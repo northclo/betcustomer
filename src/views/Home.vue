@@ -90,7 +90,7 @@
                 </a-row>
             </div>
             <div class="percentage-info-container">
-                <a-row :gutter="10">
+                <a-row :gutter="15">
                     <a-col :span="6">
                       <button class="bet-amount-btn">
                         {{ trlang.amount_1 }}
@@ -112,14 +112,17 @@
                       </button>
                     </a-col>
                 </a-row>
-                <a-row :gutter="10" class="bet-action-container">
+                <a-row :gutter="15" class="bet-action-container">
                     <a-col :span="5">
-                      <button class="bet-action-btn">
+                      <button class="bet-action-btn reset-bet-amount">
                         {{ trlang.bet_amount_reset }}
                       </button>
                     </a-col>
                     <a-col :span="14">
-                      <a-flex>
+                      <a-flex justify="space-between">
+                        <div class="bet-choosed-option">
+
+                        </div>
                         <div class="bet-percentage-val">
                             <div class="value-title">{{ trlang.bet_percentage }}</div>
                             <div class="value-info">0.0</div>
@@ -140,7 +143,7 @@
                       </button>
                     </a-col>
                     <a-col :span="5">
-                      <button class="bet-action-btn">
+                      <button class="bet-action-btn start-betting">
                         {{ trlang.start_betting }}
                       </button>
                     </a-col>
@@ -187,11 +190,10 @@ export default {
   .home-container {
     background: rgba(187, 222, 251, 0.3);
     border-radius: 5px;
-    min-height: 76vh;
     padding: 20px 16px;
   }
   .percentage-info-container {
-    padding: 13px;
+    padding: 15px;
     border-radius: 8px;
     background: var(--black-background);
     position: relative;
@@ -253,31 +255,68 @@ export default {
     cursor: pointer;
   }
   .bet-action-container {
-    padding-top: 12px;
+    padding-top: 16px;
   }
   .benefit-amount {
     padding: 3px;
-    width: 150px;
-    border-radius: 5px;
+    width: 120px;
+    border-radius: 1px;
   }
 
   .benefit-amount input {
-    font-size: 16px;
+    font-size: 16px !important;
     font-weight: 600;
+    height: 35px !important;
   }
   .bet-percentage-val {
     display: flex;
     align-items: center;
+    color: white;
   }
+
+  .value-title {
+    padding: 10px;
+    background: var(--main-color);
+    border: 1px solid var(--main-color);
+  }
+
+  .value-info {
+    border: 1px solid var(--main-color);
+    padding: 10px;
+  }
+
   .bet-action-btn{
     width: 100%;
     height: 100%;
     cursor: pointer;
+    font-size: 16px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   }
   .bet-reset-action{
     width: 100%;
     height: 50px;
     margin-top: 12px;
+    cursor: pointer;
+    border: none;
+    background: var(--main-color);
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+  }
+  .reset-bet-amount {
+    background: var(--pink-color);
+  }
+  .start-betting {
+    background: var(--green-color);
+  }
+
+  .bet-choosed-option{
+    width: 60px;
+    text-align: center;
   }
 </style>
 
