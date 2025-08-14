@@ -1,0 +1,46 @@
+export default {
+  // Menu items
+  game_menu: "GameStart",
+  bethistory_menu: "BetHistory",
+  addfund_menu: "AddFund",
+  refund_menu: "Refund",
+  blog_menu: "BlogPost",
+  customer_center_menu: "CustomerCenter",
+
+  // Game banner names
+  game_index: "GameIndex",
+  time_intro: "TimeIntro",
+  store_amount: "StoreAmount",
+  store_name: "StoreName",
+  partner_dashboard: "Pdashboard",
+  index_unit: "tms",
+  per_day: "D",
+  currency: "¥",
+  store_name_link: "https://www.alibaba.com/",
+  logout: "LogOut",
+
+  //Game Betting Types
+  odd: "Odd",
+  even: "Even",
+  under: "Under",
+  over: "Over",
+  odd_under: "OddUnder",
+  odd_over: "OddOver",
+  even_under: "EvenUnder",
+  even_over: "EvenOver",
+  normal_bet: "Normal",
+  combine_bet: "Combined",
+  number_match: "Number Match",
+  number_13: "Number 13",
+  number_14: "Number 14",
+  number_16: "Number 16",
+  amount_1: "10000",
+  amount_2: "20000",
+  amount_5: "50000",
+  amount_10: "100000",
+  bet_amount_reset: "AmountReset",
+  bet_reset: "BetReset",
+  bet_percentage: "Percentage",
+  benefit_amount: "Benefit",
+  start_betting: "StartBet"
+};

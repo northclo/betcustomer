@@ -1,0 +1,29 @@
+#app {
+  background-color: var(--main-dark-color);
+  min-height: 100vh;
+}
+
+.main-container {
+  max-width: 1200px;
+  margin: auto;
+}
+
+.main-background {
+  background: var(--main-color)!important;
+}
+
+.pink-background {
+  background: var(--pink-color)!important;
+}
+
+.green-background {
+  background: var(--green-color)!important;
+}
+
+.red-background {
+  background: var(--red-color)!important;
+}
+
+.yellow-background {
+  background: var(--yellow-color)!important;
+}

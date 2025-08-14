@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /login/
+Disallow: /account/
+Disallow: /search
+Disallow: /*?*
+Allow: /
+
+Sitemap: https://vuecollection.com/sitemap.xml
