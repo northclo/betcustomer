@@ -1,0 +1,44 @@
+name: Frontend Master Deploy to S3
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Project Checkout
+        uses: actions/checkout@v2
+
+      - name: Install NPM v22.18.0
+        uses: actions/setup-node@v1
+        with:
+          node-version: '22.18.0'
+
+      - name: NPM install...
+        run: npm install
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+
+      - name: Upload to AWS
+        run: |
+          aws s3 rm s3://${{ secrets.BUCKET_NAME }}/ --recursive
+          aws s3 cp dist s3://${{ secrets.BUCKET_NAME }}/ --recursive
+
+      - name: Deploy
+        uses: lbertenasco/s3-deploy@v1
+        with:
+          folder: dist
+          bucket: ${{ secrets.BUCKET_NAME }}
+          dist-id: E2Y6VZI27L3EFV
+          invalidation: / *
