@@ -76,7 +76,7 @@
                       </a>
                     </a-col>
                     <a-col :span="8" class="bet-btn">
-                      <a class="bet-num-14 yellow-background">
+                      <a class="bet-num-14">
                         <div class="bet-btn-title">{{ trlang.number_14 }}</div>
                         <div class="bet-percentage">19.5</div>
                       </a>
