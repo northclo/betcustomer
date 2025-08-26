@@ -9,7 +9,7 @@
                     <a-typography-title :level="4" class="text-white mb-0">
                         {{ trlang.login_to_account }}
                     </a-typography-title>
-                    <div>
+                    <!-- <div>
                         <a-typography-text class="text-white fs-5">
                             {{ trlang.do_not_have_account }}
                         </a-typography-text>
@@ -18,18 +18,17 @@
                                 {{ trlang.register_now }}
                             </button>
                         </a>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="text-start">
                     <a-typography-text class="text-white">{{ trlang.email }}</a-typography-text>
-                    <a-input-password v-model:value="value3" :placeholder="trlang.input_email"
-                        :visibility-toggle="false" />
+                    <a-input v-model:value="email" :placeholder="trlang.input_email" />
                 </div>
                 <div class="text-start">
                     <a-typography-text class="text-white">{{ trlang.password }}</a-typography-text>
-                    <a-input-password v-model:value="value" :placeholder="trlang.input_password" />
+                    <a-input-password v-model:value="password" :placeholder="trlang.input_password" />
                 </div>
-                <button class="w-100 pt-2 pb-2 mt-5 radius-2 cursor-pointer">{{ trlang.login }}</button>
+                <button class="w-100 pt-2 pb-2 mt-5 radius-2 cursor-pointer" @click="login">{{ trlang.login }}</button>
             </a-space>
         </div>
     </div>
@@ -37,12 +36,18 @@
 
 <script>
 
+import { message } from 'ant-design-vue';
+
+import { checkValidEmail } from '../helpers/commond/check-valid-email';
+import { api } from '../helpers/Api'
+
 export default {
     name: 'LoginPage',
     inject: ['langState'],
     data() {
         return {
-            benefitAmount: 1000
+            email: '',
+            password: ''
         };
     },
     computed: {
@@ -50,5 +55,32 @@ export default {
             return this.langState.translations
         }
     },
+    methods: {
+        async login() {
+            if (!this.email || !this.password) {
+                message.error(this.trlang.fill_email_password)
+                return;
+            }
+
+            if (!checkValidEmail(this.email)) {
+                message.error(this.trlang.not_correct_email)
+                return;
+            }
+
+            try {
+                let response = await api.login({
+                    email: this.email,
+                    password: this.password
+                })
+
+                localStorage.setItem('token', response.data.token)
+
+                this.$router.push('/')
+
+            } catch (error) {
+                message.error(error.response.data.message)
+            }
+        }
+    }
 }
 </script>

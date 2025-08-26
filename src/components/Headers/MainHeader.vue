@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { api } from '../../helpers/Helpers';
+import { api } from '../../helpers/Api';
 import { common } from '../../helpers/Common';
 
 export default ({

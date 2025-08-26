@@ -1,5 +1,5 @@
 export default {
-  running_ball: 'Running Ball',
+  running_ball: "Running Ball",
 
   // Menu items
   game_menu: "GameStart",
@@ -54,5 +54,7 @@ export default {
   email: "Email",
   password: "Password",
   input_email: "Input email",
-  input_password: "Input password"
+  input_password: "Input password",
+  fill_email_password: "Please fill email and password",
+  not_correct_email: "Email is not correct",
 };
