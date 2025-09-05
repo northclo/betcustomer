@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 const Home = () => import('./views/Home.vue');
+const Login = () => import('./views/Login.vue')
 
 const routes = [
   {
@@ -13,6 +14,12 @@ const routes = [
     name: 'home',
     component: Home,
     meta: { breadcrumb: 'Home' }
+  },
+  {
+    path: '/auth/login',
+    name: 'login',
+    component: Login,
+    meta: { breadcrumb: 'Login' }
   }
 ];
 

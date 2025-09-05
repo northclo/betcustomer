@@ -1,4 +1,6 @@
 export default {
+  running_ball: "Running Ball",
+
   // Menu items
   game_menu: "GameStart",
   bethistory_menu: "BetHistory",
@@ -42,5 +44,17 @@ export default {
   bet_reset: "BetReset",
   bet_percentage: "Percentage",
   benefit_amount: "Benefit",
-  start_betting: "StartBet"
+  start_betting: "StartBet",
+
+  // Auth names
+  login: "Login",
+  login_to_account: "Log in to your account",
+  do_not_have_account: "Don't have an account?",
+  register_now: "Register now",
+  email: "Email",
+  password: "Password",
+  input_email: "Input email",
+  input_password: "Input password",
+  fill_email_password: "Please fill email and password",
+  not_correct_email: "Email is not correct",
 };
