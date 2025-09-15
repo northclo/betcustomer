@@ -4,7 +4,7 @@ module.exports = {
     node: true,
   },
   parserOptions: {
-    parser: '@babel/eslint-parser', // or '@babel/eslint-parser'
+    parser: '@babel/eslint-parser',
     requireConfigFile: false,
     ecmaVersion: 2020,
     sourceType: 'module',
@@ -15,6 +15,12 @@ module.exports = {
   ],
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off'
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+
+    // Vue formatting relaxations
+    'vue/max-attributes-per-line': 'off',
+    'vue/html-closing-bracket-newline': 'off',
+    'vue/first-attribute-linebreak': 'off',
+    'vue/html-indent': 'off',
   },
 };

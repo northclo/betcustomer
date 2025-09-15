@@ -16,15 +16,14 @@ import { computed } from 'vue';
 
 export default {
   name: 'App',
-  data() {
-    return {
-      currentLang: 'en',
-      translations: {}
-    }
-  },
   components: {
     MainHeader,
     BannerCard
+  },
+  provide() {
+    return {
+      langState: this // we provide `this` so children can access both currentLang and translations
+    }
   },
   setup() {
     const route = useRoute()
@@ -32,6 +31,15 @@ export default {
     const isAuthPage = computed(() => route.path.startsWith('/auth'))
 
     return { isAuthPage }
+  },
+  data() {
+    return {
+      currentLang: 'en',
+      translations: {}
+    }
+  },
+  mounted() {
+    this.loadLanguage(this.currentLang)
   },
   methods: {
     async loadLanguage(lang) {
@@ -43,13 +51,5 @@ export default {
       }
     }
   },
-  provide() {
-    return {
-      langState: this // we provide `this` so children can access both currentLang and translations
-    }
-  },
-  mounted() {
-    this.loadLanguage(this.currentLang)
-  }
 };
 </script>
