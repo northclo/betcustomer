@@ -39,25 +39,25 @@
           </div>
           <a-row :gutter="8">
             <a-col :span="6" class="bet-btn">
-              <a class="bet-type-odd main-background">
+              <a class="bet-type-odd bg-primary">
                 <div class="bet-btn-title">{{ trlang.odd_under }}</div>
                 <div class="bet-percentage">2.45</div>
               </a>
             </a-col>
             <a-col :span="6" class="bet-btn">
-              <a class="bet-type-even pink-background">
+              <a class="bet-type-even bg-pink">
                 <div class="bet-btn-title">{{ trlang.odd_over }}</div>
                 <div class="bet-percentage">2.45</div>
               </a>
             </a-col>
             <a-col :span="6" class="bet-btn">
-              <a class="bet-type-under main-background">
+              <a class="bet-type-under bg-primary">
                 <div class="bet-btn-title">{{ trlang.even_under }}</div>
                 <div class="bet-percentage">2.45</div>
               </a>
             </a-col>
             <a-col :span="6" class="bet-btn">
-              <a class="bet-type-over pink-background">
+              <a class="bet-type-over bg-pink">
                 <div class="bet-btn-title">{{ trlang.even_over }}</div>
                 <div class="bet-percentage">2.45</div>
               </a>
@@ -70,7 +70,7 @@
           </div>
           <a-row :gutter="8">
             <a-col :span="8" class="bet-btn">
-              <a class="bet-num-13 red-background">
+              <a class="bet-num-13 bg-danger">
                 <div class="bet-btn-title">{{ trlang.number_13 }}</div>
                 <div class="bet-percentage">9.5</div>
               </a>
@@ -82,7 +82,7 @@
               </a>
             </a-col>
             <a-col :span="8" class="bet-btn">
-              <a class="bet-num-16 main-background">
+              <a class="bet-num-16 bg-primary">
                 <div class="bet-btn-title">{{ trlang.number_16 }}</div>
                 <div class="bet-percentage">999</div>
               </a>
@@ -124,21 +124,22 @@
                   <div class="value-title">
                     {{ trlang.bet_percentage }}
                   </div>
-                  <div class="value-info">
-                    0.0
-                  </div>
+                  <div class="value-info">0.0</div>
                 </div>
                 <div class="bet-percentage-val">
                   <div class="value-title">
                     {{ trlang.benefit_amount }}
                   </div>
-                  <div class="value-info">
-                    0
-                  </div>
+                  <div class="value-info">0</div>
                 </div>
-                <a-input-number id="benefit-amount"
-                  :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                  :parser="value => value.replace(/\$\s?|(,*)/g, '')" class="benefit-amount" />
+                <a-input-number
+                  id="benefit-amount"
+                  :formatter="
+                    (value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                  "
+                  :parser="(value) => value.replace(/\$\s?|(,*)/g, '')"
+                  class="benefit-amount"
+                />
               </a-flex>
               <button class="bet-reset-action">
                 {{ trlang.bet_reset }}
@@ -152,15 +153,12 @@
           </a-row>
         </div>
       </a-col>
-      <a-col :span="8" class="game-progress">
-        col-12
-      </a-col>
+      <a-col :span="8" class="game-progress"> col-12 </a-col>
     </a-row>
   </div>
 </template>
 
 <script>
-
 import moment from 'moment';
 
 export default {
@@ -168,13 +166,13 @@ export default {
   inject: ['langState'],
   data() {
     return {
-      benefitAmount: 1000
+      benefitAmount: 1000,
     };
   },
   computed: {
     trlang() {
-      return this.langState.translations
-    }
+      return this.langState.translations;
+    },
   },
   mounted() {
     this.initDate();
@@ -183,9 +181,9 @@ export default {
     moment,
     initDate: async function () {
       this.selectedStartDate = new Date();
-    }
+    },
   },
-}
+};
 </script>
 
 <style>
@@ -209,7 +207,7 @@ export default {
   align-items: center;
   justify-content: space-between;
   background: var(--green-color);
-  color: white
+  color: white;
 }
 
 .bet-btn a.bet-type-even {
@@ -238,7 +236,6 @@ export default {
 
 .combined-bet {
   margin-top: 50px;
-
 }
 
 .card-title {

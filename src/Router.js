@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 const Home = () => import('./views/Home.vue');
-const Login = () => import('./views/Login.vue')
+const LoginPage = () => import('./views/LoginPage.vue')
 
 const routes = [
   {
@@ -18,7 +18,7 @@ const routes = [
   {
     path: '/auth/login',
     name: 'login',
-    component: Login,
+    component: LoginPage,
     meta: { breadcrumb: 'Login' }
   }
 ];

@@ -48,13 +48,16 @@ export default {
 
   // Auth names
   login: "Login",
-  login_to_account: "Log in to your account",
-  do_not_have_account: "Don't have an account?",
-  register_now: "Register now",
+  login_to_your_account: "Log in to your account",
+  remember_me: "Remember me",
   email: "Email",
   password: "Password",
-  input_email: "Input email",
-  input_password: "Input password",
   fill_email_password: "Please fill email and password",
   not_correct_email: "Email is not correct",
+  captcha_is_wrong: "Captcha is wrong",
+  your_login_attempt_has_failed_3_times_or_more: "Your login attempt has failed 3 times or more",
+  please_try_again_later: "Please try again later",
+  enter_captcha: "Enter captcha",
+  min: "min",
+  sec: "sec"
 };

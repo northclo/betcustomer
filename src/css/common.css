@@ -3,43 +3,87 @@
   min-height: 100vh;
 }
 
-button {
-  border: none;
-}
-
 .main-container {
   max-width: 1200px;
   margin: auto;
 }
+/* 
+===========================================
+Global App Styles & Utility Classes
+This file defines utility-first CSS classes 
+(similar to Bootstrap/Tailwind) for quick styling.
+Each class has a single responsibility.
+===========================================
+*/
 
-/** background color css */
-.main-background {
+#app {
+  min-height: 100vh; /* Ensure app container fills full viewport height */
+}
+
+button {
+  border: none; /* Remove default button border */
+}
+
+/* ================================
+   BACKGROUND COLOR UTILITIES
+   Uses CSS custom properties (variables).
+   Each class applies a specific background.
+================================= */
+
+.bg-primary {
   background: var(--main-color) !important;
 }
 
-.pink-background {
+.bg-pink {
   background: var(--pink-color) !important;
 }
 
-.green-background {
+.bg-light-pink {
+  background: var(--light-pink-color) !important;
+}
+
+.bg-success {
   background: var(--green-color) !important;
 }
 
-.red-background {
+.bg-light-green {
+  background: var(--light-green-color) !important;
+}
+
+.bg-danger {
   background: var(--red-color) !important;
 }
 
-.yellow-background {
+.bg-warning {
   background: var(--yellow-color) !important;
 }
 
-.transparent-background {
-  background: transparent;
+.bg-white {
+  background: var(--white-color) !important;
 }
 
-/** text align css */
+.bg-dark-gray {
+  background: var(--dark-gray-color) !important;
+}
+
+.bg-gray {
+  background: var(--gray) !important;
+}
+
+.bg-purple {
+  background: var(--purple-color) !important;
+}
+
+.bg-none {
+  background: transparent; /* No background */
+}
+
+/* ================================
+   TEXT ALIGNMENT UTILITIES
+================================= */
+
 .text-start {
-  text-align: start;
+  text-align: start; /* Left in LTR, Right in RTL */
 }
 
 .text-center {
@@ -47,10 +91,13 @@ button {
 }
 
 .text-end {
-  text-align: end;
+  text-align: end; /* Right in LTR, Left in RTL */
 }
 
-/** text color css */
+/* ================================
+   TEXT COLOR UTILITIES
+================================= */
+
 .text-white {
   color: var(--white-color) !important;
 }
@@ -59,30 +106,199 @@ button {
   color: var(--main-color) !important;
 }
 
-/** font size css */
-.fs-5 {
-  font-size: 12px;
+.text-red {
+  color: var(--red-color) !important;
 }
 
-/** width & height css */
+.text-pink {
+  color: var(--pink-color) !important;
+}
+
+.text-dark-brown {
+  color: var(--dark-brown-color) !important;
+}
+
+.text-yellow {
+  color: var(--yellow-color) !important;
+}
+
+.text-green {
+  color: var(--green-color) !important;
+}
+
+.text-dark-gray {
+  color: var(--dark-gray-color) !important;
+}
+
+.text-light-gray {
+  color: var(--light-gray-color) !important;
+}
+
+.text-dark-main {
+  color: var(--main-dark-color) !important;
+}
+
+/* ================================
+   FONT WEIGHT UTILITIES
+================================= */
+
+.font-bold {
+  font-weight: bold;
+}
+
+.fw-400 {
+  font-weight: 400 !important; /* Normal weight */
+}
+
+/* ================================
+   FONT SIZE UTILITIES
+================================= */
+
+.fs-1 {
+  font-size: 30px; /* Large heading */
+}
+
+.fs-2 {
+  font-size: 25px;
+}
+
+.fs-3 {
+  font-size: 20px;
+}
+
+.fs-4 {
+  font-size: 16px; /* Base size */
+}
+
+.fs-5 {
+  font-size: 12px; /* Small text */
+}
+
+/* ================================
+   LINE HEIGHT UTILITIES
+================================= */
+
+.leading-0 {
+  line-height: 0px !important; /* Collapsed line height */
+}
+
+/* ================================
+   WIDTH & HEIGHT UTILITIES
+================================= */
+
 .w-100 {
   width: 100%;
 }
 
-.h-100vh {
-  height: 100vh;
+.w-50 {
+  width: 50%;
 }
 
-/** align css */
+.w-fit {
+  width: fit-content; /* Shrinks to content width */
+}
+
+.min-w-100 {
+  min-width: 100%; /* At least full width */
+}
+
+.max-w-fit {
+  max-width: fit-content; /* Restrict to content width */
+}
+
+.h-100 {
+  height: 100%;
+}
+
+.h-100vh {
+  height: 100vh; /* Full viewport height */
+}
+
+/* ================================
+   FLEX & ALIGNMENT UTILITIES
+   For flexbox containers & children
+================================= */
+
 .justify-center {
-  display: flex;
-  align-items: center;
   justify-content: center;
 }
 
-/** margin css */
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-end {
+  justify-content: end;
+}
+
+.items-start {
+  align-items: start;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.items-end {
+  align-items: end;
+}
+
+.flex {
+  display: flex !important;
+}
+
+.flex-0 {
+  flex: none; /* Prevent flex growth/shrink */
+}
+
+.flex-1 {
+  flex: 1; /* Take up remaining space */
+}
+
+.flex-row {
+  flex-direction: row;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-wrap {
+  flex-wrap: wrap; /* Allow wrapping */
+}
+
+.gap-0 {
+  gap: 0px !important;
+}
+
+.gap-2 {
+  gap: 8px !important;
+}
+
+.gap-5 {
+  gap: 20px !important;
+}
+
+/* ================================
+   MARGIN UTILITIES
+   Uses spacing scale (0, 2 = 8px, 5 = 20px, etc.)
+================================= */
+
+.m-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.m-2 {
+  margin: 8px;
+}
+
 .mt-0 {
   margin-top: 0px;
+}
+
+.mt-2 {
+  margin-top: 8px;
 }
 
 .mt-5 {
@@ -93,25 +309,148 @@ button {
   margin-bottom: 0px !important;
 }
 
-/** padding css */
+.mb-2 {
+  margin-bottom: 8px;
+}
+
+.mb-5 {
+  margin-bottom: 20px;
+}
+
+.ms-2 {
+  margin-left: 8px;
+}
+
+.ms-5 {
+  margin-left: 16px;
+}
+
+.me-2 {
+  margin-right: 8px;
+}
+
+/* ================================
+   PADDING UTILITIES
+   Uses spacing scale like margin
+================================= */
+
+.p-1 {
+  padding: 4px;
+}
+
+.p-2 {
+  padding: 8px;
+}
+
+.p-5 {
+  padding: 20px;
+}
+
+.ps-2 {
+  padding-left: 8px;
+}
+
+.ps-5 {
+  padding-left: 20px;
+}
+
+.pe-5 {
+  padding-right: 20px;
+}
+
 .pt-2 {
   padding-top: 8px;
+}
+
+.pt-5 {
+  padding-top: 20px;
 }
 
 .pb-2 {
   padding-bottom: 8px;
 }
 
-/** border css */
+.pb-5 {
+  padding-bottom: 20px;
+}
+
+.px-2 {
+  padding-inline: 8px !important;
+}
+
+.px-5 {
+  padding-inline: 20px !important; /* Equal padding left & right */
+}
+
+/* ================================
+   BORDER & RADIUS UTILITIES
+================================= */
+
 .border-0 {
   border: none;
 }
 
-.radius-2 {
-  border-radius: 8px;
+.border {
+  border: 1px solid rgb(209, 209, 209); /* Light gray border */
 }
 
-/** cursor css */
+.border-bottom {
+  border-bottom: 1px solid rgb(209, 209, 209); /* Light gray border */
+}
+
+.radius-1 {
+  border-radius: 4px;
+}
+
+.radius-2 {
+  border-radius: 8px; /* Rounded corners */
+}
+
+.radius-bottom-1 {
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+/* ================================
+   OVERFLOW UTILITIES
+================================= */
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.overflow-y-auto {
+  overflow-y: auto; /* Vertical scrollbar if needed */
+}
+
+/* ================================
+   POSITION UTILITIES
+================================= */
+
+.absolute {
+  position: absolute;
+}
+
+.relative {
+  position: relative;
+}
+
+/* ================================
+   CURSOR & TRANSITION UTILITIES
+================================= */
+
 .cursor-pointer:hover {
-  cursor: pointer;
+  cursor: pointer; /* Show pointer on hover */
+}
+
+.transition {
+  transition: all 2s; /* Smooth transition for all properties */
+}
+
+.shadow-none {
+  box-shadow: none; /* Remove shadow */
+}
+
+.shadow {
+  box-shadow: 0px -1px 4px 0px rgb(209, 209, 209);
 }

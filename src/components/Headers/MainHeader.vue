@@ -34,7 +34,6 @@
 </template>
 
 <script>
-import { api } from '../../helpers/Api';
 import { common } from '../../helpers/Common';
 
 export default {
@@ -55,13 +54,13 @@ export default {
     },
   },
   methods: {
-    getLogo: async function () {
-      const res = await api.getLogoInfo();
-      if (res.length > 0) {
-        this.logoImage = `${res[0].logoimage}`;
-        this.logoName = res[0].logoname;
-      }
-    },
+    // getLogo: async function () {
+    //   const res = await api.getLogoInfo();
+    //   if (res.length > 0) {
+    //     this.logoImage = `${res[0].logoimage}`;
+    //     this.logoName = res[0].logoname;
+    //   }
+    // },
     showMenu() {
       this.visibleMenu = true;
     },
@@ -115,7 +114,7 @@ export default {
       });
       this.$router.go(0);
     },
-    onSearch() { },
+    onSearch() {},
     showLogin(_isShow) {
       this.visibleLogin = _isShow;
       this.visibleMenu = false;
@@ -214,7 +213,7 @@ export default {
         onOk() {
           this.logout();
         },
-        onCancel() { },
+        onCancel() {},
       });
     },
   },

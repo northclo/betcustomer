@@ -3,10 +3,16 @@
   --main-color: #0086e3;
   --green-color: #28a745;
   --pink-color: #e83e8c;
+  --light-pink-color: #fff3ff;
   --light-green-color: #02e32d;
   --yellow-color: #ffc107;
   --red-color: #c20103;
   --brown-color: #483c18;
   --white-color: #ffffff;
+  --dark-brown-color: #ff875c;
+  --purple-color: #aaaaff;
+  --gray: #96a0b0;
+  --light-gray-color: #e3e3e3;
+  --dark-gray-color: rgb(80, 80, 80);
   --black-background: rgb(19, 24, 28, 0.6);
 }
