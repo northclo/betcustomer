@@ -111,3 +111,43 @@ button {
 .game-result-card tbody > .active:hover td {
   background: var(--dark-gray-color) !important;
 }
+
+.running-ball {
+  display: inline-block;
+  font-weight: 700;
+  text-align: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  line-height: 19px;
+}
+
+.running-ball1 {
+  background-color: var(--gray);
+  box-shadow: #4e4872 0 -12px 6px inset;
+}
+
+.running-ball2 {
+  background-color: #d9d8a6;
+  box-shadow: #575621 0 -12px 6px inset;
+}
+
+.running-ball3 {
+  background-color: #63a55d;
+  box-shadow: #2b4629 0 -12px 6px inset;
+}
+
+.running-ball4 {
+  background-color: #b8a7a7;
+  box-shadow: #452a2a 0 -12px 6px inset;
+}
+
+.running-ball5 {
+  background-color: #a8aeb6;
+  box-shadow: #3e454f 0 -12px 6px inset;
+}
+
+.running-ball6 {
+  background-color: #b667ca;
+  box-shadow: #46275a 0 -12px 6px inset;
+}

@@ -62,7 +62,6 @@ const fetchData = async () => {
 
   if (result.status) {
     const { option: o, game, pendingBet, user } = result.data;
-    console.log(pendingBet);
     bettingId.value = game.id;
     remainTime.value = game.remain_time;
     todayNo.value = game.today_no || 0;
@@ -170,6 +169,7 @@ const fetchData = async () => {
         bet_amount: el.bet_amount,
         type: el.betting_type,
         benefit: el.betting_rate,
+        number_sort: el.number_sort,
         result: 0,
       };
     });

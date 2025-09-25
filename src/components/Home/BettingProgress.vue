@@ -16,16 +16,24 @@
         <a-typography-text v-if="!selectedBettingId" class="text-white fs-2">
           {{ trlang.betting_available }}
         </a-typography-text>
-        <a-layout-content
-          v-else
-          class="flex-1 flex justify-center flex-wrap gap-2"
-        >
-          <template v-for="item in activeBetting?.bet" :key="item.key">
-            <a-button :class="item.win ? 'active game-btn' : 'game-btn'">
-              {{ trlang[item.type] }}
+        <div v-else>
+          <a-layout-content class="flex-1 flex justify-center flex-wrap gap-2">
+            <template v-for="item in activeBetting?.bet" :key="item.key">
+              <a-button :class="item.win ? 'active game-btn' : 'game-btn'">
+                {{ trlang[item.type] }}
+              </a-button>
+            </template>
+          </a-layout-content>
+          <div class="mt-5 flex gap-5">
+            <a-button
+              v-for="item in activeBetting?.numberSort"
+              :key="item"
+              :class="'running-ball running-ball' + item"
+            >
+              {{ item }}
             </a-button>
-          </template>
-        </a-layout-content>
+          </div>
+        </div>
         <RightOutlined
           :class="
             selectedBettingId !== dataSource[0]?.id
@@ -179,7 +187,6 @@ const customRow = (record) => {
 
 const buildActiveBetting = (record) => {
   const specialTypes = ['number_13', 'number_14', 'number_16'];
-  console.log(record.type);
 
   if (specialTypes.includes(record.type)) {
     activeBetting.value = {
@@ -192,5 +199,7 @@ const buildActiveBetting = (record) => {
       numberSort: [],
     };
   }
+
+  console.log(activeBetting.value);
 };
 </script>
