@@ -83,7 +83,7 @@ button {
 }
 
 .bg-black {
-  background: var(--black-background) !important;
+  background: var(--black-color) !important;
 }
 
 .bg-none {

@@ -1,0 +1,150 @@
+::-webkit-scrollbar {
+  width: 2px; /* scrollbar width */
+  height: 2px; /* for horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #f0f0f0; /* track color */
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888; /* handle color */
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* hover effect */
+}
+
+.game-result-card {
+  border: 5px solid #13181d;
+  background: #13181d;
+}
+
+.game-result-card .ant-card-head {
+  background: rgb(38 44 49);
+  color: var(--white-color);
+}
+
+.game-result-card .ant-card-body {
+  background: #13181d;
+  text-align: center;
+  padding: 0px;
+}
+
+.game-btn {
+  border: 3px solid var(--red-color) !important;
+  background: none !important;
+  color: var(--red-color);
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-btn:hover {
+  color: var(--red-color) !important;
+}
+
+.game-btn.active {
+  color: var(--white-color);
+  background: var(--red-color) !important;
+}
+
+.game-btn.active:hover {
+  color: var(--white-color) !important;
+}
+
+.game-result-card table thead tr th,
+.game-result-card table,
+.game-result-card table:hover,
+.game-result-card table tbody tr:hover td,
+.game-result-card table tbody tr td {
+  background: #13181d !important;
+  color: var(--white-color) !important;
+  text-align: center;
+}
+
+.game-result-card table tbody tr td {
+  border-bottom: none !important;
+  cursor: pointer;
+}
+
+.game-result-card table thead tr th {
+  border-bottom: 1px solid gray !important;
+  text-align: center !important;
+}
+
+.benefit-amount input {
+  height: 45px !important;
+}
+
+.sp-icon {
+  padding: 4px 8px;
+  background: var(--green-color);
+  border-radius: 5px;
+  color: white;
+  margin-bottom: 8px;
+  position: relative;
+  height: 27px;
+}
+
+.sp-icon::after {
+  content: '';
+  background: var(--green-color);
+  clip-path: polygon(100% 100%, 0 0, 75% 0);
+  width: 12px;
+  height: 12px;
+  position: absolute;
+  bottom: -9px;
+  right: 10px;
+}
+
+.game-result-card tbody > .active > td,
+.game-result-card tbody > .active:hover td {
+  background: var(--dark-gray-color) !important;
+}
+
+.running-ball {
+  color: var(--main-dark-color) !important;
+  display: inline-block;
+  font-weight: 700;
+  text-align: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  line-height: 19px;
+}
+
+.running-ball1 {
+  background-color: var(--gray);
+  box-shadow: #4e4872 0 -12px 6px inset;
+}
+
+.running-ball2 {
+  background-color: #d9d8a6;
+  box-shadow: #575621 0 -12px 6px inset;
+}
+
+.running-ball3 {
+  background-color: #63a55d;
+  box-shadow: #2b4629 0 -12px 6px inset;
+}
+
+.running-ball4 {
+  background-color: #b8a7a7;
+  box-shadow: #452a2a 0 -12px 6px inset;
+}
+
+.running-ball5 {
+  background-color: #a8aeb6;
+  box-shadow: #3e454f 0 -12px 6px inset;
+}
+
+.running-ball6 {
+  background-color: #b667ca;
+  box-shadow: #46275a 0 -12px 6px inset;
+}
