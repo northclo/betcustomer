@@ -1,18 +1,19 @@
 :root {
   --main-dark-color: #303265;
   --main-color: #0086e3;
+  --main-right-color: rgba(187, 222, 251, 0.3);
   --green-color: #28a745;
   --pink-color: #e83e8c;
   --light-pink-color: #fff3ff;
   --light-green-color: #02e32d;
   --yellow-color: #ffc107;
-  --red-color: #c20103;
+  --red-color: #ef4444;
   --brown-color: #483c18;
   --white-color: #ffffff;
   --dark-brown-color: #ff875c;
   --purple-color: #aaaaff;
   --gray: #96a0b0;
   --light-gray-color: #e3e3e3;
-  --dark-gray-color: rgb(80, 80, 80);
+  --dark-gray-color: #4d6578;
   --black-background: rgb(19, 24, 28, 0.6);
 }

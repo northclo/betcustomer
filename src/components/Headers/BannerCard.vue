@@ -1,114 +1,157 @@
 <template>
-    <div class="bannercard-wrapper">
-        <a-flex class="game-info" justify="space-between">
-            <a-flex class="current-game-index game-info-col">
-                <div class="sp-icon">
-                    {{ trlang.game_index }}
-                </div>
-                <a-flex class="game-index-number" align="flex-end">
-                    <div class="game-index-num">
-                        1508830 {{ trlang.index_unit }}
-                    </div>
-                    <div class="game-index-day">
-                        ({{ trlang.per_day }} 279 {{ trlang.index_unit }})
-                    </div>
-                </a-flex>
-            </a-flex>
-            <a-flex class="time-intro game-info-col">
-                <div class="sp-icon">
-                    {{ trlang.time_intro }}
-                </div>
-                <a-flex class="current-time" align="flex-end">
-                    {{ formattedTime }} <span class="time-counter">{{ counterText }}</span>
-                </a-flex>
-            </a-flex>
-            <a-flex class="fund-store-amount game-info-col">
-                <div class="sp-icon">
-                    {{ trlang.store_amount }}
-                </div>
-                <a-flex class="store-amount-val" align="flex-end">
-                    879,450 {{ trlang.currency }}
-                </a-flex>
-            </a-flex>
-            <a-flex class="store-name game-info-col">
-                <a class="store-name-link" :href="trlang.store_name_link" target="_blank">
-                    <div class="store-icon">
-                        <a-image src="../../assets/images/sp.png" />
-                    </div>
-                    <div class="store-name-title">
-                        {{ trlang.store_name }}
-                    </div>
-                </a>
-            </a-flex>
-            <div class="partner-dashboard game-info-col">
-                <div class="partner-info">
-                    Test
-                </div>
-                <button class="goto-partner-dash">
-                    {{ trlang.partner_dashboard }}
-                </button>
-            </div>
-            <a-flex class="noted-messages game-info-col" align="center">
-                <div class="msg-icon">
-                    <a-image src="../../assets/images/msg-icon.png" />
-                </div>
-                <div class="msg-number">
-                    0
-                </div>
-            </a-flex>
+  <div class="mt-5" style="background: rgba(253, 126, 20, 0.4)">
+    <a-flex justify="space-between">
+      <!-- Game Index -->
+      <a-flex class="p-2" gap="small" align="center">
+        <a-typography-text class="sp-icon">
+          {{ trlang.game_index }}
+        </a-typography-text>
+        <a-flex align="flex-end" gap="small">
+          <a-typography-text class="fs-2 font-bold text-pink">
+            {{ total_no }} {{ trlang.index_unit }}
+          </a-typography-text>
+          <a-typography-text class="fs-3 font-bold text-white">
+            ({{ trlang.per_day }} {{ today_no }} {{ trlang.index_unit }})
+          </a-typography-text>
         </a-flex>
-    </div>
+      </a-flex>
+
+      <!-- Timer -->
+      <a-flex class="p-2" gap="small" align="center">
+        <a-typography-text class="sp-icon">
+          {{ trlang.time_intro }}
+        </a-typography-text>
+        <a-flex class="fs-3 text-white" align="flex-end" gap="small">
+          {{ formattedTime }}
+          <span class="fs-1 text-warning">{{ counterText }}</span>
+        </a-flex>
+      </a-flex>
+
+      <!-- Store Amount -->
+      <a-flex class="p-2" align="center" gap="small">
+        <a-typography-text class="sp-icon">
+          {{ trlang.store_amount }}
+        </a-typography-text>
+        <a-flex class="fs-2 text-light-green" align="flex-end">
+          {{ own_money.toLocaleString() }} {{ trlang.currency }}
+        </a-flex>
+      </a-flex>
+
+      <!-- Store Link -->
+      <a-flex align="center">
+        <a
+          :href="trlang.store_name_link"
+          target="_blank"
+          class="flex items-center"
+        >
+          <a-image :src="spImg" />
+          <a-typography-text class="text-white fs-4 ms-2">
+            {{ trlang.store_name }}
+          </a-typography-text>
+        </a>
+      </a-flex>
+
+      <!-- Partner Dashboard -->
+      <div class="p-2">
+        <div class="text-white">Test</div>
+        <button class="bg-white cursor-pointer">
+          {{ trlang.partner_dashboard }}
+        </button>
+      </div>
+
+      <!-- Messages -->
+      <a-flex class="p-2" align="center" gap="small">
+        <a-image :src="msgIcon" />
+        <a-typography-text class="text-white fs-3">0</a-typography-text>
+      </a-flex>
+    </a-flex>
+  </div>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, inject, onMounted, onBeforeUnmount, watch } from 'vue';
+import spImg from '@/assets/images/sp.png';
+import msgIcon from '@/assets/images/msg-icon.png';
 
-export default ({
-    name: 'BannerCard',
-    inject: ['langState'],
-    data() {
-        return {
-            formattedTime: '',
-            clockInterval: null,
-            counterText: '',
-            counterInterval: null
-        };
-    },
-    computed: {
-        trlang() {
-            return this.langState.translations
-        }
-    },
-    beforeUnmount() {
-        clearInterval(this.clockInterval);
-    },
-    mounted: function () {
-        this.updateTokyoTime();
-        this.updateCounter();
-        this.clockInterval = setInterval(() => {
-            this.updateTokyoTime();
-            this.updateCounter();
-        }, 1000);
+// ✅ i18n
+const langState = inject('langState');
+const trlang = computed(() => langState.translations);
 
-    },
-    methods: {
-        updateTokyoTime() {
-            this.formattedTime = new Intl.DateTimeFormat('en-US', {
-                timeZone: 'Asia/Tokyo',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false
-            }).format(new Date());
-        },
-        updateCounter() {
-            const now = new Date();
-            const secondsSince5min = (now.getMinutes() % 5) * 60 + now.getSeconds();
-            const remainingSeconds = (5 * 60) - secondsSince5min;
+// ✅ props & emits
+const props = defineProps({
+  loading: { type: Boolean, default: false },
+  today_no: { type: Number },
+  total_no: { type: Number },
+  own_money: { type: Number },
+  remain_time: { type: Number, default: 0 },
+});
+const emit = defineEmits(['update:remain_time']);
 
-            const minutes = String(Math.floor(remainingSeconds / 60)).padStart(2, '0');
-            const seconds = String(remainingSeconds % 60).padStart(2, '0');
-            this.counterText = `${minutes}:${seconds}`;
-        }
-    },
-})
+// ✅ state
+const formattedTime = ref('');
+const counterText = ref('00:00');
+let clockInterval = null;
+let remain = ref(props.remain_time);
+
+// ✅ update Tokyo Time
+function updateTokyoTime() {
+  formattedTime.value = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Tokyo',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  }).format(new Date());
+}
+
+// ✅ update Counter
+function updateCounter() {
+  if (remain.value > 0) {
+    remain.value -= 1;
+    emit('update:remain_time', remain.value);
+
+    const minutes = String(Math.floor(remain.value / 60)).padStart(2, '0');
+    const seconds = String(remain.value % 60).padStart(2, '0');
+    counterText.value = `${minutes}:${seconds}`;
+  }
+}
+
+// ✅ start clock
+function startClock() {
+  stopClock();
+  remain.value = props.remain_time;
+
+  if (remain.value > 0 && remain.value < 180 && !props.loading) {
+    const minutes = String(Math.floor(remain.value / 60)).padStart(2, '0');
+    const seconds = String(remain.value % 60).padStart(2, '0');
+    counterText.value = `${minutes}:${seconds}`;
+  }
+
+  updateTokyoTime();
+
+  clockInterval = setInterval(() => {
+    updateTokyoTime();
+    updateCounter();
+  }, 1000);
+}
+
+// ✅ stop clock
+function stopClock() {
+  if (clockInterval) {
+    clearInterval(clockInterval);
+    clockInterval = null;
+  }
+}
+
+// ✅ lifecycle
+onMounted(startClock);
+onBeforeUnmount(stopClock);
+
+// ✅ watch remain_time & loading reset
+watch(
+  () => [props.remain_time, props.loading],
+  () => {
+    startClock();
+  }
+);
 </script>

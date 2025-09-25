@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-const Home = () => import('./views/Home.vue');
+const HomePage = () => import('./views/HomePage.vue');
 const LoginPage = () => import('./views/LoginPage.vue')
 
 const routes = [
@@ -12,7 +12,7 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: Home,
+    component: HomePage,
     meta: { breadcrumb: 'Home' }
   },
   {

@@ -42,10 +42,10 @@
       </div>
 
       <div v-if="retry" class="flex flex-column">
-        <a-typography-text class="text-red">
+        <a-typography-text class="text-danger">
           {{ trlang.your_login_attempt_has_failed_3_times_or_more }}
         </a-typography-text>
-        <a-typography-text class="text-red">
+        <a-typography-text class="text-danger">
           {{ trlang.please_try_again_later }}:
           {{
             Math.floor(retryRemainedTime / 60)
