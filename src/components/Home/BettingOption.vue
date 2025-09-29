@@ -122,8 +122,10 @@
 </template>
 
 <script setup>
-import { computed, inject, ref } from 'vue';
+import { computed, inject, onMounted, ref } from 'vue';
 import { message } from 'ant-design-vue';
+import { getData } from '@/helpers/Axios.js';
+import { apiLink } from '../../utils/api-link';
 
 // ✅ i18n
 const langState = inject('langState');
@@ -134,20 +136,122 @@ const BET_AMOUNTS = [10000, 20000, 50000, 100000];
 
 // ✅ props
 const props = defineProps({
-  bettingOptions: { type: Array, required: true },
-  loading: { type: Boolean, default: false },
   bettingRemainTime: { type: Number, default: 0 },
 });
 
 // ✅ states
+const bettingOptions = ref([]);
 const bettingAmountOptions = ref(BET_AMOUNTS);
 const bettingAmount = ref(0);
 const bettingType = ref('');
 const bettingRate = ref(0);
 const benefitAmount = computed(() => bettingAmount.value * bettingRate.value);
 const numberSort = ref([]);
+const loading = ref(false);
 
 const emit = defineEmits(['startBetting']);
+
+const fetchData = async () => {
+  loading.value = true;
+  const result = await getData(apiLink.get_init_betting_option);
+
+  if (result.status) {
+    // build betting options
+    bettingOptions.value = [
+      {
+        key: 'normal',
+        label: trlang.value.normal,
+        child: [
+          {
+            key: 'odd',
+            label: trlang.value.odd,
+            rate: result.data.odd / 100,
+            bgColor: 'success',
+            radius: 'radius-left-2',
+          },
+          {
+            key: 'even',
+            label: trlang.value.even,
+            rate: result.data.even / 100,
+            bgColor: 'danger',
+          },
+          {
+            key: 'under',
+            label: trlang.value.under,
+            rate: result.data.under / 100,
+            bgColor: 'success',
+          },
+          {
+            key: 'over',
+            label: trlang.value.over,
+            rate: result.data.over / 100,
+            bgColor: 'danger',
+            radius: 'radius-right-2',
+          },
+        ],
+      },
+      {
+        key: 'combined',
+        label: trlang.value.combined,
+        child: [
+          {
+            key: 'odd_under',
+            label: trlang.value.odd_under,
+            rate: result.data.odd_under / 100,
+            bgColor: 'primary',
+            radius: 'radius-left-2',
+          },
+          {
+            key: 'odd_over',
+            label: trlang.value.odd_over,
+            rate: result.data.odd_over / 100,
+            bgColor: 'pink',
+          },
+          {
+            key: 'even_under',
+            label: trlang.value.even_under,
+            rate: result.data.even_under / 100,
+            bgColor: 'primary',
+          },
+          {
+            key: 'even_over',
+            label: trlang.value.even_over,
+            rate: result.data.even_over / 100,
+            bgColor: 'pink',
+            radius: 'radius-right-2',
+          },
+        ],
+      },
+      {
+        key: 'number_match',
+        label: trlang.value.number_match,
+        child: [
+          {
+            key: 'number_13',
+            label: trlang.value.number_13,
+            rate: result.data.match_number1 / 100,
+            bgColor: 'danger',
+            radius: 'radius-left-2',
+          },
+          {
+            key: 'number_14',
+            label: trlang.value.number_14,
+            rate: result.data.match_number2 / 100,
+            bgColor: 'success',
+          },
+          {
+            key: 'number_16',
+            label: trlang.value.number_16,
+            rate: result.data.match_number3 / 100,
+            bgColor: 'primary',
+            radius: 'radius-right-2',
+          },
+        ],
+      },
+    ];
+    loading.value = false;
+  }
+};
 
 const setBettingOption = (item) => {
   bettingType.value = item.key;
@@ -202,4 +306,8 @@ const startBetting = async () => {
 
   resetBetting();
 };
+
+onMounted(() => {
+  fetchData();
+});
 </script>

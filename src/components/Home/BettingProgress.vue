@@ -10,11 +10,11 @@
         class="bg-none flex flex-row justify-between items-center px-5 mt-5 mb-5"
       >
         <LeftOutlined
-          :class="selectedBettingId ? 'text-white cursor-pointer' : ''"
-          @click="previousResult"
+          class="text-white cursor-pointer"
+          @click="emit('previousGame')"
         />
         <a-typography-text v-if="!selectedBettingId" class="text-white fs-2">
-          {{ trlang.betting_available }}
+          {{ gameId ? trlang.betting_available : trlang.no_available_betting }}
         </a-typography-text>
         <div v-else>
           <a-layout-content class="flex-1 flex justify-center flex-wrap gap-2">
@@ -35,12 +35,8 @@
           </div>
         </div>
         <RightOutlined
-          :class="
-            selectedBettingId !== dataSource[0]?.id
-              ? 'text-white cursor-pointer'
-              : ''
-          "
-          @click="nextResult"
+          class="text-white cursor-pointer"
+          @click="emit('nextGame')"
         />
       </a-layout>
 
@@ -68,10 +64,6 @@
         class="w-100 mt-2"
         :scroll="dataSource.length ? { x: 'max-content' } : undefined"
         :pagination="false"
-        :rowClassName="
-          (record) => (record.id === selectedBettingId ? 'active' : '')
-        "
-        :customRow="customRow"
       >
         <template #emptyText>
           <a-spin v-if="loading" />
@@ -86,15 +78,17 @@
             {{ record.bet_amount.toLocaleString() }}
           </template>
           <template v-else-if="column.key === 'bet_info'">
-            {{ trlang[record.type] }}
-            <span class="ms-5">{{ record.benefit }}</span>
+            <a-tooltip :title="String(record.number_sort)" color="#0086e3">
+              {{ trlang[record.type] }}
+              <span class="ms-5">{{ record.benefit }}</span>
+            </a-tooltip>
           </template>
           <template v-else-if="column.key === 'result'">
             <a-button
               class="w-100"
               @click="emit('cancelBetting', { id: record.id })"
             >
-              Cancel
+              {{ trlang.cancel }}
             </a-button>
           </template>
         </template>
@@ -119,10 +113,11 @@ const DEFAULT_COLUMNS = (t) => [
   { key: 'result', title: t.result, dataIndex: 'result' },
 ];
 
-const emit = defineEmits(['cancelBetting']);
+const emit = defineEmits(['cancelBetting', 'previousGame', 'nextGame']);
 
 // ✅ props
 const props = defineProps({
+  gameId: { type: String },
   todayNo: { type: Number, default: 0 },
   totalNo: { type: Number, default: 0 },
   loading: { type: Boolean, default: true },
@@ -136,70 +131,4 @@ const totalBettingAmount = computed(() =>
 const totalEarningAmount = ref(0);
 const columns = ref(DEFAULT_COLUMNS(trlang.value));
 const dataSource = computed(() => props.bettingHistory || []);
-const selectedBettingId = ref(null);
-const activeBetting = ref({});
-
-const navigateResult = (direction) => {
-  const _selectedBettingId = selectedBettingId.value;
-  const index = dataSource.value.findIndex(
-    (el) => el.id === _selectedBettingId
-  );
-
-  if (index !== -1) {
-    const newIndex = index + direction;
-
-    if (direction === +1 && newIndex >= dataSource.value.length) {
-      selectedBettingId.value = null;
-      activeBetting.value = {};
-      return;
-    }
-
-    const nextRecord = dataSource.value[newIndex];
-    if (nextRecord) {
-      selectedBettingId.value = nextRecord.id;
-      buildActiveBetting(nextRecord);
-    }
-  } else if (direction < 0) {
-    const lastRecord = dataSource.value.at(-1);
-    if (lastRecord) {
-      selectedBettingId.value = lastRecord.id;
-      buildActiveBetting(lastRecord);
-    }
-  }
-};
-
-const previousResult = () => navigateResult(+1);
-const nextResult = () => navigateResult(-1);
-
-const customRow = (record) => {
-  return {
-    onClick: () => {
-      if (selectedBettingId.value === record.id) {
-        selectedBettingId.value = null;
-        activeBetting.value = {};
-      } else {
-        selectedBettingId.value = record.id;
-        buildActiveBetting(record);
-      }
-    },
-  };
-};
-
-const buildActiveBetting = (record) => {
-  const specialTypes = ['number_13', 'number_14', 'number_16'];
-
-  if (specialTypes.includes(record.type)) {
-    activeBetting.value = {
-      bet: [{ type: record.type, win: false }],
-      numberSort: record.number_sort,
-    };
-  } else {
-    activeBetting.value = {
-      bet: record.type.split('_').map((t) => ({ type: t, win: false })),
-      numberSort: [],
-    };
-  }
-
-  console.log(activeBetting.value);
-};
 </script>

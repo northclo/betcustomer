@@ -57,6 +57,8 @@ export default {
   number_should_be_from_1_to_6: "Number should be from 1 to 6",
   number_should_be_number: "Number should be number",
   betting_available: 'Betting Available',
+  no_available_betting: "No available betting",
+  cancel: "Cancel",
 
   // Auth names
   login: "Login",
