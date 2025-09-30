@@ -9,36 +9,49 @@
       <a-layout
         class="bg-none flex flex-row justify-between items-center px-5 mt-5 mb-5"
       >
-        <LeftOutlined
-          class="text-white cursor-pointer"
-          @click="emit('previousGame')"
-        />
-        <a-typography-text v-if="!selectedBettingId" class="text-white fs-2">
-          {{ gameId ? trlang.betting_available : trlang.no_available_betting }}
+        <div>
+          <LeftOutlined
+            v-if="previousGameId"
+            class="text-white cursor-pointer"
+            @click="emit('previousGame')"
+          />
+        </div>
+        <a-typography-text v-if="!game?.list.length" class="text-white fs-2">
+          {{
+            remainTime > 0 && remainTime < 180
+              ? trlang.betting_available
+              : trlang.no_available_betting
+          }}
         </a-typography-text>
         <div v-else>
           <a-layout-content class="flex-1 flex justify-center flex-wrap gap-2">
-            <template v-for="item in activeBetting?.bet" :key="item.key">
-              <a-button :class="item.win ? 'active game-btn' : 'game-btn'">
-                {{ trlang[item.type] }}
-              </a-button>
-            </template>
-          </a-layout-content>
-          <div class="mt-5 flex gap-5">
-            <a-button
-              v-for="item in activeBetting?.numberSort"
-              :key="item"
-              :class="'running-ball running-ball' + item"
-            >
-              {{ item }}
+            <a-button :class="game?.odd ? 'active game-btn' : 'game-btn'">
+              {{ trlang.odd }}
             </a-button>
-          </div>
+            <a-button :class="game?.under ? 'active game-btn' : 'game-btn'">
+              {{ trlang.under }}
+            </a-button>
+          </a-layout-content>
         </div>
-        <RightOutlined
-          class="text-white cursor-pointer"
-          @click="emit('nextGame')"
-        />
+        <div>
+          <RightOutlined
+            v-if="nextGameId"
+            class="text-white cursor-pointer"
+            @click="emit('nextGame')"
+          />
+        </div>
       </a-layout>
+      <a-flex justify="center">
+        <div class="mt-5 flex gap-5">
+          <a-button
+            v-for="item in game?.list"
+            :key="item"
+            :class="'running-ball running-ball' + item"
+          >
+            {{ item }}
+          </a-button>
+        </div>
+      </a-flex>
 
       <a-layout
         class="flex flex-row justify-center gap-5 p-2 w-100 radius-bottom-1"
@@ -84,7 +97,14 @@
             </a-tooltip>
           </template>
           <template v-else-if="column.key === 'result'">
+            <a-typography-text
+              v-if="game?.list?.length !== 0"
+              class="text-white"
+            >
+              {{ record?.earning_amount }}
+            </a-typography-text>
             <a-button
+              v-else
               class="w-100"
               @click="emit('cancelBetting', { id: record.id })"
             >
@@ -117,7 +137,12 @@ const emit = defineEmits(['cancelBetting', 'previousGame', 'nextGame']);
 
 // ✅ props
 const props = defineProps({
+  previousGameId: { type: String },
+  nextGameId: { type: String },
+  gameResult: { type: Object },
+  remainTime: { type: Number, default: 0 },
   gameId: { type: String },
+  numberList: { type: Array },
   todayNo: { type: Number, default: 0 },
   totalNo: { type: Number, default: 0 },
   loading: { type: Boolean, default: true },
@@ -128,7 +153,10 @@ const props = defineProps({
 const totalBettingAmount = computed(() =>
   dataSource.value.reduce((sum, el) => sum + el.bet_amount, 0)
 );
-const totalEarningAmount = ref(0);
+const totalEarningAmount = computed(() =>
+  dataSource.value.reduce((sum, el) => sum + el?.earning_amount, 0)
+);
 const columns = ref(DEFAULT_COLUMNS(trlang.value));
 const dataSource = computed(() => props.bettingHistory || []);
+const game = computed(() => props.gameResult);
 </script>

@@ -275,7 +275,7 @@ const resetBetting = () => {
 };
 
 const startBetting = async () => {
-  if (props.bettingRemainTime < 90) return;
+  if (props.bettingRemainTime < 90 || props.bettingRemainTime > 180) return;
 
   if (!bettingAmount.value || !bettingRate.value)
     return message.error(trlang.value.you_should_set_betting_amount_and_type);

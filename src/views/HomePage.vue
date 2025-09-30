@@ -18,7 +18,12 @@
       </a-col>
       <a-col :span="9">
         <BettingProgress
+          :previousGameId="previousGameId"
+          :nextGameId="nextGameId"
+          :gameResult="gameResult"
+          :remainTime="remainTime"
           :gameId="gameId"
+          :numberList="numberList"
           :todayNo="todayNo"
           :totalNo="totalNo"
           :bettingHistory="bettingHistory"
@@ -39,34 +44,40 @@ import BettingOption from '@/components/Home/BettingOption.vue';
 import BettingProgress from '@/components/Home/BettingProgress.vue';
 import { getData, postData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link';
-import { message } from 'ant-design-vue';
 import { socket } from '@/plugins/socket.js';
+import { message } from 'ant-design-vue';
 
 // ✅ state
 const gameId = ref('');
+const gameResult = ref(null);
+const numberList = ref([]);
 const loading = ref(false);
 const remainTime = ref(0);
 const todayNo = ref(0);
 const totalNo = ref(0);
 const ownMoney = ref(0);
 const bettingHistory = ref([]);
+const previousGameId = ref(null);
+const nextGameId = ref(null);
 
 // ✅ methods
-const fetchData = async (currentGameId, nextGame) => {
+const fetchData = async (currentGameId) => {
   loading.value = true;
   const result = await getData(
-    `${apiLink.get_betting_info}?gameId=${currentGameId || ''}&nextGame=${
-      nextGame || ''
-    }`
+    `${apiLink.get_betting_info}?gameId=${currentGameId}`
   );
 
   if (result.status) {
-    const { game, pendingBet, user } = result.data;
+    const { game, pendingBet, user, aroundGameId } = result.data;
+    previousGameId.value = aroundGameId.previousGameId;
+    nextGameId.value = aroundGameId.nextGameId;
     gameId.value = game.id;
+    gameResult.value = game;
+    numberList.value = game.list;
     remainTime.value = game.remain_time;
     todayNo.value = game.today_no || 0;
     totalNo.value = game.total_no || 0;
-    ownMoney.value = user.ownMoney || 0;
+    ownMoney.value = user.own_money || 0;
 
     // pending bets
     bettingHistory.value = pendingBet.map((el) => {
@@ -76,6 +87,8 @@ const fetchData = async (currentGameId, nextGame) => {
         type: el.betting_type,
         benefit: el.betting_rate,
         number_sort: el.number_sort,
+        win: el.win || false,
+        earning_amount: el.earning_amount || 0,
         result: 0,
       };
     });
@@ -106,6 +119,8 @@ const startBetting = async (bettingData) => {
 };
 
 const cancelBetting = async ({ id }) => {
+  if (remainTime.value < 90) return;
+
   const result = await postData(apiLink.cancel_bet, { id: id });
   if (result.status) {
     bettingHistory.value = bettingHistory.value.filter(
@@ -114,21 +129,20 @@ const cancelBetting = async ({ id }) => {
   }
 };
 
-const getGameResult = async () => {
-  const result = await getData(apiLink.get_game_result);
-
-  if (result.status) {
-    message.success('game is ended');
-  }
-};
-
-const previousGame = () => fetchData(gameId.value, -1);
-const nextGame = () => fetchData(gameId.value, 1);
+const previousGame = () => fetchData(previousGameId.value);
+const nextGame = () => fetchData(nextGameId.value);
 
 onMounted(() => {
-  fetchData();
-  socket.on('end_game', () => {
-    getGameResult();
+  fetchData('', '');
+
+  socket.on('start_game', ({ game_id }) => {
+    message.success('started new game', game_id);
+    // fetchData(game_id, '');
+  });
+
+  socket.on('end_game', ({ game_id }) => {
+    message.success(game_id);
+    fetchData(game_id, '');
   });
 });
 </script>
