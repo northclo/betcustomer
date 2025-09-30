@@ -197,7 +197,6 @@ export default {
       // //   if (this.$store.state.loginUser.loginType === 'fb') {
       // //     window.FB.logout(function (response) {
       // //       // user is now logged out
-      // //       console.log('fb logout', response);
       // //     });
       // //   }
       // this.visibleUserPanel = false;

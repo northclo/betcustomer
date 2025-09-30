@@ -114,6 +114,8 @@ const startBetting = async (bettingData) => {
       benefit: result.data.betting_rate,
       result: 0,
       number_sort: result.data.number_sort,
+      win: false,
+      earning_amount: 0,
     });
   }
 };
@@ -133,16 +135,16 @@ const previousGame = () => fetchData(previousGameId.value);
 const nextGame = () => fetchData(nextGameId.value);
 
 onMounted(() => {
-  fetchData('', '');
+  fetchData('');
 
   socket.on('start_game', ({ game_id }) => {
     message.success('started new game', game_id);
-    // fetchData(game_id, '');
+    fetchData(game_id);
   });
 
   socket.on('end_game', ({ game_id }) => {
     message.success(game_id);
-    fetchData(game_id, '');
+    fetchData(game_id);
   });
 });
 </script>
