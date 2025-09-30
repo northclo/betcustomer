@@ -117,6 +117,8 @@ const startBetting = async (bettingData) => {
       win: false,
       earning_amount: 0,
     });
+
+    ownMoney.value = ownMoney.value - bettingData.bettingAmount;
   }
 };
 
@@ -128,6 +130,8 @@ const cancelBetting = async ({ id }) => {
     bettingHistory.value = bettingHistory.value.filter(
       (item) => item.id !== id
     );
+
+    ownMoney.value = ownMoney.value + result.data.bettingAmount;
   }
 };
 
