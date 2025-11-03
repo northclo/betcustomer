@@ -12,10 +12,10 @@ jobs:
       - name: Project Checkout
         uses: actions/checkout@v2
 
-      - name: Install NPM v22.18.0
+      - name: Install NPM v24.18.0
         uses: actions/setup-node@v1
         with:
-          node-version: '22.18.0'
+          node-version: '24.18.0'
 
       - name: NPM install...
         run: npm install
