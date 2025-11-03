@@ -28,8 +28,8 @@ jobs:
           aws-region: us-east-2
           
       # Download lang/en.js from S3 and overwrite local file
-      - name: Fetch latest lang/en.js from S3
-        run: aws s3 cp s3://${{ secrets.STORAGE_BUCKET }}/lang-customer.js src/lang/en.js
+      # - name: Fetch latest lang/en.js from S3
+      #  run: aws s3 cp s3://${{ secrets.STORAGE_BUCKET }}/lang-customer.js src/lang/en.js
         
       - name: Build frontend
         run: npm run build
