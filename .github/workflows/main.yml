@@ -44,5 +44,5 @@ jobs:
         with:
           folder: dist
           bucket: ${{ secrets.BUCKET_NAME }}
-          dist-id: E2Y6VZI27L3EFV
+          dist-id: ENRU8NH5XA562
           invalidation: / *
