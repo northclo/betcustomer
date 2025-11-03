@@ -33,7 +33,13 @@
       </div>
 
       <div v-if="captchaShow">
-        <div v-html="captcha" @click="loadCaptcha" class="text-center"></div>
+        <!-- eslint-disable vue/html-self-closing, vue/no-v-html -->
+        <div
+          class="text-center"
+          @click="loadCaptcha"
+          v-html="captcha"
+        ></div>
+        <!-- eslint-enable vue/html-self-closing, vue/no-v-html -->
         <a-input
           v-model:value="captchaInput"
           :placeholder="trlang.enter_captcha"

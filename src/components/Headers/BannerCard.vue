@@ -8,10 +8,10 @@
         </a-typography-text>
         <a-flex align="flex-end" gap="small">
           <a-typography-text class="fs-2 font-bold text-pink">
-            {{ total_no }} {{ trlang.index_unit }}
+            {{ totalNo }} {{ trlang.index_unit }}
           </a-typography-text>
           <a-typography-text class="fs-3 font-bold text-white">
-            ({{ trlang.per_day }} {{ today_no }} {{ trlang.index_unit }})
+            ({{ trlang.per_day }} {{ todayNo }} {{ trlang.index_unit }})
           </a-typography-text>
         </a-flex>
       </a-flex>
@@ -33,7 +33,7 @@
           {{ trlang.store_amount }}
         </a-typography-text>
         <a-flex class="fs-2 text-light-green" align="flex-end">
-          {{ own_money.toLocaleString() }} {{ trlang.currency }}
+          {{ ownMoney.toLocaleString() }} {{ trlang.currency }}
         </a-flex>
       </a-flex>
 
@@ -53,7 +53,9 @@
 
       <!-- Partner Dashboard -->
       <div class="p-2">
-        <div class="text-white">Test</div>
+        <div class="text-white">
+          Test
+        </div>
         <button class="bg-white cursor-pointer">
           {{ trlang.partner_dashboard }}
         </button>
@@ -62,7 +64,9 @@
       <!-- Messages -->
       <a-flex class="p-2" align="center" gap="small">
         <a-image :src="msgIcon" />
-        <a-typography-text class="text-white fs-3">0</a-typography-text>
+        <a-typography-text class="text-white fs-3">
+          0
+        </a-typography-text>
       </a-flex>
     </a-flex>
   </div>
@@ -75,23 +79,23 @@ import msgIcon from '@/assets/images/msg-icon.png';
 
 // ✅ i18n
 const langState = inject('langState');
-const trlang = computed(() => langState.translations);
+const trlang = computed(() => langState?.translations || {});
 
 // ✅ props & emits
 const props = defineProps({
   loading: { type: Boolean, default: false },
-  today_no: { type: Number },
-  total_no: { type: Number },
-  own_money: { type: Number },
-  remain_time: { type: Number, default: 0 },
+  todayNo: { type: Number, default: 0 },
+  totalNo: { type: Number, default: 0 },
+  ownMoney: { type: Number, default: 0 },
+  remainTime: { type: Number, default: 0 },
 });
-const emit = defineEmits(['update:remain_time']);
+const emit = defineEmits(['update:remainTime']);
 
 // ✅ state
 const formattedTime = ref('');
 const counterText = ref('00:00');
 let clockInterval = null;
-let remain = ref(props.remain_time);
+const remain = ref(props.remainTime);
 
 // ✅ update Tokyo Time
 function updateTokyoTime() {
@@ -108,7 +112,7 @@ function updateTokyoTime() {
 function updateCounter() {
   if (remain.value > 0) {
     remain.value -= 1;
-    emit('update:remain_time', remain.value);
+    emit('update:remainTime', remain.value);
 
     const minutes = String(Math.floor(remain.value / 60)).padStart(2, '0');
     const seconds = String(remain.value % 60).padStart(2, '0');
@@ -119,7 +123,7 @@ function updateCounter() {
 // ✅ start clock
 function startClock() {
   stopClock();
-  remain.value = props.remain_time;
+  remain.value = props.remainTime;
 
   if (remain.value > 0 && remain.value < 180 && !props.loading) {
     const minutes = String(Math.floor(remain.value / 60)).padStart(2, '0');
@@ -147,9 +151,9 @@ function stopClock() {
 onMounted(startClock);
 onBeforeUnmount(stopClock);
 
-// ✅ watch remain_time & loading reset
+// ✅ watch remainTime & loading reset
 watch(
-  () => [props.remain_time, props.loading],
+  () => [props.remainTime, props.loading],
   () => {
     startClock();
   }

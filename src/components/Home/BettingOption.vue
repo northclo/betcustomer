@@ -16,8 +16,12 @@
           ]"
           @click="setBettingOption(child)"
         >
-          <div class="fs-3 font-bold">{{ child.label }}</div>
-          <div class="fs-4">{{ child.rate }}</div>
+          <div class="fs-3 font-bold">
+            {{ child.label }}
+          </div>
+          <div class="fs-4">
+            {{ child.rate }}
+          </div>
         </a-col>
       </a-row>
     </div>
@@ -30,9 +34,9 @@
         <a-input
           v-for="index in numberSort.length"
           :key="index"
+          v-model:value="numberSort[index - 1]"
           class="text-center"
           style="width: 40px"
-          v-model:value="numberSort[index - 1]"
         />
       </a-flex>
     </div>
@@ -94,8 +98,8 @@
             </div>
 
             <a-input-number
-              class="flex-1 fs-4 benefit-amount"
               v-model:value="bettingAmount"
+              class="flex-1 fs-4 benefit-amount"
             />
           </a-flex>
 

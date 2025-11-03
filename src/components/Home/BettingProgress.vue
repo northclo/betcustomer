@@ -118,7 +118,7 @@
 </template>
 
 <script setup>
-import { computed, inject, ref } from 'vue';
+import { computed, inject } from 'vue';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons-vue';
 
 // ✅ i18n
@@ -137,16 +137,16 @@ const emit = defineEmits(['cancelBetting', 'previousGame', 'nextGame']);
 
 // ✅ props
 const props = defineProps({
-  previousGameId: { type: String },
-  nextGameId: { type: String },
-  gameResult: { type: Object },
+  previousGameId: { type: String, default: null },
+  nextGameId: { type: String, default: null },
+  gameResult: { type: Object, default: null },
   remainTime: { type: Number, default: 0 },
-  gameId: { type: String },
-  numberList: { type: Array },
+  gameId: { type: String, default: null },
+  numberList: { type: Array, default: () => [] },
   todayNo: { type: Number, default: 0 },
   totalNo: { type: Number, default: 0 },
   loading: { type: Boolean, default: true },
-  bettingHistory: { type: Array },
+  bettingHistory: { type: Array, default: () => [] },
 });
 
 // ✅ state
@@ -156,7 +156,7 @@ const totalBettingAmount = computed(() =>
 const totalEarningAmount = computed(() =>
   dataSource.value.reduce((sum, el) => sum + el?.earning_amount, 0)
 );
-const columns = ref(DEFAULT_COLUMNS(trlang.value));
+const columns = computed(() => DEFAULT_COLUMNS(trlang.value));
 const dataSource = computed(() => props.bettingHistory || []);
 const game = computed(() => props.gameResult);
 </script>

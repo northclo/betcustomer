@@ -1,36 +1,36 @@
 <template>
   <BannerCard
     :loading="loading"
-    :today_no="todayNo"
-    :total_no="totalNo"
-    :own_money="ownMoney"
-    :remain_time="remainTime"
-    @update:remain_time="(val) => (remainTime = val)"
+    :today-no="todayNo"
+    :total-no="totalNo"
+    :own-money="ownMoney"
+    :remain-time="remainTime"
+    @update:remain-time="(val) => (remainTime = val)"
   />
 
   <div class="bg-primary-light radius-1 p-5 mt-5">
     <a-row :gutter="15">
       <a-col :span="15" class="flex flex-column gap-4">
         <BettingOption
-          :bettingRemainTime="remainTime"
-          @startBetting="startBetting"
+          :betting-remain-time="remainTime"
+          @start-betting="startBetting"
         />
       </a-col>
       <a-col :span="9">
         <BettingProgress
-          :previousGameId="previousGameId"
-          :nextGameId="nextGameId"
-          :gameResult="gameResult"
-          :remainTime="remainTime"
-          :gameId="gameId"
-          :numberList="numberList"
-          :todayNo="todayNo"
-          :totalNo="totalNo"
-          :bettingHistory="bettingHistory"
+          :previous-game-id="previousGameId"
+          :next-game-id="nextGameId"
+          :game-result="gameResult"
+          :remain-time="remainTime"
+          :game-id="gameId"
+          :number-list="numberList"
+          :today-no="todayNo"
+          :total-no="totalNo"
+          :betting-history="bettingHistory"
           :loading="loading"
-          @cancelBetting="cancelBetting"
-          @previousGame="previousGame"
-          @nextGame="nextGame"
+          @cancel-betting="cancelBetting"
+          @previous-game="previousGame"
+          @next-game="nextGame"
         />
       </a-col>
     </a-row>
@@ -38,7 +38,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, onBeforeUnmount, ref } from 'vue';
 import BannerCard from '@/components/Headers/BannerCard.vue';
 import BettingOption from '@/components/Home/BettingOption.vue';
 import BettingProgress from '@/components/Home/BettingProgress.vue';
@@ -138,17 +138,25 @@ const cancelBetting = async ({ id }) => {
 const previousGame = () => fetchData(previousGameId.value);
 const nextGame = () => fetchData(nextGameId.value);
 
+const handleStartGame = ({ game_id }) => {
+  message.success(`Started new game: ${game_id}`);
+  fetchData(game_id);
+};
+
+const handleEndGame = ({ game_id }) => {
+  message.success(`Game ended: ${game_id}`);
+  fetchData(game_id);
+};
+
 onMounted(() => {
   fetchData('');
 
-  socket.on('start_game', ({ game_id }) => {
-    message.success('started new game', game_id);
-    fetchData(game_id);
-  });
+  socket.on('start_game', handleStartGame);
+  socket.on('end_game', handleEndGame);
+});
 
-  socket.on('end_game', ({ game_id }) => {
-    message.success(game_id);
-    fetchData(game_id);
-  });
+onBeforeUnmount(() => {
+  socket.off('start_game', handleStartGame);
+  socket.off('end_game', handleEndGame);
 });
 </script>

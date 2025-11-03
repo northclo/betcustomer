@@ -34,8 +34,6 @@
 </template>
 
 <script>
-import { common } from '../../helpers/Common';
-
 export default {
   name: 'MainHeader',
   inject: ['langState'],
@@ -45,12 +43,25 @@ export default {
       top: 0,
       userInfo: {
         name: '',
+        email: '',
       },
+      visibleMenu: false,
+      visibleLogin: false,
+      visibleSignup: false,
+      visibleForgot: false,
+      visibleAgentSignup: false,
+      visibleSignUpSuccess: false,
+      visibleSignUpSuccessAgent: false,
+      visibleLoginSuccess: false,
+      visibleUserPanel: false,
+      isLogin: false,
+      selectedCurrrency: 'USD',
+      provinceData: [],
     };
   },
   computed: {
     trlang() {
-      return this.langState.translations;
+      return this.langState?.translations || {};
     },
   },
   methods: {
@@ -106,11 +117,22 @@ export default {
 
     handleProvinceChange(value) {
       const cellData = this.provinceData.filter((obj) => obj.name == value)[0];
+      if (!cellData) return;
+      
+      // Currency sign mapping
+      const currencySigns = {
+        'USD': '$',
+        'EUR': '€',
+        'JPY': '¥',
+        'KRW': '₩',
+        'CNY': '¥',
+      };
+      
       this.$store.commit('setCurrency', {
         code: cellData.code,
         name: value,
         rate: cellData.rate,
-        sign: common.getSimbolFromCurrency(value),
+        sign: currencySigns[value] || '$',
       });
       this.$router.go(0);
     },
