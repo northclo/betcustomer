@@ -2,7 +2,7 @@ import { io } from "socket.io-client";
 // import { config } from '@/config/index.js';
 
 // const socket = io(config.socketServerURL);
-const socket = io('http://localhost:5000', {
+const socket = io('https://api.superball-race.com', {
     transports: ["websocket", "polling"]
 })
 
