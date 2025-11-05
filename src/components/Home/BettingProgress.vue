@@ -18,7 +18,7 @@
         </div>
         <a-typography-text v-if="!game?.list.length" class="text-white fs-2">
           {{
-            remainTime > 0 && remainTime < 180
+            remainTime >= 90 && remainTime <= 180
               ? trlang.betting_available
               : trlang.no_available_betting
           }}
@@ -54,8 +54,7 @@
       </a-flex>
 
       <a-layout
-        class="flex flex-row justify-center gap-5 p-2 w-100 radius-bottom-1"
-        style="background: #111316; border-top: 1px solid #000"
+        class="glass-footer flex flex-row justify-center gap-5 p-2 w-100 radius-bottom-1"
       >
         <a-typography-text class="text-white fs-3">
           <span class="text-warning me-2">{{ trlang.total_betting }}</span>
@@ -69,7 +68,7 @@
     </a-card>
 
     <!-- Recent Bets -->
-    <a-card :title="trlang.recent_betting_history" class="game-result-card">
+    <a-card :title="trlang.recent_betting_history" class="game-result-card recent-betting-card">
       <a-table
         :columns="columns"
         :data-source="dataSource"
@@ -101,15 +100,18 @@
               v-if="game?.list?.length !== 0"
               class="text-white"
             >
-              {{ record?.earning_amount }}
+              {{ record?.earning_amount || 0 }}
             </a-typography-text>
             <a-button
-              v-else
+              v-else-if="remainTime >= 90 && remainTime <= 180"
               class="w-100"
               @click="emit('cancelBetting', { id: record.id })"
             >
               {{ trlang.cancel }}
             </a-button>
+            <a-typography-text v-else class="text-white">
+              {{ trlang.no_available_betting }}
+            </a-typography-text>
           </template>
         </template>
       </a-table>
@@ -160,3 +162,103 @@ const columns = computed(() => DEFAULT_COLUMNS(trlang.value));
 const dataSource = computed(() => props.bettingHistory || []);
 const game = computed(() => props.gameResult);
 </script>
+
+<style scoped>
+.glass-footer {
+  background: var(--glass-bg-dark);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  border-top: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow-soft);
+}
+
+:deep(.ant-btn) {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:deep(.ant-btn:hover) {
+  transform: translateY(-2px);
+}
+
+:deep(.ant-icon) {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:deep(.ant-icon:hover) {
+  color: var(--main-color);
+  transform: scale(1.1);
+}
+
+/* Table Styling */
+:deep(.ant-table) {
+  background: transparent !important;
+}
+
+:deep(.ant-table-thead > tr > th) {
+  background: var(--glass-bg-light) !important;
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border-color: var(--glass-border) !important;
+  color: var(--white-color) !important;
+}
+
+:deep(.ant-table-tbody > tr > td) {
+  background: transparent !important;
+  border-color: var(--glass-border) !important;
+  color: var(--white-color) !important;
+}
+
+:deep(.ant-table-tbody > tr:hover > td) {
+  background: var(--glass-bg-light) !important;
+}
+
+:deep(.ant-table-tbody > tr) {
+  background: transparent !important;
+}
+
+:deep(.ant-table-placeholder) {
+  background: transparent !important;
+}
+
+:deep(.ant-empty-description) {
+  color: var(--white-color) !important;
+}
+
+/* Recent Betting History Card Styling - Match Game Result Card Size */
+.recent-betting-card {
+  min-height: 220px;
+}
+
+.recent-betting-card :deep(.ant-card-body) {
+  padding: 30px !important;
+  min-height: 195px;
+  display: flex;
+  flex-direction: column;
+}
+
+.recent-betting-card :deep(.ant-table-wrapper) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.recent-betting-card :deep(.ant-table) {
+  font-size: 16px;
+  flex: 1;
+}
+
+.recent-betting-card :deep(.ant-table-thead > tr > th) {
+  padding: 18px !important;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.recent-betting-card :deep(.ant-table-tbody > tr > td) {
+  padding: 18px !important;
+  font-size: 16px;
+}
+
+.recent-betting-card :deep(.ant-table-tbody) {
+  min-height: 100px;
+}
+</style>

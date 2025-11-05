@@ -4,22 +4,46 @@
       <a-flex class="AppBarBtns" justify="space-between" align="center">
         <!-- href="/about/" -->
         <div class="AppBarBtnsSub">
-          <button class="menu-btn" @click="gotoAbout">
+          <button 
+            class="menu-btn" 
+            :class="{ 'menu-btn-active': currentRoute === '/' }"
+            @click="gotoHome"
+          >
             {{ trlang.game_menu }}
           </button>
-          <button class="menu-btn" @click="gotoAbout">
+          <button 
+            class="menu-btn" 
+            :class="{ 'menu-btn-active': currentRoute === '/bethistory' }"
+            @click="gotoBetHistory"
+          >
             {{ trlang.bethistory_menu }}
           </button>
-          <button class="menu-btn" @click="gotoResorts">
+          <button 
+            class="menu-btn" 
+            :class="{ 'menu-btn-active': currentRoute === '/addfund' }"
+            @click="gotoResorts"
+          >
             {{ trlang.addfund_menu }}
           </button>
-          <button class="menu-btn" @click="gotoInspirations">
+          <button 
+            class="menu-btn" 
+            :class="{ 'menu-btn-active': currentRoute === '/refund' }"
+            @click="gotoInspirations"
+          >
             {{ trlang.refund_menu }}
           </button>
-          <button class="menu-btn" @click="gotoBestOffers">
+          <button 
+            class="menu-btn" 
+            :class="{ 'menu-btn-active': currentRoute === '/blog' }"
+            @click="gotoBestOffers"
+          >
             {{ trlang.blog_menu }}
           </button>
-          <button class="menu-btn" @click="gotoContact">
+          <button 
+            class="menu-btn" 
+            :class="{ 'menu-btn-active': currentRoute === '/customer-center' }"
+            @click="gotoContact"
+          >
             {{ trlang.customer_center_menu }}
           </button>
         </div>
@@ -63,6 +87,9 @@ export default {
     trlang() {
       return this.langState?.translations || {};
     },
+    currentRoute() {
+      return this.$route.path;
+    },
   },
   methods: {
     // getLogo: async function () {
@@ -78,26 +105,32 @@ export default {
     onCloseMenu() {
       this.visibleMenu = false;
     },
+    gotoHome() {
+      this.$router.push({ path: '/' });
+      this.visibleMenu = false;
+    },
+    gotoBetHistory() {
+      this.$router.push({ path: '/bethistory' });
+      this.visibleMenu = false;
+    },
     gotoAbout() {
       this.$router.push({ path: '/about/' });
       this.visibleMenu = false;
     },
     gotoResorts() {
-      this.$router.push({ path: '/resorts/' });
+      this.$router.push({ path: '/addfund' });
       this.visibleMenu = false;
     },
     gotoInspirations() {
-      let routeData = this.$router.resolve({ path: '/inspiration/' });
-      window.open(routeData.href, '_self');
-      // this.$router.push({ path: '/inspiration/'})
+      this.$router.push({ path: '/refund' });
       this.visibleMenu = false;
     },
     gotoBestOffers() {
-      this.$router.push({ path: '/bestoffers/' });
+      this.$router.push({ path: '/blog' });
       this.visibleMenu = false;
     },
     gotoContact() {
-      this.$router.push({ path: '/contact/' });
+      this.$router.push({ path: '/customer-center' });
       this.visibleMenu = false;
     },
     updateCurrencyDrop() {

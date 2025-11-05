@@ -1,11 +1,44 @@
 #app {
-  background-color: var(--main-dark-color);
+  background: var(--main-dark-color);
   min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Animated Gradient Background */
+#app::before {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 40% 20%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
+  animation: gradient-shift 20s ease infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes gradient-shift {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(5%, 5%) rotate(5deg);
+  }
+  66% {
+    transform: translate(-5%, -5%) rotate(-5deg);
+  }
 }
 
 .main-container {
   max-width: 1200px;
   margin: auto;
+  position: relative;
+  z-index: 1;
 }
 /* 
 ===========================================
@@ -35,7 +68,11 @@ button {
 }
 
 .bg-primary-light {
-  background: var(--main-right-color) !important;
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow) !important;
 }
 
 .bg-pink {
@@ -83,7 +120,11 @@ button {
 }
 
 .bg-black {
-  background: var(--black-color) !important;
+  background: var(--glass-bg-dark) !important;
+  backdrop-filter: var(--blur-lg);
+  -webkit-backdrop-filter: var(--blur-lg);
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow-strong) !important;
 }
 
 .bg-none {
@@ -507,7 +548,21 @@ button {
 }
 
 .transition {
-  transition: all 2s; /* Smooth transition for all properties */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Floating Animation */
+.float-animation {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .shadow-none {
@@ -515,9 +570,9 @@ button {
 }
 
 .shadow {
-  box-shadow: 0px -1px 4px 0px rgb(209, 209, 209);
+  box-shadow: var(--glass-shadow) !important;
 }
 
 .shadow-dark {
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  box-shadow: var(--glass-shadow-strong) !important;
 }

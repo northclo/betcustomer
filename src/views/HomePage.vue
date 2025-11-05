@@ -10,13 +10,15 @@
 
   <div class="bg-primary-light radius-1 p-5 mt-5">
     <a-row :gutter="15">
-      <a-col :span="15" class="flex flex-column gap-4">
+      <!-- Left side: 60% (14.4/24 ≈ 60%) -->
+      <a-col :span="14" class="flex flex-column gap-4">
         <BettingOption
           :betting-remain-time="remainTime"
           @start-betting="startBetting"
         />
       </a-col>
-      <a-col :span="9">
+      <!-- Right side: 40% (9.6/24 ≈ 40%) -->
+      <a-col :span="10">
         <BettingProgress
           :previous-game-id="previousGameId"
           :next-game-id="nextGameId"
@@ -123,7 +125,11 @@ const startBetting = async (bettingData) => {
 };
 
 const cancelBetting = async ({ id }) => {
-  if (remainTime.value < 90) return;
+  // Can only cancel during betting window: 3 mins (180s) to 1.5 mins (90s)
+  if (remainTime.value < 90 || remainTime.value > 180) {
+    message.error('Cannot cancel betting outside the betting window');
+    return;
+  }
 
   const result = await postData(apiLink.cancel_bet, { id: id });
   if (result.status) {

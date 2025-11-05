@@ -1,81 +1,140 @@
 ::-webkit-scrollbar {
-  width: 2px; /* scrollbar width */
-  height: 2px; /* for horizontal scrollbar */
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f0f0f0; /* track color */
-  border-radius: 2px;
+  background: var(--glass-bg-dark);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888; /* handle color */
-  border-radius: 2px;
+  background: var(--glass-bg-light);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  box-shadow: var(--glass-shadow-soft);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555; /* hover effect */
+  background: var(--glass-bg);
+  box-shadow: var(--glass-shadow);
 }
 
 .game-result-card {
-  border: 5px solid #13181d;
-  background: #13181d;
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--blur-lg);
+  -webkit-backdrop-filter: var(--blur-lg);
+  border: 1px solid var(--glass-border-light) !important;
+  box-shadow: var(--glass-shadow-strong) !important;
+  border-radius: 20px !important;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.game-result-card:hover {
+  box-shadow: var(--glass-shadow-strong), 0 0 40px rgba(99, 102, 241, 0.2);
 }
 
 .game-result-card .ant-card-head {
-  background: rgb(38 44 49);
+  background: var(--glass-bg-light) !important;
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  border-bottom: 1px solid var(--glass-border) !important;
+  color: var(--white-color) !important;
+}
+
+.game-result-card .ant-card-head-title {
   color: var(--white-color);
+  font-weight: 600;
 }
 
 .game-result-card .ant-card-body {
-  background: #13181d;
+  background: transparent !important;
   text-align: center;
-  padding: 0px;
+  padding: 20px !important;
+  min-height: 195px;
 }
 
 .game-btn {
-  border: 3px solid var(--red-color) !important;
-  background: none !important;
-  color: var(--red-color);
+  border: 2px solid var(--glass-border-light) !important;
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  color: var(--white-color) !important;
   width: 90px;
   height: 90px;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--glass-shadow-soft);
 }
 
 .game-btn:hover {
-  color: var(--red-color) !important;
+  background: var(--glass-bg-light) !important;
+  border-color: var(--main-color) !important;
+  transform: scale(1.05);
+  box-shadow: var(--glass-shadow), 0 0 20px rgba(99, 102, 241, 0.3);
 }
 
 .game-btn.active {
-  color: var(--white-color);
-  background: var(--red-color) !important;
+  color: var(--white-color) !important;
+  background: var(--glass-bg-light) !important;
+  border-color: var(--main-color) !important;
+  box-shadow: var(--glass-shadow), 0 0 25px rgba(99, 102, 241, 0.4);
 }
 
 .game-btn.active:hover {
   color: var(--white-color) !important;
+  transform: scale(1.1);
+}
+
+.game-result-card table,
+.game-result-card table tbody,
+.game-result-card table thead {
+  background: transparent !important;
 }
 
 .game-result-card table thead tr th,
-.game-result-card table,
-.game-result-card table:hover,
-.game-result-card table tbody tr:hover td,
 .game-result-card table tbody tr td {
-  background: #13181d !important;
+  background: transparent !important;
   color: var(--white-color) !important;
   text-align: center;
+  border-color: var(--glass-border) !important;
+}
+
+.game-result-card table tbody tr {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent !important;
+}
+
+.game-result-card table tbody tr:hover {
+  background: var(--glass-bg-light) !important;
+}
+
+.game-result-card table tbody tr:hover td {
+  background: transparent !important;
 }
 
 .game-result-card table tbody tr td {
-  border-bottom: none !important;
+  border-bottom: 1px solid var(--glass-border) !important;
   cursor: pointer;
+  padding: 12px !important;
+  background: transparent !important;
 }
 
 .game-result-card table thead tr th {
-  border-bottom: 1px solid gray !important;
+  background: var(--glass-bg-light) !important;
+  border-bottom: 1px solid var(--glass-border-light) !important;
   text-align: center !important;
+  padding: 12px !important;
+  font-weight: 600;
+  color: var(--white-color) !important;
 }
 
 .benefit-amount input {
@@ -83,24 +142,40 @@
 }
 
 .sp-icon {
-  padding: 4px 8px;
-  background: var(--green-color);
-  border-radius: 5px;
+  padding: 6px 12px;
+  background: var(--glass-bg-light);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
   color: white;
   margin-bottom: 8px;
   position: relative;
-  height: 27px;
+  height: 32px;
+  font-weight: 500;
+  box-shadow: var(--glass-shadow-soft);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sp-icon:hover {
+  background: var(--glass-bg);
+  transform: translateY(-2px);
+  box-shadow: var(--glass-shadow);
 }
 
 .sp-icon::after {
   content: '';
-  background: var(--green-color);
+  background: var(--glass-bg-light);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
   clip-path: polygon(100% 100%, 0 0, 75% 0);
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   position: absolute;
-  bottom: -9px;
-  right: 10px;
+  bottom: -10px;
+  right: 12px;
+  border-right: 1px solid var(--glass-border);
+  border-bottom: 1px solid var(--glass-border);
 }
 
 .game-result-card tbody > .active > td,
@@ -108,43 +183,89 @@
   background: var(--dark-gray-color) !important;
 }
 
+/* Global Table Styling for All Pages */
+.ant-table-wrapper :deep(.ant-table) {
+  background: transparent !important;
+}
+
+.ant-table-wrapper :deep(.ant-table-thead > tr > th) {
+  background: var(--glass-bg-light) !important;
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border-color: var(--glass-border) !important;
+  color: var(--white-color) !important;
+}
+
+.ant-table-wrapper :deep(.ant-table-tbody > tr > td) {
+  background: transparent !important;
+  border-color: var(--glass-border) !important;
+  color: var(--white-color) !important;
+}
+
+.ant-table-wrapper :deep(.ant-table-tbody > tr:hover > td) {
+  background: var(--glass-bg-light) !important;
+}
+
+.ant-table-wrapper :deep(.ant-table-tbody > tr) {
+  background: transparent !important;
+}
+
+.ant-table-wrapper :deep(.ant-table-placeholder) {
+  background: transparent !important;
+}
+
+.ant-table-wrapper :deep(.ant-empty-description) {
+  color: var(--white-color) !important;
+}
+
 .running-ball {
-  color: var(--main-dark-color) !important;
+  color: var(--white-color) !important;
   display: inline-block;
   font-weight: 700;
   text-align: center;
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  line-height: 19px;
+  line-height: 50px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border: 2px solid var(--glass-border);
+  box-shadow: var(--glass-shadow-soft);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.running-ball:hover {
+  transform: scale(1.1) translateY(-5px);
+  box-shadow: var(--glass-shadow), 0 0 20px rgba(99, 102, 241, 0.3);
 }
 
 .running-ball1 {
-  background-color: var(--gray);
-  box-shadow: #4e4872 0 -12px 6px inset;
+  background: linear-gradient(135deg, rgba(100, 116, 139, 0.3), rgba(71, 85, 105, 0.3)) !important;
+  border-color: rgba(100, 116, 139, 0.3) !important;
 }
 
 .running-ball2 {
-  background-color: #d9d8a6;
-  box-shadow: #575621 0 -12px 6px inset;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(245, 158, 11, 0.3)) !important;
+  border-color: rgba(251, 191, 36, 0.3) !important;
 }
 
 .running-ball3 {
-  background-color: #63a55d;
-  box-shadow: #2b4629 0 -12px 6px inset;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(5, 150, 105, 0.3)) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
 }
 
 .running-ball4 {
-  background-color: #b8a7a7;
-  box-shadow: #452a2a 0 -12px 6px inset;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(220, 38, 38, 0.3)) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
 }
 
 .running-ball5 {
-  background-color: #a8aeb6;
-  box-shadow: #3e454f 0 -12px 6px inset;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(37, 99, 235, 0.3)) !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
 }
 
 .running-ball6 {
-  background-color: #b667ca;
-  box-shadow: #46275a 0 -12px 6px inset;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(124, 58, 237, 0.3)) !important;
+  border-color: rgba(139, 92, 246, 0.3) !important;
 }

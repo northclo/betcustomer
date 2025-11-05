@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-5" style="background: rgba(253, 126, 20, 0.4)">
+  <div class="glass-banner mt-5">
     <a-flex justify="space-between">
       <!-- Game Index -->
       <a-flex class="p-2" gap="small" align="center">
@@ -125,10 +125,13 @@ function startClock() {
   stopClock();
   remain.value = props.remainTime;
 
-  if (remain.value > 0 && remain.value < 180 && !props.loading) {
+  // Timer shows for 3 minutes (180 seconds)
+  if (remain.value > 0 && remain.value <= 180 && !props.loading) {
     const minutes = String(Math.floor(remain.value / 60)).padStart(2, '0');
     const seconds = String(remain.value % 60).padStart(2, '0');
     counterText.value = `${minutes}:${seconds}`;
+  } else {
+    counterText.value = '00:00';
   }
 
   updateTokyoTime();
@@ -159,3 +162,19 @@ watch(
   }
 );
 </script>
+
+<style scoped>
+.glass-banner {
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur-lg);
+  -webkit-backdrop-filter: var(--blur-lg);
+  border: 1px solid var(--glass-border-light);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: var(--glass-shadow-strong);
+}
+
+.glass-banner:hover {
+  box-shadow: var(--glass-shadow-strong), 0 0 40px rgba(99, 102, 241, 0.15);
+}
+</style>

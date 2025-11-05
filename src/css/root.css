@@ -1,19 +1,67 @@
 :root {
-  --main-dark-color: #303265;
-  --main-color: #0086e3;
-  --main-right-color: rgba(187, 222, 251, 0.3);
-  --green-color: #28a745;
-  --pink-color: #e83e8c;
-  --light-pink-color: #fff3ff;
-  --light-green-color: #02e32d;
-  --yellow-color: #ffc107;
+  /* Base Colors */
+  --main-dark-color: #0a0e27;
+  --main-color: #6366f1;
+  --main-right-color: rgba(99, 102, 241, 0.1);
+  --green-color: #10b981;
+  --pink-color: #ec4899;
+  --light-pink-color: rgba(236, 72, 153, 0.1);
+  --light-green-color: #34d399;
+  --yellow-color: #f59e0b;
   --red-color: #ef4444;
-  --brown-color: #483c18;
+  --brown-color: #78350f;
   --white-color: #ffffff;
-  --dark-brown-color: #ff875c;
-  --purple-color: #aaaaff;
-  --gray: #96a0b0;
-  --light-gray-color: #e3e3e3;
-  --dark-gray-color: #4d6578;
-  --black-color: rgb(19, 24, 28, 0.6);
+  --dark-brown-color: #fb923c;
+  --purple-color: #8b5cf6;
+  --gray: #64748b;
+  --light-gray-color: #cbd5e1;
+  --dark-gray-color: #475569;
+  --black-color: rgba(15, 23, 42, 0.8);
+  
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-bg-light: rgba(255, 255, 255, 0.08);
+  --glass-bg-dark: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-border-light: rgba(255, 255, 255, 0.15);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  --glass-shadow-strong: 0 8px 32px 0 rgba(31, 38, 135, 0.5);
+  --glass-shadow-soft: 0 4px 16px 0 rgba(31, 38, 135, 0.2);
+  
+  /* Gradient Backgrounds */
+  --gradient-bg-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-bg-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --gradient-bg-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --gradient-bg-4: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  --gradient-bg-5: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  
+  /* Blur Values */
+  --blur-sm: blur(10px);
+  --blur-md: blur(20px);
+  --blur-lg: blur(30px);
+  
+  /* Transparent Color Accents for Glassmorphism - Brighter Colors */
+  --glass-green: rgba(16, 185, 129, 0.35);
+  --glass-green-border: rgba(16, 185, 129, 0.6);
+  --glass-green-light: rgba(16, 185, 129, 0.45);
+  --glass-green-active: rgba(16, 185, 129, 0.6);
+  --glass-green-active-border: rgba(16, 185, 129, 0.9);
+  
+  --glass-red: rgba(239, 68, 68, 0.35);
+  --glass-red-border: rgba(239, 68, 68, 0.6);
+  --glass-red-light: rgba(239, 68, 68, 0.45);
+  --glass-red-active: rgba(239, 68, 68, 0.6);
+  --glass-red-active-border: rgba(239, 68, 68, 0.9);
+  
+  --glass-blue: rgba(99, 102, 241, 0.35);
+  --glass-blue-border: rgba(99, 102, 241, 0.6);
+  --glass-blue-light: rgba(99, 102, 241, 0.45);
+  --glass-blue-active: rgba(99, 102, 241, 0.6);
+  --glass-blue-active-border: rgba(99, 102, 241, 0.9);
+  
+  --glass-pink: rgba(236, 72, 153, 0.35);
+  --glass-pink-border: rgba(236, 72, 153, 0.6);
+  --glass-pink-light: rgba(236, 72, 153, 0.45);
+  --glass-pink-active: rgba(236, 72, 153, 0.6);
+  --glass-pink-active-border: rgba(236, 72, 153, 0.9);
 }

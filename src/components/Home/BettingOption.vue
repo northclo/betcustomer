@@ -1,18 +1,19 @@
 <template>
   <a-space v-if="!loading" direction="vertical" size="middle">
     <div v-for="item in bettingOptions" :key="item.key">
-      <div class="radius-top-2 text-white bg-black w-fit ms-5 p-2">
+      <div class="glass-label radius-top-2 text-white w-fit ms-5 p-2">
         {{ item.label }}
       </div>
-      <a-row class="gap-2 bg-black p-4 radius-2">
+      <a-row class="gap-2 glass-card p-4 radius-2">
         <a-col
           v-for="child in item.child"
           :key="child.key"
           :span="24 / item.child.length"
           :class="[
-            'flex-1 text-white flex justify-between items-center cursor-pointer p-3',
+            'glass-option-btn flex-1 text-white flex justify-between items-center cursor-pointer p-3',
             child.radius,
-            `bg-${child.bgColor}`,
+            `glass-option-${child.bgColor}`,
+            bettingType === child.key ? 'glass-option-active' : '',
           ]"
           @click="setBettingOption(child)"
         >
@@ -27,10 +28,10 @@
     </div>
 
     <div v-if="numberSort.length !== 0">
-      <div class="radius-top-2 text-white bg-black w-fit ms-5 p-2">
+      <div class="glass-label radius-top-2 text-white w-fit ms-5 p-2">
         {{ trlang.number_sort }}
       </div>
-      <a-flex class="bg-black p-4" justify="center" gap="middle">
+      <a-flex class="glass-card p-4" justify="center" gap="middle">
         <a-input
           v-for="index in numberSort.length"
           :key="index"
@@ -41,7 +42,7 @@
       </a-flex>
     </div>
 
-    <div class="bg-black p-4 radius-2">
+    <div class="glass-card p-4 radius-2">
       <a-row :gutter="15">
         <a-col
           v-for="item in bettingAmountOptions"
@@ -49,7 +50,7 @@
           :span="24 / bettingAmountOptions.length"
         >
           <button
-            class="w-100 p-3 fs-3 font-bold text-dark-main cursor-pointer"
+            class="glass-btn w-100 p-3 fs-3 font-bold cursor-pointer"
             @click="setBetAmount(item)"
           >
             {{ item }}
@@ -61,7 +62,7 @@
         <!-- Reset -->
         <a-col :span="5">
           <button
-            class="bg-pink text-white w-100 radius-1 cursor-pointer h-100 shadow-dark"
+            class="glass-action-btn glass-action-pink text-white w-100 radius-1 cursor-pointer h-100 shadow-dark"
             @click="resetBettingAmount"
           >
             {{ trlang.amount_reset }}
@@ -73,25 +74,25 @@
           <a-flex justify="space-between" class="gap-2">
             <div class="flex flex-1">
               <a-typography-text
-                class="flex-1 bg-primary flex items-center justify-center text-white"
+                class="glass-info-label flex-1 flex items-center justify-center text-white"
               >
                 {{ trlang.percentage }}
               </a-typography-text>
               <a-typography-text
-                class="border-primary p-3 flex items-center justify-center text-white"
+                class="glass-info-value p-3 flex items-center justify-center text-white"
               >
-                {{ bettingRate }}
+                {{ bettingRate || '0.0' }}
               </a-typography-text>
             </div>
 
             <div class="flex flex-1">
               <a-typography-text
-                class="flex-1 bg-primary flex items-center justify-center text-white"
+                class="glass-info-label flex-1 flex items-center justify-center text-white"
               >
                 {{ trlang.benefit }}
               </a-typography-text>
               <a-typography-text
-                class="border-primary p-3 flex items-center justify-center text-white"
+                class="glass-info-value p-3 flex items-center justify-center text-white"
               >
                 {{ Math.floor(benefitAmount) }}
               </a-typography-text>
@@ -104,7 +105,7 @@
           </a-flex>
 
           <button
-            class="w-100 bg-primary text-white radius-1 p-3 mt-5 cursor-pointer"
+            class="glass-action-btn glass-action-blue w-100 text-white radius-1 p-3 mt-5 cursor-pointer"
             @click="resetBetting"
           >
             {{ trlang.bet_reset }}
@@ -114,7 +115,7 @@
         <!-- Start Bet -->
         <a-col :span="5">
           <button
-            class="bg-success text-white w-100 radius-1 cursor-pointer h-100 shadow-dark"
+            class="glass-action-btn glass-action-green text-white w-100 radius-1 cursor-pointer h-100 shadow-dark"
             @click="startBetting"
           >
             {{ trlang.start_bet }}
@@ -157,102 +158,111 @@ const emit = defineEmits(['startBetting']);
 
 const fetchData = async () => {
   loading.value = true;
-  const result = await getData(apiLink.get_init_betting_option);
+  try {
+    const result = await getData(apiLink.get_init_betting_option);
 
-  if (result.status) {
-    // build betting options
-    bettingOptions.value = [
-      {
-        key: 'normal',
-        label: trlang.value.normal,
-        child: [
-          {
-            key: 'odd',
-            label: trlang.value.odd,
-            rate: result.data.odd / 100,
-            bgColor: 'success',
-            radius: 'radius-left-2',
-          },
-          {
-            key: 'even',
-            label: trlang.value.even,
-            rate: result.data.even / 100,
-            bgColor: 'danger',
-          },
-          {
-            key: 'under',
-            label: trlang.value.under,
-            rate: result.data.under / 100,
-            bgColor: 'success',
-          },
-          {
-            key: 'over',
-            label: trlang.value.over,
-            rate: result.data.over / 100,
-            bgColor: 'danger',
-            radius: 'radius-right-2',
-          },
-        ],
-      },
-      {
-        key: 'combined',
-        label: trlang.value.combined,
-        child: [
-          {
-            key: 'odd_under',
-            label: trlang.value.odd_under,
-            rate: result.data.odd_under / 100,
-            bgColor: 'primary',
-            radius: 'radius-left-2',
-          },
-          {
-            key: 'odd_over',
-            label: trlang.value.odd_over,
-            rate: result.data.odd_over / 100,
-            bgColor: 'pink',
-          },
-          {
-            key: 'even_under',
-            label: trlang.value.even_under,
-            rate: result.data.even_under / 100,
-            bgColor: 'primary',
-          },
-          {
-            key: 'even_over',
-            label: trlang.value.even_over,
-            rate: result.data.even_over / 100,
-            bgColor: 'pink',
-            radius: 'radius-right-2',
-          },
-        ],
-      },
-      {
-        key: 'number_match',
-        label: trlang.value.number_match,
-        child: [
-          {
-            key: 'number_13',
-            label: trlang.value.number_13,
-            rate: result.data.match_number1 / 100,
-            bgColor: 'danger',
-            radius: 'radius-left-2',
-          },
-          {
-            key: 'number_14',
-            label: trlang.value.number_14,
-            rate: result.data.match_number2 / 100,
-            bgColor: 'success',
-          },
-          {
-            key: 'number_16',
-            label: trlang.value.number_16,
-            rate: result.data.match_number3 / 100,
-            bgColor: 'primary',
-            radius: 'radius-right-2',
-          },
-        ],
-      },
-    ];
+    if (result.status) {
+      // build betting options
+      bettingOptions.value = [
+        {
+          key: 'normal',
+          label: trlang.value.normal,
+          child: [
+            {
+              key: 'odd',
+              label: trlang.value.odd,
+              rate: result.data.odd / 100,
+              bgColor: 'success',
+              radius: 'radius-left-2',
+            },
+            {
+              key: 'even',
+              label: trlang.value.even,
+              rate: result.data.even / 100,
+              bgColor: 'danger',
+            },
+            {
+              key: 'under',
+              label: trlang.value.under,
+              rate: result.data.under / 100,
+              bgColor: 'success',
+            },
+            {
+              key: 'over',
+              label: trlang.value.over,
+              rate: result.data.over / 100,
+              bgColor: 'danger',
+              radius: 'radius-right-2',
+            },
+          ],
+        },
+        {
+          key: 'combined',
+          label: trlang.value.combined,
+          child: [
+            {
+              key: 'odd_under',
+              label: trlang.value.odd_under,
+              rate: result.data.odd_under / 100,
+              bgColor: 'primary',
+              radius: 'radius-left-2',
+            },
+            {
+              key: 'odd_over',
+              label: trlang.value.odd_over,
+              rate: result.data.odd_over / 100,
+              bgColor: 'pink',
+            },
+            {
+              key: 'even_under',
+              label: trlang.value.even_under,
+              rate: result.data.even_under / 100,
+              bgColor: 'primary',
+            },
+            {
+              key: 'even_over',
+              label: trlang.value.even_over,
+              rate: result.data.even_over / 100,
+              bgColor: 'pink',
+              radius: 'radius-right-2',
+            },
+          ],
+        },
+        {
+          key: 'number_match',
+          label: trlang.value.number_match,
+          child: [
+            {
+              key: 'number_13',
+              label: trlang.value.number_13,
+              rate: result.data.match_number1 / 100,
+              bgColor: 'danger',
+              radius: 'radius-left-2',
+            },
+            {
+              key: 'number_14',
+              label: trlang.value.number_14,
+              rate: result.data.match_number2 / 100,
+              bgColor: 'success',
+            },
+            {
+              key: 'number_16',
+              label: trlang.value.number_16,
+              rate: result.data.match_number3 / 100,
+              bgColor: 'primary',
+              radius: 'radius-right-2',
+            },
+          ],
+        },
+      ];
+    } else {
+      console.error('Failed to fetch betting options:', result);
+      message.error('Failed to load betting options');
+    }
+  } catch (error) {
+    console.error('Error fetching betting options:', error);
+    message.error('Error loading betting options');
+  } finally {
     loading.value = false;
   }
 };
@@ -260,8 +270,13 @@ const fetchData = async () => {
 const setBettingOption = (item) => {
   bettingType.value = item.key;
   bettingRate.value = item.rate;
+  // Show number input form when number 13, 14, or 16 is selected
   const lengthMap = { number_13: 3, number_14: 4, number_16: 6 };
-  numberSort.value = Array(lengthMap[item.key] || 0).fill(0);
+  if (lengthMap[item.key]) {
+    numberSort.value = Array(lengthMap[item.key]).fill('');
+  } else {
+    numberSort.value = [];
+  }
 };
 
 const setBetAmount = (amount) => {
@@ -279,7 +294,17 @@ const resetBetting = () => {
 };
 
 const startBetting = async () => {
-  if (props.bettingRemainTime < 90 || props.bettingRemainTime > 180) return;
+  // Betting window: 3 mins (180s) to 1.5 mins (90s) - can bet and cancel
+  // After 1.5 mins (90s) - block betting
+  const remainTime = props.bettingRemainTime || 0;
+  if (remainTime < 90 || remainTime > 180) {
+    const timeMsg = remainTime === 0 
+      ? 'No active game. Please wait for the next game to start.'
+      : remainTime > 180
+        ? `Betting is not available yet. Please wait ${Math.ceil((remainTime - 180) / 60)} minute(s).`
+        : `Betting window has closed. ${Math.ceil((90 - remainTime) / 60)} minute(s) have passed.`;
+    return message.error(timeMsg);
+  }
 
   if (!bettingAmount.value || !bettingRate.value)
     return message.error(trlang.value.you_should_set_betting_amount_and_type);
@@ -315,3 +340,265 @@ onMounted(() => {
   fetchData();
 });
 </script>
+
+<style scoped>
+.glass-label {
+  background: var(--glass-bg-light);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow-soft);
+}
+
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur-lg);
+  -webkit-backdrop-filter: var(--blur-lg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  box-shadow: var(--glass-shadow-strong);
+  transform: translateY(-2px);
+}
+
+.glass-btn {
+  background: var(--glass-bg-dark);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border: 1px solid var(--glass-border);
+  color: var(--white-color);
+  border-radius: 10px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--glass-shadow-soft);
+}
+
+.glass-btn:hover {
+  background: var(--glass-bg-light);
+  transform: translateY(-2px);
+  box-shadow: var(--glass-shadow);
+}
+
+:deep(.ant-input-number),
+:deep(.ant-input) {
+  background: var(--glass-bg-dark);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  color: var(--white-color);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:deep(.ant-input-number:focus),
+:deep(.ant-input:focus) {
+  background: var(--glass-bg-light);
+  border-color: var(--glass-border-light);
+  box-shadow: var(--glass-shadow-soft);
+}
+
+:deep(.ant-input-number-input) {
+  background: transparent;
+  color: var(--white-color);
+}
+
+/* Glassmorphism Betting Option Buttons */
+.glass-option-btn {
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border: 2px solid !important;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--glass-shadow-soft);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-option-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-option-btn > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Color Variants */
+.glass-option-success {
+  background: var(--glass-green) !important;
+  border-color: var(--glass-green-border) !important;
+}
+
+.glass-option-success:hover {
+  background: var(--glass-green-light) !important;
+  border-color: var(--glass-green-border) !important;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+}
+
+.glass-option-danger {
+  background: var(--glass-red) !important;
+  border-color: var(--glass-red-border) !important;
+}
+
+.glass-option-danger:hover {
+  background: var(--glass-red-light) !important;
+  border-color: var(--glass-red-border) !important;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+}
+
+.glass-option-primary {
+  background: var(--glass-blue) !important;
+  border-color: var(--glass-blue-border) !important;
+}
+
+.glass-option-primary:hover {
+  background: var(--glass-blue-light) !important;
+  border-color: var(--glass-blue-border) !important;
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+}
+
+.glass-option-pink {
+  background: var(--glass-pink) !important;
+  border-color: var(--glass-pink-border) !important;
+}
+
+.glass-option-pink:hover {
+  background: var(--glass-pink-light) !important;
+  border-color: var(--glass-pink-border) !important;
+  box-shadow: 0 0 20px rgba(236, 72, 153, 0.3);
+}
+
+/* Active State - Enhanced Selected Effect */
+.glass-option-active {
+  transform: scale(1.05);
+  border-width: 3px !important;
+  position: relative;
+  font-weight: 700;
+}
+
+.glass-option-active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 10px;
+  background: inherit;
+  opacity: 0.3;
+  animation: pulse-glow 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.02);
+  }
+}
+
+.glass-option-active.glass-option-success {
+  background: var(--glass-green-active) !important;
+  border-color: var(--glass-green-active-border) !important;
+  box-shadow: 0 0 30px rgba(16, 185, 129, 0.6), 
+              0 0 15px rgba(16, 185, 129, 0.4),
+              inset 0 0 15px rgba(16, 185, 129, 0.2) !important;
+}
+
+.glass-option-active.glass-option-danger {
+  background: var(--glass-red-active) !important;
+  border-color: var(--glass-red-active-border) !important;
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.6), 
+              0 0 15px rgba(239, 68, 68, 0.4),
+              inset 0 0 15px rgba(239, 68, 68, 0.2) !important;
+}
+
+.glass-option-active.glass-option-primary {
+  background: var(--glass-blue-active) !important;
+  border-color: var(--glass-blue-active-border) !important;
+  box-shadow: 0 0 30px rgba(99, 102, 241, 0.6), 
+              0 0 15px rgba(99, 102, 241, 0.4),
+              inset 0 0 15px rgba(99, 102, 241, 0.2) !important;
+}
+
+.glass-option-active.glass-option-pink {
+  background: var(--glass-pink-active) !important;
+  border-color: var(--glass-pink-active-border) !important;
+  box-shadow: 0 0 30px rgba(236, 72, 153, 0.6), 
+              0 0 15px rgba(236, 72, 153, 0.4),
+              inset 0 0 15px rgba(236, 72, 153, 0.2) !important;
+}
+
+/* Action Buttons */
+.glass-action-btn {
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border: 2px solid;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--glass-shadow-soft);
+  font-weight: 600;
+}
+
+.glass-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-action-pink {
+  background: var(--glass-pink) !important;
+  border-color: var(--glass-pink-border) !important;
+}
+
+.glass-action-pink:hover {
+  background: var(--glass-pink-light) !important;
+  box-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
+}
+
+.glass-action-blue {
+  background: var(--glass-blue) !important;
+  border-color: var(--glass-blue-border) !important;
+}
+
+.glass-action-blue:hover {
+  background: var(--glass-blue-light) !important;
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+}
+
+.glass-action-green {
+  background: var(--glass-green) !important;
+  border-color: var(--glass-green-border) !important;
+}
+
+.glass-action-green:hover {
+  background: var(--glass-green-light) !important;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+}
+
+/* Info Display */
+.glass-info-label {
+  background: var(--glass-bg-light);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border: 1px solid var(--glass-border);
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  box-shadow: var(--glass-shadow-soft);
+}
+
+.glass-info-value {
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border: 1px solid var(--glass-border);
+  border-left: none;
+  border-radius: 0 10px 10px 0;
+  box-shadow: var(--glass-shadow-soft);
+}
+</style>
