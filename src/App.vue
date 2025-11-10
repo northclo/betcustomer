@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <MainHeader v-if="!isAuthPage" />
-    <a-layout-content style="min-height: 80vh" class="main-container">
+    <MainHeader v-if="routerReady && !isAuthPage" />
+    <a-layout-content v-if="routerReady" style="min-height: 80vh" class="main-container">
       <router-view />
     </a-layout-content>
   </div>
@@ -9,8 +9,8 @@
 
 <script>
 import MainHeader from './components/Headers/MainHeader.vue';
-import { useRoute } from 'vue-router';
-import { computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { computed, ref } from 'vue';
 
 export default {
   name: 'App',
@@ -24,10 +24,22 @@ export default {
   },
   setup() {
     const route = useRoute();
+    const router = useRouter();
+    const routerReady = ref(false);
 
     const isAuthPage = computed(() => route.path.startsWith('/auth'));
 
-    return { isAuthPage };
+    router
+      .isReady()
+      .then(() => {
+        routerReady.value = true;
+      })
+      .catch((error) => {
+        console.error('Router failed to initialize before mount', error);
+        routerReady.value = true;
+      });
+
+    return { isAuthPage, routerReady };
   },
   data() {
     return {
