@@ -81,12 +81,6 @@
 import { ref, onMounted } from 'vue';
 import { getData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link.js';
-import image1 from '@/assets/images/1.jpg';
-import image2 from '@/assets/images/2.jpg';
-import image3 from '@/assets/images/3.jpg';
-import image4 from '@/assets/images/4.jpg';
-import image5 from '@/assets/images/5.jpg';
-import image6 from '@/assets/images/6.jpg';
 
 // ✅ state
 const blogPosts = ref([]);
@@ -112,12 +106,12 @@ const fetchBlogPosts = async () => {
   loading.value = true;
   try {
     // TODO: Replace with actual API endpoint when available
-    const result = await getData(apiLink.get_blog_posts || 'customer/blog/posts', {
+    const result = await getData(apiLink.get_blog_posts, {
       category: selectedCategory.value === 'All' ? null : selectedCategory.value,
     });
 
     if (result.status && result.data) {
-      const images = [image1, image2, image3, image4, image5, image6];
+      const images = [];
       const posts = result.data.map((item, index) => ({
         id: item._id || index,
         title: item.title || 'Sample Post Title',
@@ -132,80 +126,16 @@ const fetchBlogPosts = async () => {
       featuredPost.value = posts[0] || null;
       blogPosts.value = posts.slice(1);
     } else {
-      // Mock data for demonstration
-      const mockPosts = generateMockPosts();
-      featuredPost.value = mockPosts[0];
-      blogPosts.value = mockPosts.slice(1);
+      blogPosts.value = [];
+      featuredPost.value = null;
     }
   } catch (error) {
     console.error('Error fetching blog posts:', error);
-    // Mock data for demonstration
-    const mockPosts = generateMockPosts();
-    featuredPost.value = mockPosts[0];
-    blogPosts.value = mockPosts.slice(1);
   } finally {
     loading.value = false;
   }
 };
 
-const generateMockPosts = () => {
-  return [
-    {
-      id: 1,
-      title: 'Welcome to Our New Betting Platform',
-      excerpt: 'We are excited to announce the launch of our new betting platform with enhanced features and better user experience.',
-      category: 'Announcements',
-      date: new Date().toLocaleDateString(),
-      readTime: 5,
-      image: image1,
-    },
-    {
-      id: 2,
-      title: 'Top 10 Betting Strategies for Beginners',
-      excerpt: 'Learn the essential strategies that every beginner should know before placing their first bet.',
-      category: 'Tips',
-      date: new Date(Date.now() - 86400000).toLocaleDateString(),
-      readTime: 8,
-      image: image2,
-    },
-    {
-      id: 3,
-      title: 'System Maintenance Scheduled',
-      excerpt: 'We will be performing scheduled maintenance on our servers this weekend.',
-      category: 'Updates',
-      date: new Date(Date.now() - 172800000).toLocaleDateString(),
-      readTime: 3,
-      image: image3,
-    },
-    {
-      id: 4,
-      title: 'New Payment Methods Added',
-      excerpt: 'We have added support for cryptocurrency and e-wallet payments.',
-      category: 'Updates',
-      date: new Date(Date.now() - 259200000).toLocaleDateString(),
-      readTime: 4,
-      image: image4,
-    },
-    {
-      id: 5,
-      title: 'Weekly Tournament Results',
-      excerpt: 'Check out the winners of this week\'s betting tournament and claim your prizes.',
-      category: 'Events',
-      date: new Date(Date.now() - 345600000).toLocaleDateString(),
-      readTime: 6,
-      image: image5,
-    },
-    {
-      id: 6,
-      title: 'How to Maximize Your Winnings',
-      excerpt: 'Expert tips on how to maximize your betting winnings with smart strategies.',
-      category: 'Tips',
-      date: new Date(Date.now() - 432000000).toLocaleDateString(),
-      readTime: 7,
-      image: image6,
-    },
-  ];
-};
 
 // ✅ lifecycle
 onMounted(() => {

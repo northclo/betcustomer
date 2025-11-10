@@ -49,8 +49,8 @@
             <div class="section-title">Payment Method</div>
             <a-radio-group v-model:value="paymentMethod" class="w-100 mt-3">
               <a-row :gutter="[16, 16]">
-                <a-col :span="12" v-for="method in paymentMethods" :key="method.value">
-                  <a-radio-button :value="method.value" class="payment-method-btn w-100">
+                <a-col :xs="24" :sm="12" v-for="method in paymentMethods" :key="method.value">
+                  <a-radio-button :value="method.value" class="payment-method-btn w-100 flex items-center justify-center">
                     <div class="payment-method-content">
                       <span class="payment-icon">{{ method.icon }}</span>
                       <span>{{ method.label }}</span>

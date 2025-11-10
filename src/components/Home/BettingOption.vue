@@ -1,14 +1,15 @@
 <template>
   <a-space v-if="!loading" direction="vertical" size="middle">
     <div v-for="item in bettingOptions" :key="item.key">
-      <div class="glass-label radius-top-2 text-white w-fit ms-5 p-2">
+      <div class="glass-label radius-top-2 text-white w-fit mb-2 p-2">
         {{ item.label }}
       </div>
-      <a-row class="gap-2 glass-card p-4 radius-2">
+      <a-row class="gap-2 glass-card p-4 radius-2 flex-col sm:flex-row">
         <a-col
           v-for="child in item.child"
           :key="child.key"
-          :span="24 / item.child.length"
+          :xs="24"
+          :sm="Math.floor(24 / item.child.length)"
           :class="[
             'glass-option-btn flex-1 text-white flex justify-between items-center cursor-pointer p-3',
             child.radius,
@@ -17,7 +18,7 @@
           ]"
           @click="setBettingOption(child)"
         >
-          <div class="fs-3 font-bold">
+          <div class="fs-4 font-bold">
             {{ child.label }}
           </div>
           <div class="fs-4">
@@ -43,11 +44,12 @@
     </div>
 
     <div class="glass-card p-4 radius-2">
-      <a-row :gutter="15">
+      <a-row :gutter="[15, 8]">
         <a-col
           v-for="item in bettingAmountOptions"
           :key="item"
-          :span="24 / bettingAmountOptions.length"
+          :xs="24"
+          :sm="Math.floor(24 / bettingAmountOptions.length)"
         >
           <button
             class="glass-btn w-100 p-3 fs-3 font-bold cursor-pointer"
@@ -58,11 +60,11 @@
         </a-col>
       </a-row>
 
-      <a-row :gutter="15" class="pt-5">
+      <a-row :gutter="[15, 12]" class="pt-5">
         <!-- Reset -->
-        <a-col :span="5">
+        <a-col :xs="24" :md="5">
           <button
-            class="glass-action-btn glass-action-pink text-white w-100 radius-1 cursor-pointer h-100 shadow-dark"
+            class="glass-action-btn glass-action-pink text-white w-100 radius-1 cursor-pointer h-100 shadow-dark py-2"
             @click="resetBettingAmount"
           >
             {{ trlang.amount_reset }}
@@ -70,8 +72,8 @@
         </a-col>
 
         <!-- Percentage, Benefit, Betting Amount -->
-        <a-col :span="14">
-          <a-flex justify="space-between" class="gap-2">
+        <a-col :xs="24" :md="14">
+          <a-flex justify="space-between" class="gap-2 flex-col sm:flex-row">
             <div class="flex flex-1">
               <a-typography-text
                 class="glass-info-label flex-1 flex items-center justify-center text-white"
@@ -100,7 +102,7 @@
 
             <a-input-number
               v-model:value="bettingAmount"
-              class="flex-1 fs-4 benefit-amount"
+              class="fs-4 benefit-amount"
             />
           </a-flex>
 
@@ -113,9 +115,9 @@
         </a-col>
 
         <!-- Start Bet -->
-        <a-col :span="5">
+        <a-col :xs="24" :md="5">
           <button
-            class="glass-action-btn glass-action-green text-white w-100 radius-1 cursor-pointer h-100 shadow-dark"
+            class="glass-action-btn glass-action-green text-white w-100 radius-1 cursor-pointer h-100 shadow-dark py-2"
             @click="startBetting"
           >
             {{ trlang.start_bet }}
@@ -414,6 +416,8 @@ onMounted(() => {
   box-shadow: var(--glass-shadow-soft);
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .glass-option-btn:hover {
@@ -600,5 +604,15 @@ onMounted(() => {
   border-left: none;
   border-radius: 0 10px 10px 0;
   box-shadow: var(--glass-shadow-soft);
+}
+
+.benefit-amount {
+  width: 100%;
+}
+
+@media (min-width: 576px) {
+  .benefit-amount {
+    width: 90px;
+  }
 }
 </style>

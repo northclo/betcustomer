@@ -1,8 +1,8 @@
 <template>
   <a-space direction="vertical" class="w-100">
     <a-card :title="trlang.game_results" class="game-result-card">
-      <a-typography-text class="text-white fs-3">
-        <span class="fs-1">{{ totalNo }}</span>
+      <a-typography-text class="text-white text-xl md:text-3xl">
+        <span class="text-xl md:text-3xl">{{ totalNo }}</span>
         {{ trlang.round }} ({{ todayNo }} {{ trlang.round }})
       </a-typography-text>
 
@@ -16,7 +16,7 @@
             @click="emit('previousGame')"
           />
         </div>
-        <a-typography-text v-if="!game?.list.length" class="text-white fs-2">
+        <a-typography-text v-if="!game?.list.length" class="text-white text-xl md:text-3xl">
           {{
             remainTime >= 90 && remainTime <= 180
               ? trlang.betting_available
@@ -54,13 +54,13 @@
       </a-flex>
 
       <a-layout
-        class="glass-footer flex flex-row justify-center gap-5 p-2 w-100 radius-bottom-1"
+        class="glass-footer flex flex-col md:flex-row justify-center gap-5 p-2 w-100 radius-bottom-1"
       >
-        <a-typography-text class="text-white fs-3">
+        <a-typography-text class="text-white text-lg md:text-2xl">
           <span class="text-warning me-2">{{ trlang.total_betting }}</span>
           {{ totalBettingAmount.toLocaleString() }}
         </a-typography-text>
-        <a-typography-text class="text-white fs-3">
+        <a-typography-text class="text-white text-lg md:text-2xl">
           <span class="text-warning me-2">{{ trlang.total_earning }}</span>
           {{ totalEarningAmount.toLocaleString() }}
         </a-typography-text>
@@ -74,7 +74,6 @@
         :data-source="dataSource"
         row-key="key"
         class="w-100 mt-2"
-        :scroll="dataSource.length ? { x: 'max-content' } : undefined"
         :pagination="false"
       >
         <template #emptyText>
@@ -240,11 +239,13 @@ const game = computed(() => props.gameResult);
   flex: 1;
   display: flex;
   flex-direction: column;
+  overflow-x: auto;
 }
 
 .recent-betting-card :deep(.ant-table) {
   font-size: 16px;
   flex: 1;
+  min-width: 720px;
 }
 
 .recent-betting-card :deep(.ant-table-thead > tr > th) {

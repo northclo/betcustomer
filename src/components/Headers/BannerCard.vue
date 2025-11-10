@@ -1,12 +1,12 @@
 <template>
   <div class="glass-banner mt-5">
-    <a-flex justify="space-between" align="center">
+    <a-flex justify="space-between" align="center" wrap="wrap">
       <!-- Game Index -->
-      <a-flex class="p-2" gap="small" align="center">
-        <a-typography-text class="sp-icon mb-0">
+      <a-flex class="p-2" gap="small" align="center" wrap="nowrap">
+        <a-typography-text class="sp-icon mb-0 white-space-nowrap">
           {{ trlang.game_index }}
         </a-typography-text>
-        <a-flex align="center" gap="small">
+        <a-flex align="center" gap="small" wrap="nowrap">
           <a-typography-text class="fs-2 font-bold text-pink">
             {{ totalNo }} {{ trlang.index_unit }}
           </a-typography-text>
@@ -17,34 +17,34 @@
       </a-flex>
 
       <!-- Timer -->
-      <a-flex class="p-2" gap="small" align="center">
-        <a-typography-text class="sp-icon mb-0">
+      <a-flex class="p-2" gap="small" align="center" wrap="nowrap">
+        <a-typography-text class="sp-icon mb-0 white-space-nowrap">
           {{ trlang.time_intro }}
         </a-typography-text>
-        <a-flex class="fs-3 text-white" align="center" gap="small">
+        <a-flex class="fs-3 text-white" align="center" gap="small" wrap="nowrap">
           {{ formattedTime }}
           <span class="fs-1 text-warning">{{ counterText }}</span>
         </a-flex>
       </a-flex>
 
       <!-- Store Amount -->
-      <a-flex class="p-2" align="center" gap="small">
-        <a-typography-text class="sp-icon mb-0">
+      <a-flex class="p-2" align="center" gap="small" wrap="nowrap">
+        <a-typography-text class="sp-icon mb-0 white-space-nowrap">
           {{ trlang.store_amount }}
         </a-typography-text>
-        <a-flex class="fs-2 text-light-green" align="center">
+        <a-flex class="fs-2 text-light-green" align="center" wrap="nowrap">
           {{ ownMoney.toLocaleString() }} {{ trlang.currency }}
         </a-flex>
       </a-flex>
 
       <!-- Store Link -->
-      <a-flex align="center">
+      <a-flex align="center" wrap="nowrap">
         <a
           :href="trlang.store_name_link"
           target="_blank"
           class="flex items-center"
         >
-          <a-image :src="spImg" />
+          <a-image src="/icons/sp.png" />
           <a-typography-text class="text-white fs-4 ms-2">
             {{ trlang.store_name }}
           </a-typography-text>
@@ -62,8 +62,8 @@
       </div> -->
 
       <!-- Messages -->
-      <a-flex class="p-2" align="center" gap="small">
-        <a-image :src="msgIcon" />
+      <a-flex class="p-2" align="center" gap="small" wrap="nowrap">
+        <a-image src="/icons/msg-icon.png" />
         <a-typography-text class="text-white fs-3">
           0
         </a-typography-text>
@@ -74,8 +74,6 @@
 
 <script setup>
 import { ref, computed, inject, onMounted, onBeforeUnmount, watch } from 'vue';
-import spImg from '@/assets/images/sp.png';
-import msgIcon from '@/assets/images/msg-icon.png';
 
 // ✅ i18n
 const langState = inject('langState');
