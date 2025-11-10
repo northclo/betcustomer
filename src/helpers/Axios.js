@@ -20,7 +20,7 @@ const handleError =
                 if (error.response) {
                     // in the case of unautherized user
                     if (error.response.status == httpStatusCodes.UNAUTHORIZED) {
-                        router.push('/#/auth/login')
+                        router.push('/auth/login')
                     }
                     message.error(`${error.response.data.message}`);
                     return {
