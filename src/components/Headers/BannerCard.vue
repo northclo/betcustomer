@@ -1,12 +1,12 @@
 <template>
   <div class="glass-banner mt-5">
-    <a-flex justify="space-between">
+    <a-flex justify="space-between" align="center">
       <!-- Game Index -->
       <a-flex class="p-2" gap="small" align="center">
-        <a-typography-text class="sp-icon">
+        <a-typography-text class="sp-icon mb-0">
           {{ trlang.game_index }}
         </a-typography-text>
-        <a-flex align="flex-end" gap="small">
+        <a-flex align="center" gap="small">
           <a-typography-text class="fs-2 font-bold text-pink">
             {{ totalNo }} {{ trlang.index_unit }}
           </a-typography-text>
@@ -18,10 +18,10 @@
 
       <!-- Timer -->
       <a-flex class="p-2" gap="small" align="center">
-        <a-typography-text class="sp-icon">
+        <a-typography-text class="sp-icon mb-0">
           {{ trlang.time_intro }}
         </a-typography-text>
-        <a-flex class="fs-3 text-white" align="flex-end" gap="small">
+        <a-flex class="fs-3 text-white" align="center" gap="small">
           {{ formattedTime }}
           <span class="fs-1 text-warning">{{ counterText }}</span>
         </a-flex>
@@ -29,10 +29,10 @@
 
       <!-- Store Amount -->
       <a-flex class="p-2" align="center" gap="small">
-        <a-typography-text class="sp-icon">
+        <a-typography-text class="sp-icon mb-0">
           {{ trlang.store_amount }}
         </a-typography-text>
-        <a-flex class="fs-2 text-light-green" align="flex-end">
+        <a-flex class="fs-2 text-light-green" align="center">
           {{ ownMoney.toLocaleString() }} {{ trlang.currency }}
         </a-flex>
       </a-flex>
@@ -52,14 +52,14 @@
       </a-flex>
 
       <!-- Partner Dashboard -->
-      <div class="p-2">
+      <!-- <div class="p-2">
         <div class="text-white">
           Test
         </div>
         <button class="bg-white cursor-pointer">
           {{ trlang.partner_dashboard }}
         </button>
-      </div>
+      </div> -->
 
       <!-- Messages -->
       <a-flex class="p-2" align="center" gap="small">

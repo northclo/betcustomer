@@ -2,8 +2,8 @@ export default {
   running_ball: "Running Ball",
 
   // Menu items
-  game_menu: "GameStart",
-  bethistory_menu: "BetHistory",
+  game_menu: "Game Start",
+  bethistory_menu: "Bet History",
   addfund_menu: "AddFund",
   refund_menu: "Refund",
   blog_menu: "BlogPost",

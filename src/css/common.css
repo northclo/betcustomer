@@ -578,3 +578,7 @@ button {
 .shadow-dark {
   box-shadow: var(--glass-shadow-strong) !important;
 }
+
+.white-space-nowrap {
+  white-space: nowrap;
+}

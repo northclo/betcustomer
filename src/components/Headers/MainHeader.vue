@@ -1,51 +1,76 @@
 <template>
   <div class="header-wrapper">
     <a-layout-header class="main-container">
-      <a-flex class="AppBarBtns" justify="space-between" align="center">
-        <!-- href="/about/" -->
-        <div class="AppBarBtnsSub">
-          <button 
-            class="menu-btn" 
-            :class="{ 'menu-btn-active': currentRoute === '/' }"
-            @click="gotoHome"
-          >
-            {{ trlang.game_menu }}
-          </button>
-          <button 
-            class="menu-btn" 
-            :class="{ 'menu-btn-active': currentRoute === '/bethistory' }"
-            @click="gotoBetHistory"
-          >
-            {{ trlang.bethistory_menu }}
-          </button>
-          <button 
-            class="menu-btn" 
-            :class="{ 'menu-btn-active': currentRoute === '/addfund' }"
-            @click="gotoResorts"
-          >
-            {{ trlang.addfund_menu }}
-          </button>
-          <button 
-            class="menu-btn" 
-            :class="{ 'menu-btn-active': currentRoute === '/refund' }"
-            @click="gotoInspirations"
-          >
-            {{ trlang.refund_menu }}
-          </button>
-          <button 
-            class="menu-btn" 
-            :class="{ 'menu-btn-active': currentRoute === '/blog' }"
-            @click="gotoBestOffers"
-          >
-            {{ trlang.blog_menu }}
-          </button>
-          <button 
-            class="menu-btn" 
-            :class="{ 'menu-btn-active': currentRoute === '/customer-center' }"
-            @click="gotoContact"
-          >
-            {{ trlang.customer_center_menu }}
-          </button>
+      <a-flex
+        class="AppBarBtns"
+        justify="space-between"
+        align="center"
+        :wrap="isMobileView ? 'nowrap' : 'wrap'"
+      >
+        <button
+          v-if="isMobileView"
+          type="button"
+          class="mobile-menu-toggle"
+          :class="{ 'is-open': isMobileMenuOpen }"
+          @click="toggleMobileMenu"
+          :aria-expanded="isMobileMenuOpen"
+          aria-controls="main-header-drawer"
+        >
+          <span class="sr-only">Toggle navigation</span>
+          <span class="mobile-menu-toggle__bar"></span>
+          <span class="mobile-menu-toggle__bar"></span>
+          <span class="mobile-menu-toggle__bar"></span>
+        </button>
+        <!-- Desktop navigation -->
+        <div
+          v-if="!isMobileView"
+          id="main-header-nav"
+          class="AppBarMenu"
+        >
+          <div class="AppBarBtnsSub">
+            <button
+              class="menu-btn white-space-nowrap"
+              :class="{ 'menu-btn-active': currentRoute === '/' }"
+              @click="navigateTo('/')"
+            >
+              {{ trlang.game_menu }}
+            </button>
+            <button
+              class="menu-btn white-space-nowrap"
+              :class="{ 'menu-btn-active': currentRoute === '/bethistory' }"
+              @click="navigateTo('/bethistory')"
+            >
+              {{ trlang.bethistory_menu }}
+            </button>
+            <button
+              class="menu-btn white-space-nowrap"
+              :class="{ 'menu-btn-active': currentRoute === '/addfund' }"
+              @click="navigateTo('/addfund')"
+            >
+              {{ trlang.addfund_menu }}
+            </button>
+            <button
+              class="menu-btn white-space-nowrap"
+              :class="{ 'menu-btn-active': currentRoute === '/refund' }"
+              @click="navigateTo('/refund')"
+            >
+              {{ trlang.refund_menu }}
+            </button>
+            <button
+              class="menu-btn white-space-nowrap"
+              :class="{ 'menu-btn-active': currentRoute === '/blog' }"
+              @click="navigateTo('/blog')"
+            >
+              {{ trlang.blog_menu }}
+            </button>
+            <button
+              class="menu-btn white-space-nowrap"
+              :class="{ 'menu-btn-active': currentRoute === '/customer-center' }"
+              @click="navigateTo('/customer-center')"
+            >
+              {{ trlang.customer_center_menu }}
+            </button>
+          </div>
         </div>
         <div class="LoginBtns">
           <div class="log-out-btn">
@@ -53,6 +78,48 @@
           </div>
         </div>
       </a-flex>
+      <a-drawer
+        v-if="isMobileView"
+        :open="isMobileMenuOpen"
+        placement="left"
+        :width="drawerWidth"
+        :title="'Menu'"
+        @close="closeMobileMenu"
+        :maskClosable="true"
+        :destroyOnClose="true"
+        class="header-mobile-drawer"
+        :body-style="{ padding: '16px 0' }"
+      >
+        <a-menu
+          mode="inline"
+          :selectedKeys="[currentRoute]"
+          @click="handleMenuItemClick"
+        >
+          <a-menu-item key="/">
+            {{ trlang.game_menu }}
+          </a-menu-item>
+          <a-menu-item key="/bethistory">
+            {{ trlang.bethistory_menu }}
+          </a-menu-item>
+          <a-menu-item key="/addfund">
+            {{ trlang.addfund_menu }}
+          </a-menu-item>
+          <a-menu-item key="/refund">
+            {{ trlang.refund_menu }}
+          </a-menu-item>
+          <a-menu-item key="/blog">
+            {{ trlang.blog_menu }}
+          </a-menu-item>
+          <a-menu-item key="/customer-center">
+            {{ trlang.customer_center_menu }}
+          </a-menu-item>
+        </a-menu>
+        <div class="drawer-footer">
+          <a-button block type="primary" ghost @click="handleLogoutFromDrawer">
+            {{ trlang.logout }}
+          </a-button>
+        </div>
+      </a-drawer>
     </a-layout-header>
   </div>
 </template>
@@ -64,23 +131,9 @@ export default {
   props: {},
   data() {
     return {
-      top: 0,
-      userInfo: {
-        name: '',
-        email: '',
-      },
-      visibleMenu: false,
-      visibleLogin: false,
-      visibleSignup: false,
-      visibleForgot: false,
-      visibleAgentSignup: false,
-      visibleSignUpSuccess: false,
-      visibleSignUpSuccessAgent: false,
-      visibleLoginSuccess: false,
-      visibleUserPanel: false,
-      isLogin: false,
-      selectedCurrrency: 'USD',
-      provinceData: [],
+      isMobileMenuOpen: false,
+      windowWidth: typeof window !== 'undefined' ? window.innerWidth : 1200,
+      drawerWidth: 280,
     };
   },
   computed: {
@@ -90,185 +143,72 @@ export default {
     currentRoute() {
       return this.$route.path;
     },
+    isMobileView() {
+      return this.windowWidth < 992;
+    },
+  },
+  watch: {
+    isMobileView(newVal) {
+      if (!newVal) {
+        this.isMobileMenuOpen = false;
+      }
+    },
+    currentRoute() {
+      this.closeMobileMenu();
+    },
+  },
+  mounted() {
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', this.handleResize, { passive: true });
+      this.handleResize();
+    }
+  },
+  beforeUnmount() {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('resize', this.handleResize);
+    }
   },
   methods: {
-    // getLogo: async function () {
-    //   const res = await api.getLogoInfo();
-    //   if (res.length > 0) {
-    //     this.logoImage = `${res[0].logoimage}`;
-    //     this.logoName = res[0].logoname;
-    //   }
-    // },
-    showMenu() {
-      this.visibleMenu = true;
-    },
-    onCloseMenu() {
-      this.visibleMenu = false;
-    },
-    gotoHome() {
-      this.$router.push({ path: '/' });
-      this.visibleMenu = false;
-    },
-    gotoBetHistory() {
-      this.$router.push({ path: '/bethistory' });
-      this.visibleMenu = false;
-    },
-    gotoAbout() {
-      this.$router.push({ path: '/about/' });
-      this.visibleMenu = false;
-    },
-    gotoResorts() {
-      this.$router.push({ path: '/addfund' });
-      this.visibleMenu = false;
-    },
-    gotoInspirations() {
-      this.$router.push({ path: '/refund' });
-      this.visibleMenu = false;
-    },
-    gotoBestOffers() {
-      this.$router.push({ path: '/blog' });
-      this.visibleMenu = false;
-    },
-    gotoContact() {
-      this.$router.push({ path: '/customer-center' });
-      this.visibleMenu = false;
-    },
-    updateCurrencyDrop() {
-      if (this.$store.state.selectedCurrency !== null) {
-        this.selectedCurrrency = this.$store.state.selectedCurrency.name;
-      } else {
-        this.selectedCurrrency = 'USD';
-
-        this.$store.commit('setCurrency', {
-          code: 'us',
-          name: 'USD',
-          rate: 1.0,
-          sign: '$',
-        });
-      }
-    },
-
-    handleProvinceChange(value) {
-      const cellData = this.provinceData.filter((obj) => obj.name == value)[0];
-      if (!cellData) return;
-      
-      // Currency sign mapping
-      const currencySigns = {
-        'USD': '$',
-        'EUR': '€',
-        'JPY': '¥',
-        'KRW': '₩',
-        'CNY': '¥',
-      };
-      
-      this.$store.commit('setCurrency', {
-        code: cellData.code,
-        name: value,
-        rate: cellData.rate,
-        sign: currencySigns[value] || '$',
-      });
-      this.$router.go(0);
-    },
-    onSearch() {},
-    showLogin(_isShow) {
-      this.visibleLogin = _isShow;
-      this.visibleMenu = false;
-      if (!_isShow) this.updateUserInfo();
-    },
-    showLoginSuccess() {
-      this.visibleLoginSuccess = true;
-      this.showLogin(false);
-    },
-    showSignup(_isShow) {
-      this.visibleSignup = _isShow;
-      this.visibleMenu = false;
-      if (!_isShow) this.updateUserInfo();
-    },
-    showSuccess() {
-      this.visibleSignup = false;
-      this.visibleMenu = false;
-      this.visibleSignUpSuccess = true;
-      this.updateUserInfo();
-    },
-    showSuccessAgent() {
-      this.visibleAgentSignup = false;
-      this.visibleMenu = false;
-      this.visibleSignUpSuccessAgent = true;
-      this.updateUserInfo();
-    },
-    showForgot(_isShow) {
-      this.visibleForgot = _isShow;
-      this.visibleMenu = false;
-      if (!_isShow) this.updateUserInfo();
-    },
-    showAgentSignup(_isShow) {
-      this.visibleAgentSignup = _isShow;
-    },
-    closeShowSignup() {
-      this.visibleLogin = false;
-      this.visibleForgot = false;
-      this.visibleSignup = true;
-    },
-    closeShowForgot() {
-      this.visibleLogin = false;
-      this.visibleSignup = false;
-      this.visibleForgot = true;
-      this.visibleAgentSignup = false;
-    },
-    closeShowLogin() {
-      this.visibleLogin = true;
-      this.visibleForgot = false;
-      this.visibleSignup = false;
-      this.visibleAgentSignup = false;
-    },
-    closeShowSignAgent() {
-      this.visibleLogin = false;
-      this.visibleSignup = false;
-      this.visibleAgentSignup = true;
-    },
-    updateUserInfo() {
-      if (this.$store.state.loginUser !== null) {
-        if (this.$store.state.loginUser.loginType === 'api') {
-          this.userInfo.name = this.$store.state.loginUser.api.user.name;
-          this.userInfo.email = this.$store.state.loginUser.api.user.email;
-          this.isLogin = true;
-        } else if (this.$store.state.loginUser.loginType === 'google') {
-          this.userInfo.name = this.$store.state.loginUser.google.user.name;
-          this.userInfo.email = this.$store.state.loginUser.google.user.email;
-          this.isLogin = true;
-        } else if (this.$store.state.loginUser.loginType === 'fb') {
-          this.userInfo.name = this.$store.state.loginUser.fb.user.name;
-          this.isLogin = true;
-        } else {
-          this.userInfo.name = '';
-          this.isLogin = false;
-        }
-      } else {
-        this.userInfo.name = '';
-        this.isLogin = false;
-      }
-    },
     logout() {
-      // //   if (this.$store.state.loginUser.loginType === 'fb') {
-      // //     window.FB.logout(function (response) {
-      // //       // user is now logged out
-      // //     });
-      // //   }
-      // this.visibleUserPanel = false;
-      // this.$store.commit('setLoginUser', null);
-      // this.updateUserInfo();
       localStorage.removeItem('token');
       this.$router.push({ path: '/auth/login' });
+      this.closeMobileMenu();
     },
-    showConfirm() {
-      this.$confirm({
-        title: 'Do you want to logout?',
-        content: 'When clicked the OK button, you logout!',
-        onOk() {
-          this.logout();
-        },
-        onCancel() {},
-      });
+    toggleMobileMenu() {
+      if (!this.isMobileView) return;
+      this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    },
+    closeMobileMenu() {
+      this.isMobileMenuOpen = false;
+    },
+    navigateTo(path) {
+      if (!path) return;
+      if (this.$route.path === path) {
+        this.closeMobileMenu();
+        return;
+      }
+      this.$router.push({ path });
+      this.closeMobileMenu();
+    },
+    handleResize() {
+      if (typeof window === 'undefined') return;
+      this.windowWidth = window.innerWidth;
+      if (this.isMobileView) {
+        const calculatedWidth = Math.floor(this.windowWidth * 0.85);
+        this.drawerWidth = Math.min(320, Math.max(240, calculatedWidth));
+      } else {
+        this.drawerWidth = 280;
+      }
+      if (this.windowWidth >= 992 && this.isMobileMenuOpen) {
+        this.isMobileMenuOpen = false;
+      }
+    },
+    handleMenuItemClick({ key }) {
+      this.navigateTo(key);
+    },
+    handleLogoutFromDrawer() {
+      this.closeMobileMenu();
+      this.logout();
     },
   },
 };
