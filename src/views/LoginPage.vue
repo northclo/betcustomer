@@ -35,7 +35,7 @@
       <div v-if="captchaShow">
         <!-- eslint-disable vue/html-self-closing, vue/no-v-html -->
         <div
-          class="text-center"
+          class="text-center mb-4"
           @click="loadCaptcha"
           v-html="captcha"
         ></div>

@@ -121,26 +121,31 @@ const columns = computed(() => [
 const fetchBettingHistory = async (page = 1, pageSize = 10) => {
   loading.value = true;
   try {
-    // TODO: Replace with actual betting history API endpoint when available
-    // For now, we'll use a placeholder or get from game endpoint
-    const result = await getData(`${apiLink.get_betting_info}?page=${page}&pageSize=${pageSize}`);
-    
-    if (result.status && result.data.pendingBet) {
-      // Transform the data
-      bettingHistory.value = result.data.pendingBet.map((el, index) => ({
-        id: el._id || index + 1,
-        game_id: el.game_id || '-',
-        bet_amount: el.bet_amount || 0,
-        type: el.betting_type || '',
-        benefit: el.betting_rate || 0,
-        betting_rate: el.betting_rate || 0,
-        number_sort: el.number_sort || [],
-        win: el.win || false,
-        earning_amount: el.earning_amount || 0,
-        createdAt: el.createdAt || new Date(),
+    const result = await getData(
+      `${apiLink.get_bet_history}?page=${page}&pageSize=${pageSize}`
+    );
+
+    if (result.status && result.data?.items) {
+      bettingHistory.value = result.data.items.map((item, index) => ({
+        id: item._id || index + 1,
+        game_id: item.game_id || '-',
+        bet_amount: item.bet_amount || 0,
+        type: item.betting_type || '',
+        benefit: item.betting_rate || 0,
+        betting_rate: item.betting_rate || 0,
+        number_sort: item.number_sort || [],
+        win: Boolean(item.win),
+        earning_amount: item.earning_amount || 0,
+        createdAt: item.createdAt || new Date(),
       }));
-      
-      pagination.value.total = bettingHistory.value.length;
+
+      if (result.data.pagination) {
+        pagination.value.total = result.data.pagination.total || 0;
+        pagination.value.current = result.data.pagination.page || page;
+        pagination.value.pageSize = result.data.pagination.pageSize || pageSize;
+      } else {
+        pagination.value.total = bettingHistory.value.length;
+      }
     } else {
       bettingHistory.value = [];
       pagination.value.total = 0;

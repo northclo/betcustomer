@@ -45,10 +45,10 @@ const routes = [
     meta: { breadcrumb: 'News & Updates', requiresAuth: true }
   },
   {
-    path: '/customer-center',
-    name: 'customerCenter',
+    path: '/contact',
+    name: 'contact',
     component: CustomerCenterPage,
-    meta: { breadcrumb: 'Customer Support', requiresAuth: true }
+    meta: { breadcrumb: 'Contact Us', requiresAuth: true }
   },
   {
     path: '/auth/login',

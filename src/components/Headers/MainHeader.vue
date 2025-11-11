@@ -65,8 +65,8 @@
             </button>
             <button
               class="menu-btn white-space-nowrap"
-              :class="{ 'menu-btn-active': currentRoute === '/customer-center' }"
-              @click="navigateTo('/customer-center')"
+              :class="{ 'menu-btn-active': currentRoute === '/contact' }"
+              @click="navigateTo('/contact')"
             >
               {{ trlang.customer_center_menu }}
             </button>
@@ -110,7 +110,7 @@
           <a-menu-item key="/blog">
             {{ trlang.blog_menu }}
           </a-menu-item>
-          <a-menu-item key="/customer-center">
+          <a-menu-item key="/contact">
             {{ trlang.customer_center_menu }}
           </a-menu-item>
         </a-menu>

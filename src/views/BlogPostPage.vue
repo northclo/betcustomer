@@ -1,435 +1,962 @@
 <template>
   <div class="blog-post-page">
-    <div class="bg-primary-light radius-2 p-5 mt-5">
-      <a-card title="News & Updates" class="game-result-card">
-        <a-space direction="vertical" size="large" class="w-100">
-          <!-- Featured Post -->
-          <div v-if="featuredPost" class="featured-post">
-            <div class="featured-image">
-              <img v-if="featuredPost.image" :src="featuredPost.image" :alt="featuredPost.title" />
-              <div class="featured-badge">Featured</div>
-            </div>
-            <div class="featured-content">
-              <h2 class="featured-title">{{ featuredPost.title }}</h2>
-              <p class="featured-excerpt">{{ featuredPost.excerpt }}</p>
-              <div class="featured-meta">
-                <span>{{ featuredPost.date }}</span>
-                <span>•</span>
-                <span>{{ featuredPost.category }}</span>
+    <div class="page-container">
+      <a-card class="blog-card" :bordered="false">
+        <div class="card-header">
+          <div>
+            <h1 class="card-title">Blog Posts</h1>
+          </div>
+          <a-space align="center">
+            <a-select
+              v-model:value="filters.status"
+              class="filter-select glass-select"
+              :options="statusFilterOptions"
+              dropdown-class-name="glass-select-dropdown"
+              @change="handleFilterChange"
+            >
+              <template #suffixIcon>
+                <span class="glass-select__icon">▾</span>
+              </template>
+            </a-select>
+            <a-select
+              v-model:value="filters.category"
+              class="filter-select glass-select"
+              :options="categoryFilterOptions"
+              dropdown-class-name="glass-select-dropdown"
+              @change="handleFilterChange"
+            >
+              <template #suffixIcon>
+                <span class="glass-select__icon">▾</span>
+              </template>
+            </a-select>
+            <a-button class="glass-primary-btn" type="primary" @click="openCreateModal">
+              New Post
+            </a-button>
+          </a-space>
+        </div>
+
+        <a-table
+          class="blog-table"
+          row-key="_id"
+          :columns="columns"
+          :data-source="posts"
+          :loading="loading"
+          :pagination="{
+            current: pagination.page,
+            pageSize: pagination.limit,
+            total: pagination.total,
+            showSizeChanger: false
+          }"
+          @change="handleTableChange"
+        >
+          <template #bodyCell="{ column, record }">
+            <template v-if="column.key === 'title'">
+              <div class="title-cell">
+                <div class="title">{{ record.title }}</div>
+                <div class="description">{{ record.description }}</div>
               </div>
-              <button
-                class="featured-read-more"
-                @click.stop="viewPost(featuredPost)"
-              >
-                Read More
-              </button>
-            </div>
-          </div>
-
-          <!-- Blog Posts Grid -->
-          <div>
-            <div class="section-title">Latest Posts</div>
-            <a-row :gutter="[16, 16]" class="mt-3">
-              <a-col
-                v-for="post in blogPosts"
-                :key="post.id"
-                :xs="24"
-                :sm="12"
-                :md="8"
-              >
-                <div class="blog-post-card" @click="viewPost(post)">
-                  <div class="post-image">
-                    <img v-if="post.image" :src="post.image" :alt="post.title" />
-                    <div class="post-category">{{ post.category }}</div>
-                  </div>
-                  <div class="post-content">
-                    <h3 class="post-title">{{ post.title }}</h3>
-                    <p class="post-excerpt">{{ post.excerpt }}</p>
-                    <div class="post-meta">
-                      <span>{{ post.date }}</span>
-                      <span>•</span>
-                      <span>{{ post.readTime }} min read</span>
-                    </div>
-                  </div>
-                </div>
-              </a-col>
-            </a-row>
-          </div>
-
-          <!-- Categories Filter -->
-          <div>
-            <div class="section-title">Categories</div>
-            <div class="category-filters mt-3">
-              <button
-                v-for="category in categories"
-                :key="category"
-                class="category-btn glass-btn"
-                :class="{ 'category-active': selectedCategory === category }"
-                @click="filterByCategory(category)"
-              >
-                {{ category }}
-              </button>
-            </div>
-          </div>
-        </a-space>
+            </template>
+            <template v-else-if="column.key === 'status'">
+              <a-tag :color="statusColor(record.status)">
+                {{ formatStatus(record.status) }}
+              </a-tag>
+            </template>
+            <template v-else-if="column.key === 'action'">
+              <a-space>
+                <a-button type="link" @click.stop="openEditModal(record)">
+                  Edit
+                </a-button>
+                <a-button type="link" danger @click.stop="confirmDelete(record)">
+                  Delete
+                </a-button>
+              </a-space>
+            </template>
+          </template>
+        </a-table>
       </a-card>
     </div>
   </div>
+
+  <a-modal
+    :open="modalVisible"
+    :confirm-loading="submitting"
+    wrap-class-name="blog-modal"
+    :footer="null"
+    destroy-on-close
+    centered
+    @cancel="handleModalCancel"
+  >
+    <div class="blog-modal__header">
+      <div class="blog-modal__badge">
+        <span>{{ isEdit ? 'Edit Post' : 'New Post' }}</span>
+      </div>
+        <div class="blog-modal__heading">
+          <h2>{{ isEdit ? 'Update Blog Post' : 'Create Blog Post' }}</h2>
+          <p class="blog-modal__subtitle">
+            {{
+              isEdit
+                ? 'Make quick changes and keep your audience up to date.'
+                : 'Craft a new story and share it with your players.'
+            }}
+          </p>
+        </div>
+      </div>
+
+    <a-form layout="vertical" class="blog-modal__form">
+      <a-form-item label="Title" required>
+        <a-input
+          v-model:value="formState.title"
+          placeholder="Enter a descriptive title"
+          :disabled="submitting"
+          size="large"
+        />
+      </a-form-item>
+
+      <a-form-item label="Description" required>
+        <a-textarea
+          v-model:value="formState.description"
+          :auto-size="{ minRows: 4, maxRows: 8 }"
+          placeholder="Write your post content"
+          :disabled="submitting"
+        />
+      </a-form-item>
+
+      <a-form-item label="Image URL">
+        <a-input
+          v-model:value="formState.image"
+          placeholder="https://example.com/cover.jpg"
+          :disabled="submitting"
+        />
+      </a-form-item>
+      <a-form-item label="Category" required>
+        <a-select
+          v-model:value="formState.category"
+          :options="categoryOptions"
+          dropdown-class-name="glass-select-dropdown"
+          class="glass-select"
+          :disabled="submitting"
+        >
+          <template #suffixIcon>
+            <span class="glass-select__icon">▾</span>
+          </template>
+        </a-select>
+      </a-form-item>
+    </a-form>
+
+    <div class="blog-modal__footer">
+      <a-button class="blog-modal__btn blog-modal__btn--ghost" @click="handleModalCancel" :disabled="submitting">
+        Cancel
+      </a-button>
+      <a-button
+        class="blog-modal__btn blog-modal__btn--primary"
+        type="primary"
+        @click="handleSubmit"
+        :loading="submitting"
+      >
+        {{ isEdit ? 'Save Changes' : 'Create Post' }}
+      </a-button>
+    </div>
+  </a-modal>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { getData } from '@/helpers/Axios.js';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { message, Modal } from 'ant-design-vue';
+
+import { deleteData, getData, postData, putData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link.js';
 
-// ✅ state
-const blogPosts = ref([]);
-const featuredPost = ref(null);
-const selectedCategory = ref('All');
+const posts = ref([]);
+const pagination = reactive({
+  page: 1,
+  limit: 10,
+  total: 0,
+  totalPages: 1,
+});
+
 const loading = ref(false);
+const submitting = ref(false);
+const modalVisible = ref(false);
+const modalMode = ref('create');
+const isEdit = computed(() => modalMode.value === 'edit');
 
-// ✅ constants
-const categories = ['All', 'Announcements', 'Tips', 'Updates', 'Events'];
+const filters = reactive({
+  status: 'all',
+  category: 'all',
+});
 
-// ✅ methods
-const viewPost = (post) => {
-  // TODO: Navigate to post detail page or show modal
-  console.log('View post:', post);
-};
+const formState = reactive({
+  _id: null,
+  title: '',
+  description: '',
+  image: '',
+  userId: '',
+  category: 'General',
+  status: 'draft',
+});
 
-const filterByCategory = (category) => {
-  selectedCategory.value = category;
-  fetchBlogPosts();
-};
+const statusOptions = [
+  { label: 'Draft', value: 'draft' },
+  { label: 'Published', value: 'published' },
+  { label: 'Archived', value: 'archived' },
+];
 
-const fetchBlogPosts = async () => {
-  loading.value = true;
+const categoryOptions = [
+  { label: 'General', value: 'General' },
+  { label: 'Announcements', value: 'Announcements' },
+  { label: 'Events', value: 'Events' },
+  { label: 'Tips', value: 'Tips' },
+  { label: 'Updates', value: 'Updates' },
+];
+
+const statusFilterOptions = [
+  { label: 'All statuses', value: 'all' },
+  ...statusOptions,
+];
+
+const categoryFilterOptions = [
+  { label: 'All categories', value: 'all' },
+  ...categoryOptions,
+];
+
+const columns = [
+  { title: 'Title', dataIndex: 'title', key: 'title' },
+  { title: 'Category', dataIndex: 'category', key: 'category' },
+  { title: 'Status', dataIndex: 'status', key: 'status' },
+  { title: 'Actions', key: 'action' },
+];
+
+const decodeJwtPayload = () => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const token = window.localStorage.getItem('token');
+  if (!token) {
+    return null;
+  }
+
+  const parts = token.split('.');
+  if (parts.length !== 3) {
+    return null;
+  }
+
   try {
-    // TODO: Replace with actual API endpoint when available
-    const result = await getData(apiLink.get_blog_posts, {
-      category: selectedCategory.value === 'All' ? null : selectedCategory.value,
-    });
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '=');
+    const decoded = window.atob(padded);
+
+    return JSON.parse(decoded);
+  } catch (error) {
+    console.warn('Failed to decode token payload', error);
+    return null;
+  }
+};
+
+const currentUserId = computed(() => decodeJwtPayload()?.id ?? '');
+
+const statusColor = (status) => {
+  switch (status) {
+    case 'published':
+      return 'green';
+    case 'archived':
+      return 'default';
+    default:
+      return 'blue';
+  }
+};
+
+const formatStatus = (status) => {
+  if (!status) {
+    return 'Unknown';
+  }
+  return status.charAt(0).toUpperCase() + status.slice(1);
+};
+
+const resetForm = () => {
+  formState._id = null;
+  formState.title = '';
+  formState.description = '';
+  formState.image = '';
+  formState.category = 'General';
+  formState.status = 'draft';
+  formState.userId = currentUserId.value;
+};
+
+const mapPost = (item) => ({
+  _id: item._id,
+  title: item.title ?? '',
+  description: item.description ?? '',
+  image: item.image ?? '',
+  userId: item.userId ?? '',
+  category: item.category ?? 'General',
+  status: item.status ?? 'draft',
+  published_at: item.published_at ?? null,
+  createdAt: item.createdAt ?? null,
+  updatedAt: item.updatedAt ?? null,
+});
+
+const fetchPosts = async () => {
+  loading.value = true;
+
+  try {
+    const requestedPage = pagination.page;
+    const params = new URLSearchParams();
+    if (filters.status !== 'all') {
+      params.set('status', filters.status);
+    }
+    if (filters.category !== 'all') {
+      params.set('category', filters.category);
+    }
+    params.set('page', String(requestedPage));
+    params.set('limit', String(pagination.limit));
+
+    const endpoint = `${apiLink.blog_posts}?${params.toString()}`;
+    const result = await getData(endpoint);
 
     if (result.status && result.data) {
-      const images = [];
-      const posts = result.data.map((item, index) => ({
-        id: item._id || index,
-        title: item.title || 'Sample Post Title',
-        excerpt: item.excerpt || item.content?.substring(0, 100) || 'Sample post excerpt...',
-        content: item.content || '',
-        category: item.category || 'Updates',
-        date: new Date(item.createdAt || Date.now()).toLocaleDateString(),
-        readTime: item.readTime || 5,
-        image: item.image || images[index % images.length] || null,
-      }));
+      const {
+        items = [],
+        total = 0,
+        totalPages = 1,
+        page = requestedPage,
+        limit = pagination.limit,
+      } = result.data || {};
 
-      featuredPost.value = posts[0] || null;
-      blogPosts.value = posts.slice(1);
+      posts.value = Array.isArray(items) ? items.map(mapPost) : [];
+
+      const sanitizedLimit =
+        Number.isFinite(limit) && limit > 0 ? limit : pagination.limit;
+      pagination.limit = sanitizedLimit;
+
+      const sanitizedTotal = Number.isFinite(total) ? total : posts.value.length;
+      pagination.total = sanitizedTotal;
+
+      const sanitizedTotalPages =
+        Number.isFinite(totalPages) && totalPages > 0
+          ? totalPages
+          : Math.max(1, Math.ceil(sanitizedTotal / sanitizedLimit) || 1);
+      pagination.totalPages = sanitizedTotalPages;
+
+      const sanitizedPage =
+        Number.isFinite(page) && page > 0
+          ? Math.min(page, sanitizedTotalPages)
+          : Math.min(requestedPage, sanitizedTotalPages);
+      const resolvedPage = sanitizedPage || 1;
+
+      const shouldRefetch =
+        sanitizedTotal > 0 &&
+        posts.value.length === 0 &&
+        resolvedPage !== requestedPage;
+
+      pagination.page = resolvedPage;
+
+      if (shouldRefetch) {
+        await fetchPosts();
+        return;
+      }
     } else {
-      blogPosts.value = [];
-      featuredPost.value = null;
+      posts.value = [];
+      pagination.total = 0;
+      pagination.totalPages = 1;
+      pagination.page = 1;
     }
-  } catch (error) {
-    console.error('Error fetching blog posts:', error);
   } finally {
     loading.value = false;
   }
 };
 
+const handleTableChange = (paginationInfo) => {
+  const nextPage = paginationInfo?.current ?? pagination.page;
+  if (nextPage !== pagination.page) {
+    pagination.page = nextPage;
+    fetchPosts();
+  }
+};
 
-// ✅ lifecycle
-onMounted(() => {
-  fetchBlogPosts();
+const handleFilterChange = () => {
+  pagination.page = 1;
+  fetchPosts();
+};
+
+const openCreateModal = () => {
+  modalMode.value = 'create';
+  resetForm();
+  modalVisible.value = true;
+};
+
+const openEditModal = (record) => {
+  modalMode.value = 'edit';
+  formState._id = record._id;
+  formState.title = record.title;
+  formState.description = record.description;
+  formState.image = record.image ?? '';
+  formState.category = record.category ?? 'General';
+  formState.status = record.status ?? 'draft';
+  formState.userId = record.userId ?? currentUserId.value;
+  modalVisible.value = true;
+};
+
+const handleModalCancel = () => {
+  if (!submitting.value) {
+    modalVisible.value = false;
+    resetForm();
+  }
+};
+
+const buildPayload = () => {
+  const payload = {
+    title: formState.title.trim(),
+    description: formState.description.trim(),
+    image: formState.image ? formState.image.trim() : '',
+    category: formState.category,
+    status: formState.status,
+  };
+
+  if (!payload.title || !payload.description) {
+    return null;
+  }
+
+  if (!payload.image) {
+    payload.image = null;
+  }
+
+  return payload;
+};
+
+const handleSubmit = async () => {
+  const payload = buildPayload();
+
+  if (!payload) {
+    message.error('Please provide a title and description.');
+    return;
+  }
+
+  submitting.value = true;
+
+  try {
+    let result;
+    if (modalMode.value === 'create') {
+      result = await postData(apiLink.create_blog_post, payload);
+    } else {
+      result = await putData(apiLink.update_blog_post(formState._id), payload);
+    }
+
+    if (result.status) {
+      message.success(result.message || 'Changes saved successfully.');
+      modalVisible.value = false;
+      resetForm();
+      if (modalMode.value === 'create') {
+        pagination.page = 1;
+      }
+      await fetchPosts();
+    }
+  } finally {
+    submitting.value = false;
+  }
+};
+
+const confirmDelete = (record) => {
+  Modal.confirm({
+    title: 'Delete blog post',
+    content: `Are you sure you want to delete "${record.title}"?`,
+    okText: 'Delete',
+    okType: 'danger',
+    cancelText: 'Cancel',
+    onOk: () => handleDelete(record._id),
+  });
+};
+
+const handleDelete = async (postId) => {
+  const result = await deleteData(apiLink.delete_blog_post(postId));
+
+  if (result.status) {
+    message.success(result.message || 'Blog post deleted.');
+    if (posts.value.length <= 1 && pagination.page > 1) {
+      pagination.page = Math.max(1, pagination.page - 1);
+    }
+    await fetchPosts();
+  }
+};
+
+watch(
+  () => currentUserId.value,
+  (value) => {
+    if (value && !formState.userId) {
+      formState.userId = value;
+    }
+  },
+  { immediate: true }
+);
+
+onMounted(async () => {
+  formState.userId = currentUserId.value;
+  await fetchPosts();
 });
 </script>
 
 <style scoped>
 .blog-post-page {
   min-height: 80vh;
+  padding: 24px 0;
 }
 
-.section-title {
-  color: var(--white-color);
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 15px;
+.page-container {
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
-.featured-post {
+.blog-card {
   background: var(--glass-bg-light);
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
-  border: 1px solid var(--glass-border);
-  border-radius: 24px;
-  overflow: hidden;
-  box-shadow: var(--glass-shadow);
-  display: flex;
-  gap: 30px;
-  padding: 0;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-}
-
-.featured-post:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--glass-shadow-strong);
-  border-color: var(--glass-blue-border);
-}
-
-.featured-image {
-  width: 400px;
-  min-width: 400px;
-  height: 280px;
-  background: var(--gradient-blue);
-  border-radius: 0;
-  position: relative;
-  flex-shrink: 0;
-  overflow: hidden;
-}
-
-.featured-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.featured-post:hover .featured-image img {
-  transform: scale(1.05);
-}
-
-.featured-badge {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(5, 150, 105, 0.9));
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  color: var(--white-color);
-  padding: 8px 16px;
   border-radius: 20px;
-  font-size: 13px;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  padding: 24px;
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.card-title {
+  color: var(--white-color);
+  font-size: 28px;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  margin-bottom: 4px;
 }
 
-.featured-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 40px 30px;
-  gap: 20px;
-}
-
-.featured-title {
-  color: var(--white-color);
-  font-size: 32px;
-  font-weight: 800;
+.card-subtitle {
+  color: rgba(255, 255, 255, 0.7);
   margin: 0;
-  line-height: 1.3;
-  letter-spacing: -0.5px;
-  background: linear-gradient(135deg, var(--white-color), rgba(255, 255, 255, 0.8));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
-.featured-excerpt {
-  color: var(--white-color);
-  font-size: 17px;
-  opacity: 0.85;
-  line-height: 1.7;
-  margin: 0;
-  font-weight: 400;
+.filter-select {
+  min-width: 160px;
 }
 
-.featured-meta {
-  color: var(--white-color);
-  font-size: 14px;
-  opacity: 0.75;
+.glass-select :deep(.ant-select-selector) {
+  background: rgba(15, 23, 42, 0.65) !important;
+  border: 1px solid rgba(148, 163, 184, 0.25) !important;
+  color: var(--white-color) !important;
+  border-radius: 12px !important;
+  height: 44px !important;
   display: flex;
-  gap: 8px;
   align-items: center;
+  transition: all 0.3s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.glass-select :deep(.ant-select-selection-item),
+.glass-select :deep(.ant-select-selection-placeholder) {
+  color: rgba(226, 232, 240, 0.85) !important;
+}
+
+.glass-select :deep(.ant-select-selector:hover),
+.glass-select :deep(.ant-select-focused .ant-select-selector) {
+  border-color: rgba(99, 102, 241, 0.55) !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+}
+
+.glass-select__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(226, 232, 240, 0.85);
+  font-size: 12px;
+  transition: color 0.2s ease;
+}
+
+.blog-modal__form .glass-select {
+  width: 100%;
+}
+
+:global(.glass-select-dropdown .ant-select-item-option-content) {
   font-weight: 500;
 }
 
-.featured-read-more {
-  margin-top: 8px;
+.glass-primary-btn {
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.95), rgba(139, 92, 246, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 14px 28px rgba(99, 102, 241, 0.35);
+  backdrop-filter: blur(6px);
+  color: var(--white-color);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.glass-primary-btn:hover,
+.glass-primary-btn:focus {
+  transform: translateY(-1px);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 1), rgba(139, 92, 246, 1));
+  box-shadow: 0 18px 34px rgba(99, 102, 241, 0.45);
+  color: var(--white-color);
+}
+
+.glass-primary-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 10px 20px rgba(99, 102, 241, 0.35);
+}
+
+.blog-table :deep(.ant-table) {
+  background: transparent;
+  color: var(--white-color);
+}
+
+.blog-table :deep(.ant-table-thead > tr > th) {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--white-color);
+  border: none;
+}
+
+.blog-table :deep(.ant-table-tbody > tr > td) {
+  background: rgba(22, 27, 34, 0.6);
+  border: none;
+}
+
+.blog-table :deep(.ant-table-placeholder) {
+  background: rgba(22, 27, 34, 0.6);
+  color: var(--white-color);
+  pointer-events: none;
+}
+
+.blog-table :deep(.ant-table-placeholder:hover) {
+  background: rgba(22, 27, 34, 0.6) !important;
+}
+
+.blog-table :deep(.ant-table-tbody > tr:not(.ant-table-placeholder):hover > td) {
+  background: rgba(99, 102, 241, 0.2) !important;
+}
+
+.blog-table :deep(.ant-empty-description) {
+  color: var(--white-color);
+}
+
+.title-cell .title {
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--white-color);
+}
+
+.title-cell .description {
+  color: rgba(255, 255, 255, 0.65);
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.blog-card :deep(.ant-select-selector),
+.blog-card :deep(.ant-input),
+.blog-card :deep(.ant-input:hover),
+.blog-card :deep(.ant-input:focus),
+.blog-card :deep(.ant-input-focused),
+.blog-card :deep(.ant-picker),
+.blog-card :deep(.ant-picker:hover),
+.blog-card :deep(.ant-picker-focused) {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: var(--white-color) !important;
+}
+
+.blog-card :deep(.ant-picker-suffix),
+.blog-card :deep(.ant-picker-clear),
+.blog-card :deep(.ant-input-prefix),
+.blog-card :deep(.ant-input-suffix) {
+  color: var(--white-color) !important;
+}
+
+.blog-card :deep(.ant-tag) {
+  border-radius: 16px;
+  padding: 2px 12px;
+  font-weight: 600;
+}
+
+.blog-card :deep(.ant-modal-content) {
+  background: rgba(18, 22, 31, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--white-color);
+}
+
+.blog-card :deep(.ant-modal-header) {
+  background: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.blog-card :deep(.ant-modal-title) {
+  color: var(--white-color);
+}
+
+.blog-card :deep(.ant-modal-footer) {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+:global(.glass-select-dropdown) {
+  background: rgba(12, 16, 24, 0.96);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  box-shadow: 0 18px 32px rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(16px);
+  color: rgba(226, 232, 240, 0.9);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+:global(.glass-select-dropdown .ant-select-item-option) {
+  color: rgba(226, 232, 240, 0.9);
+}
+
+:global(.glass-select-dropdown .ant-select-item-option-active),
+:global(.glass-select-dropdown .ant-select-item-option-selected) {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.45), rgba(139, 92, 246, 0.45));
+  color: #fff;
+}
+
+:deep(.ant-picker-dropdown) {
+  background: rgba(18, 24, 33, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  color: #fff;
+}
+
+:deep(.ant-picker-panel-container) {
+  background: transparent;
+}
+
+:deep(.ant-picker-cell) {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+:deep(.ant-picker-cell-in-view.ant-picker-cell-range-hover),
+:deep(.ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner),
+:deep(.ant-picker-cell-in-view.ant-picker-cell-range-start .ant-picker-cell-inner),
+:deep(.ant-picker-cell-in-view.ant-picker-cell-range-end .ant-picker-cell-inner) {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.45), rgba(139, 92, 246, 0.45)) !important;
+}
+
+:global(.blog-modal .ant-modal-content) {
+  background: rgba(12, 16, 24, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  backdrop-filter: blur(18px);
+  border-radius: 20px;
+}
+
+:global(.blog-modal .ant-modal-header) {
+  background: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 28px 28px 16px;
+}
+
+:global(.blog-modal .ant-modal-title) {
+  color: #fff;
+}
+
+:global(.blog-modal .ant-modal-body) {
+  padding: 0 28px 12px;
+}
+
+:global(.blog-modal .ant-modal-footer) {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 16px 28px 28px;
+}
+
+:global(.blog-modal .ant-modal-close-x) {
+  color: rgba(226, 232, 240, 0.75);
+  border-radius: 50%;
+  transition: background 0.3s ease;
+}
+
+:global(.blog-modal .ant-modal-close-x:hover) {
+  background: rgba(148, 163, 184, 0.2);
+}
+
+.blog-modal__header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.blog-modal__badge {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(139, 92, 246, 0.9));
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
-  border: 2px solid rgba(99, 102, 241, 0.5);
-  color: var(--white-color);
-  padding: 12px 28px;
-  border-radius: 12px;
-  font-size: 15px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+  letter-spacing: 0.35px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(139, 92, 246, 0.9));
+  color: #fff;
+  box-shadow: 0 12px 28px rgba(99, 102, 241, 0.35);
   width: fit-content;
 }
 
-.featured-read-more:hover {
-  transform: translateX(5px);
-  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
-  border-color: rgba(99, 102, 241, 0.7);
-  background: linear-gradient(135deg, rgba(99, 102, 241, 1), rgba(139, 92, 246, 1));
-}
-
-.featured-read-more::after {
-  content: '→';
-  font-size: 18px;
-  transition: transform 0.3s ease;
-}
-
-.featured-read-more:hover::after {
-  transform: translateX(4px);
-}
-
-.blog-post-card {
-  background: var(--glass-bg);
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
-  border: 1px solid var(--glass-border);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: var(--glass-shadow-soft);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.blog-post-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--glass-shadow);
-  border-color: var(--glass-border-light);
-}
-
-.post-image {
-  width: 100%;
-  height: 180px;
-  background: linear-gradient(135deg, var(--glass-blue), var(--glass-pink));
-  position: relative;
-  overflow: hidden;
-}
-
-.post-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.post-category {
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  background: var(--glass-bg);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
-  border: 1px solid var(--glass-border);
+.blog-modal__heading h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
   color: var(--white-color);
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
+  letter-spacing: -0.25px;
 }
 
-.post-content {
-  padding: 20px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.post-title {
-  color: var(--white-color);
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 10px;
-  line-height: 1.4;
-}
-
-.post-excerpt {
-  color: var(--white-color);
+.blog-modal__subtitle {
+  margin: 6px 0 0;
+  color: rgba(226, 232, 240, 0.8);
   font-size: 14px;
-  opacity: 0.8;
-  line-height: 1.6;
-  margin-bottom: 15px;
-  flex: 1;
+  line-height: 1.5;
 }
 
-.post-meta {
-  color: var(--white-color);
-  font-size: 12px;
-  opacity: 0.7;
+.blog-modal__form :deep(.ant-form-item-label > label) {
+  color: rgba(226, 232, 240, 0.9) !important;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.blog-modal__form :deep(.ant-input),
+.blog-modal__form :deep(.ant-input:hover),
+.blog-modal__form :deep(.ant-input:focus),
+.blog-modal__form :deep(.ant-input-focused),
+.blog-modal__form :deep(.ant-select-selector),
+.blog-modal__form :deep(.ant-picker),
+.blog-modal__form :deep(.ant-picker:hover),
+.blog-modal__form :deep(.ant-picker-focused) {
+  background: rgba(15, 23, 42, 0.65) !important;
+  border: 1px solid rgba(148, 163, 184, 0.25) !important;
+  color: var(--white-color) !important;
+  border-radius: 12px !important;
+  transition: all 0.3s ease;
+}
+
+.blog-modal__form :deep(.ant-input:focus),
+.blog-modal__form :deep(.ant-select-focused .ant-select-selector),
+.blog-modal__form :deep(.ant-picker-focused) {
+  border-color: rgba(99, 102, 241, 0.55) !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+}
+
+.blog-modal__form :deep(.ant-select-arrow),
+.blog-modal__form :deep(.ant-picker-suffix),
+.blog-modal__form :deep(.ant-picker-clear) {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.blog-modal__footer {
+  margin-top: 28px;
   display: flex;
-  gap: 8px;
-  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
 }
 
-.category-filters {
+.blog-modal__btn {
+  height: 46px;
+  min-width: 130px;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.blog-modal__btn--ghost {
+  background: rgba(148, 163, 184, 0.16);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  color: rgba(226, 232, 240, 0.85);
+}
+
+.blog-modal__btn--ghost:hover {
+  background: rgba(148, 163, 184, 0.24);
+  border-color: rgba(148, 163, 184, 0.55);
+  color: #fff;
+}
+
+.blog-modal__btn--primary {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(139, 92, 246, 0.9));
+  border: none;
+  box-shadow: 0 12px 28px rgba(99, 102, 241, 0.35);
+}
+
+.blog-modal__btn--primary:hover {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 1), rgba(139, 92, 246, 1));
+  box-shadow: 0 16px 32px rgba(99, 102, 241, 0.45);
+}
+
+.blog-card :deep(.ant-pagination) {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  justify-content: flex-end;
+  color: var(--white-color);
 }
 
-.category-btn {
-  background: var(--glass-bg);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
-  border: 2px solid var(--glass-border);
-  color: var(--white-color);
+.blog-card :deep(.ant-pagination-item) {
   border-radius: 10px;
-  padding: 8px 20px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(22, 27, 34, 0.6);
 }
 
-.category-btn:hover {
-  background: var(--glass-bg-light);
-  border-color: var(--glass-blue-border);
-  transform: translateY(-2px);
+.blog-card :deep(.ant-pagination-item a) {
+  color: rgba(226, 232, 240, 0.85);
 }
 
-.category-active {
-  background: var(--glass-blue) !important;
-  border-color: var(--glass-blue-border) !important;
-  box-shadow: 0 0 15px rgba(99, 102, 241, 0.3) !important;
+.blog-card :deep(.ant-pagination-item-active) {
+  border-color: rgba(99, 102, 241, 0.7);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.85), rgba(139, 92, 246, 0.85));
+  box-shadow: 0 10px 18px rgba(99, 102, 241, 0.35);
+}
+
+.blog-card :deep(.ant-pagination-item-active a) {
+  color: #fff;
+}
+
+.blog-card :deep(.ant-pagination-item:hover) {
+  border-color: rgba(99, 102, 241, 0.55);
+}
+
+.blog-card :deep(.ant-pagination-item-link) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(22, 27, 34, 0.6);
+  color: rgba(226, 232, 240, 0.85);
+}
+
+.blog-card :deep(.ant-pagination-item-link:hover) {
+  border-color: rgba(99, 102, 241, 0.55);
+  color: #fff;
+}
+
+.blog-card :deep(.ant-pagination-disabled .ant-pagination-item-link),
+.blog-card :deep(.ant-pagination-disabled .ant-pagination-item-link:hover) {
+  color: rgba(148, 163, 184, 0.45);
+  border-color: rgba(148, 163, 184, 0.25);
+  background: rgba(30, 41, 59, 0.6);
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
 @media (max-width: 768px) {
-  .featured-post {
+  .card-header {
     flex-direction: column;
-    gap: 0;
+    align-items: flex-start;
   }
 
-  .featured-image {
+  .filter-select {
     width: 100%;
-    min-width: 100%;
-    height: 220px;
   }
 
-  .featured-content {
-    padding: 30px 20px;
-  }
-
-  .featured-title {
-    font-size: 24px;
-  }
-
-  .featured-excerpt {
-    font-size: 15px;
+  .form-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>
-

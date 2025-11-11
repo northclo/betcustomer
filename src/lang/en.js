@@ -17,7 +17,7 @@ export default {
   partner_dashboard: "Pdashboard",
   index_unit: "tms",
   per_day: "D",
-  currency: "¥",
+  currency: "$",
   store_name_link: "https://www.alibaba.com/",
   logout: "LogOut",
 

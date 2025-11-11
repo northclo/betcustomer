@@ -6,8 +6,10 @@
           <!-- Balance Display -->
           <div class="balance-display">
             <div class="balance-label">Available Balance</div>
-            <div class="balance-amount">{{ availableBalance.toLocaleString() }} {{ currency }}</div>
-            <div class="balance-note">Minimum withdrawal: 10,000 {{ currency }}</div>
+            <div class="balance-amount">{{ availableBalance.toLocaleString() }} $</div>
+            <div class="pending-amount" v-if="pendingRefundBalance > 0">
+              Pending Approval: {{ pendingRefundBalance.toLocaleString() }} $
+            </div>
           </div>
 
           <!-- Withdrawal Amount -->
@@ -15,9 +17,9 @@
             <div class="section-title">Withdrawal Amount</div>
             <a-input-number
               v-model:value="withdrawalAmount"
-              :min="10000"
+              :min="1"
               :max="availableBalance"
-              :step="1000"
+              :step="1"
               class="w-100 mt-3"
               placeholder="Enter withdrawal amount"
               size="large"
@@ -34,54 +36,14 @@
             </div>
           </div>
 
-          <!-- Withdrawal Method -->
-          <div>
-            <div class="section-title">Withdrawal Method</div>
-            <a-radio-group v-model:value="withdrawalMethod" class="w-100 mt-3">
-              <a-row :gutter="[16, 16]">
-                <a-col :xs="24" :sm="12" v-for="method in withdrawalMethods" :key="method.value">
-                  <a-radio-button :value="method.value" class="withdrawal-method-btn w-100 flex items-center justify-center">
-                    <div class="payment-method-content">
-                      <span class="payment-icon">{{ method.icon }}</span>
-                      <span>{{ method.label }}</span>
-                    </div>
-                  </a-radio-button>
-                </a-col>
-              </a-row>
-            </a-radio-group>
-          </div>
-
-          <!-- Account Details -->
-          <div v-if="withdrawalMethod">
-            <div class="section-title">Account Details</div>
-            <a-space direction="vertical" class="w-100 mt-3" size="middle">
-              <a-input
-                v-model:value="accountNumber"
-                placeholder="Account Number / Wallet Address"
-                size="large"
-              />
-              <a-input
-                v-model:value="accountName"
-                placeholder="Account Holder Name"
-                size="large"
-              />
-              <a-input
-                v-if="withdrawalMethod === 'bank_transfer'"
-                v-model:value="bankName"
-                placeholder="Bank Name"
-                size="large"
-              />
-            </a-space>
-          </div>
-
           <!-- Action Button -->
           <div class="text-center">
             <button
-              class="glass-action-btn glass-action-green px-5 py-3 fs-3 font-bold cursor-pointer"
-              :disabled="!canWithdraw"
+              class="glass-action-btn glass-action-green text-white px-5 py-3 fs-3 font-bold cursor-pointer"
+              :disabled="!canWithdraw || loading"
               @click="handleWithdraw"
             >
-              Request Withdrawal
+              {{ loading ? 'Processing...' : 'Request Withdrawal' }}
             </button>
           </div>
         </a-space>
@@ -98,33 +60,25 @@ import { apiLink } from '@/utils/api-link.js';
 
 // ✅ state
 const availableBalance = ref(0);
-const currency = ref('¥');
+const pendingRefundBalance = ref(0);
 const withdrawalAmount = ref(null);
-const withdrawalMethod = ref('bank_transfer');
-const accountNumber = ref('');
-const accountName = ref('');
-const bankName = ref('');
 const loading = ref(false);
 
 // ✅ constants
-const withdrawalMethods = [
-  { value: 'bank_transfer', label: 'Bank Transfer', icon: '🏦' },
-  { value: 'crypto', label: 'Cryptocurrency', icon: '₿' },
-  { value: 'e_wallet', label: 'E-Wallet', icon: '📱' },
-];
+const MIN_WITHDRAW_AMOUNT = 1;
 
 const canWithdraw = computed(() => {
   return withdrawalAmount.value &&
-         withdrawalAmount.value >= 10000 &&
-         withdrawalAmount.value <= availableBalance.value &&
-         withdrawalMethod.value &&
-         accountNumber.value &&
-         accountName.value;
+         withdrawalAmount.value >= MIN_WITHDRAW_AMOUNT &&
+         withdrawalAmount.value <= availableBalance.value;
 });
 
 // ✅ methods
 const setPercentAmount = (percent) => {
-  withdrawalAmount.value = Math.floor((availableBalance.value * percent) / 100);
+  withdrawalAmount.value = Math.max(
+    MIN_WITHDRAW_AMOUNT,
+    Math.floor((availableBalance.value * percent) / 100)
+  );
 };
 
 const handleWithdraw = async () => {
@@ -134,22 +88,19 @@ const handleWithdraw = async () => {
 
   loading.value = true;
   try {
-    // TODO: Replace with actual API endpoint when available
-    const result = await postData(apiLink.withdraw || 'customer/fund/withdraw', {
+    const result = await postData(apiLink.withdraw, {
       amount: withdrawalAmount.value,
-      withdrawal_method: withdrawalMethod.value,
-      account_number: accountNumber.value,
-      account_name: accountName.value,
-      bank_name: bankName.value,
     });
 
     if (result.status) {
-      message.success('Withdrawal request submitted successfully!');
+      message.success(result.message || 'Withdrawal request submitted and awaiting approval.');
       withdrawalAmount.value = null;
-      accountNumber.value = '';
-      accountName.value = '';
-      bankName.value = '';
-      fetchBalance();
+      if (result.data) {
+        availableBalance.value = result.data.balance ?? availableBalance.value;
+        pendingRefundBalance.value = result.data.pending_refund_balance ?? pendingRefundBalance.value;
+      } else {
+        fetchBalance();
+      }
     } else {
       message.error(result.message || 'Failed to process withdrawal');
     }
@@ -166,20 +117,24 @@ const fetchBalance = async () => {
     const result = await getData(apiLink.get_betting_info);
     if (result.status && result.data) {
       // Check if user data exists in response
-      if (result.data.user && typeof result.data.user.own_money !== 'undefined') {
-        availableBalance.value = result.data.user.own_money || 0;
-        currency.value = result.data.user.currency || '¥';
+      if (result.data.user) {
+        const userData = result.data.user;
+        availableBalance.value = userData.current_balance || 0;
+        pendingRefundBalance.value = userData.pending_refund_balance ?? 0;
       } else {
         console.warn('User balance not found in API response:', result.data);
         availableBalance.value = 0;
+        pendingRefundBalance.value = 0;
       }
     } else {
       console.error('Failed to fetch balance:', result.message);
       availableBalance.value = 0;
+      pendingRefundBalance.value = 0;
     }
   } catch (error) {
     console.error('Error fetching balance:', error);
     availableBalance.value = 0;
+    pendingRefundBalance.value = 0;
   }
 };
 
@@ -219,6 +174,13 @@ onMounted(() => {
   margin-bottom: 10px;
 }
 
+.pending-amount {
+  color: var(--white-color);
+  font-size: 16px;
+  opacity: 0.8;
+  margin-bottom: 6px;
+}
+
 .balance-note {
   color: var(--white-color);
   font-size: 14px;
@@ -254,43 +216,6 @@ onMounted(() => {
   background: var(--glass-blue-light);
   border-color: var(--glass-blue-border);
   transform: translateY(-2px);
-}
-
-.withdrawal-method-btn {
-  height: 60px;
-  border-radius: 12px;
-}
-
-.payment-method-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  font-size: 16px;
-}
-
-.payment-icon {
-  font-size: 24px;
-}
-
-:deep(.ant-radio-button-wrapper) {
-  background: var(--glass-bg);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
-  border: 2px solid var(--glass-border) !important;
-  color: var(--white-color);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-:deep(.ant-radio-button-wrapper:hover) {
-  background: var(--glass-bg-light);
-  border-color: var(--glass-blue-border) !important;
-}
-
-:deep(.ant-radio-button-wrapper-checked) {
-  background: var(--glass-blue) !important;
-  border-color: var(--glass-blue-border) !important;
-  box-shadow: 0 0 15px rgba(99, 102, 241, 0.3) !important;
 }
 
 :deep(.ant-input),

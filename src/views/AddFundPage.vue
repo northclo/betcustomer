@@ -6,7 +6,10 @@
           <!-- Balance Display -->
           <div class="balance-display">
             <div class="balance-label">Current Balance</div>
-            <div class="balance-amount">{{ balance.toLocaleString() }} {{ currency }}</div>
+            <div class="balance-amount">{{ balance.toLocaleString() }} $</div>
+            <div class="pending-amount" v-if="pendingAddBalance > 0">
+              Pending Approval: {{ pendingAddBalance.toLocaleString() }} $
+            </div>
           </div>
 
           <!-- Amount Selection -->
@@ -34,9 +37,9 @@
             <div class="section-title">Or Enter Custom Amount</div>
             <a-input-number
               v-model:value="customAmount"
-              :min="1000"
+              :min="1"
               :max="10000000"
-              :step="1000"
+              :step="1"
               class="w-100 mt-3"
               placeholder="Enter amount"
               size="large"
@@ -44,31 +47,14 @@
             />
           </div>
 
-          <!-- Payment Method -->
-          <div>
-            <div class="section-title">Payment Method</div>
-            <a-radio-group v-model:value="paymentMethod" class="w-100 mt-3">
-              <a-row :gutter="[16, 16]">
-                <a-col :xs="24" :sm="12" v-for="method in paymentMethods" :key="method.value">
-                  <a-radio-button :value="method.value" class="payment-method-btn w-100 flex items-center justify-center">
-                    <div class="payment-method-content">
-                      <span class="payment-icon">{{ method.icon }}</span>
-                      <span>{{ method.label }}</span>
-                    </div>
-                  </a-radio-button>
-                </a-col>
-              </a-row>
-            </a-radio-group>
-          </div>
-
           <!-- Action Button -->
           <div class="text-center">
             <button
-              class="glass-action-btn glass-action-green px-5 py-3 fs-3 font-bold cursor-pointer"
-              :disabled="!canProceed"
+              class="glass-action-btn glass-action-green text-white px-5 py-3 fs-3 font-bold cursor-pointer"
+              :disabled="!canProceed || loading"
               @click="handleAddFund"
             >
-              Add Funds
+              {{ loading ? 'Processing...' : 'Add Funds' }}
             </button>
           </div>
         </a-space>
@@ -85,50 +71,42 @@ import { apiLink } from '@/utils/api-link.js';
 
 // ✅ state
 const balance = ref(0);
-const currency = ref('¥');
+const pendingAddBalance = ref(0);
 const selectedAmount = ref(null);
 const customAmount = ref(null);
-const paymentMethod = ref('bank_transfer');
 const loading = ref(false);
 
 // ✅ constants
-const quickAmounts = [10000, 50000, 100000, 200000, 500000, 1000000];
-const paymentMethods = [
-  { value: 'bank_transfer', label: 'Bank Transfer', icon: '🏦' },
-  { value: 'credit_card', label: 'Credit Card', icon: '💳' },
-  { value: 'crypto', label: 'Cryptocurrency', icon: '₿' },
-  { value: 'e_wallet', label: 'E-Wallet', icon: '📱' },
-];
-
+const quickAmounts = [1, 10, 20, 50, 100, 200];
 const canProceed = computed(() => {
-  return (selectedAmount.value || customAmount.value) && paymentMethod.value;
+  return Boolean(selectedAmount.value || customAmount.value);
 });
 
 // ✅ methods
 const handleCustomAmountChange = (value) => {
-  if (value) {
-    selectedAmount.value = null;
-    customAmount.value = value;
+  if (!value) {
+    customAmount.value = null;
+    return;
   }
+  selectedAmount.value = null;
+  customAmount.value = value;
 };
 
 const handleAddFund = async () => {
   const amount = selectedAmount.value || customAmount.value;
   
-  if (!amount || amount < 1000) {
-    return message.error('Minimum amount is 1,000');
+  if (!amount || amount < 1) {
+    return message.error('Minimum amount is 1');
   }
 
   loading.value = true;
   try {
-    // TODO: Replace with actual API endpoint when available
-    const result = await postData(apiLink.add_fund || 'customer/fund/add', {
+    const result = await postData(apiLink.add_fund, {
       amount: amount,
-      payment_method: paymentMethod.value,
     });
 
     if (result.status) {
-      message.success('Fund request submitted successfully!');
+      message.success(result.message || 'Fund request submitted and awaiting approval.');
       selectedAmount.value = null;
       customAmount.value = null;
       fetchBalance();
@@ -147,21 +125,26 @@ const fetchBalance = async () => {
   try {
     const result = await getData(apiLink.get_betting_info);
     if (result.status && result.data) {
-      // Check if user data exists in response
-      if (result.data.user && typeof result.data.user.own_money !== 'undefined') {
-        balance.value = result.data.user.own_money || 0;
-        currency.value = result.data.user.currency || '¥';
+      const userData = result.data.user || {};
+      const latestBalance = userData.current_balance || 0;
+
+      if (typeof latestBalance !== 'undefined') {
+        balance.value = latestBalance || 0;
+        pendingAddBalance.value = userData.pending_addfund_balance ?? 0;
       } else {
         console.warn('User balance not found in API response:', result.data);
         balance.value = 0;
+        pendingAddBalance.value = 0;
       }
     } else {
       console.error('Failed to fetch balance:', result.message);
       balance.value = 0;
+      pendingAddBalance.value = 0;
     }
   } catch (error) {
     console.error('Error fetching balance:', error);
     balance.value = 0;
+    pendingAddBalance.value = 0;
   }
 };
 
@@ -198,6 +181,13 @@ onMounted(() => {
   color: var(--white-color);
   font-size: 36px;
   font-weight: 700;
+}
+
+.pending-amount {
+  margin-top: 8px;
+  color: var(--white-color);
+  font-size: 16px;
+  opacity: 0.8;
 }
 
 .section-title {
