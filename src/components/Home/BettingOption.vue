@@ -29,10 +29,10 @@
     </div>
 
     <div v-if="numberSort.length !== 0">
-      <div class="glass-label radius-top-2 text-white w-fit ms-5 p-2">
+      <div class="glass-label radius-top-2 text-white w-fit mb-2 p-2">
         {{ trlang.number_sort }}
       </div>
-      <a-flex class="glass-card p-4" justify="center" gap="middle">
+      <a-flex class="glass-card py-2 px-2 md:p-4" justify="center" gap="middle">
         <a-input
           v-for="index in numberSort.length"
           :key="index"
@@ -307,6 +307,8 @@ const startBetting = async () => {
         : `Betting window has closed. ${Math.ceil((90 - remainTime) / 60)} minute(s) have passed.`;
     return message.error(timeMsg);
   }
+
+  console.log(numberSort.value)
 
   if (!bettingAmount.value || !bettingRate.value)
     return message.error(trlang.value.you_should_set_betting_amount_and_type);
