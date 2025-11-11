@@ -16,7 +16,7 @@
           :aria-expanded="isMobileMenuOpen"
           aria-controls="main-header-drawer"
         >
-          <span class="sr-only">Toggle navigation</span>
+          <span class="sr-only">{{ trlang.toggle_navigation }}</span>
           <span class="mobile-menu-toggle__bar"></span>
           <span class="mobile-menu-toggle__bar"></span>
           <span class="mobile-menu-toggle__bar"></span>
@@ -83,7 +83,7 @@
         :open="isMobileMenuOpen"
         placement="left"
         :width="drawerWidth"
-        :title="'Menu'"
+        :title="trlang.menu"
         @close="closeMobileMenu"
         :maskClosable="true"
         :destroyOnClose="true"

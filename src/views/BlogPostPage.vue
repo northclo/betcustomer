@@ -4,7 +4,7 @@
       <a-card class="blog-card" :bordered="false">
         <div class="card-header">
           <div>
-            <h1 class="card-title">Blog Posts</h1>
+            <h1 class="card-title">{{ trlang.blog_posts }}</h1>
           </div>
           <a-space align="center">
             <a-select
@@ -30,7 +30,7 @@
               </template>
             </a-select>
             <a-button class="glass-primary-btn" type="primary" @click="openCreateModal">
-              New Post
+              {{ trlang.new_post }}
             </a-button>
           </a-space>
         </div>
@@ -64,10 +64,10 @@
             <template v-else-if="column.key === 'action'">
               <a-space>
                 <a-button type="link" @click.stop="openEditModal(record)">
-                  Edit
+                  {{ trlang.edit }}
                 </a-button>
                 <a-button type="link" danger @click.stop="confirmDelete(record)">
-                  Delete
+                  {{ trlang.delete }}
                 </a-button>
               </a-space>
             </template>
@@ -88,47 +88,47 @@
   >
     <div class="blog-modal__header">
       <div class="blog-modal__badge">
-        <span>{{ isEdit ? 'Edit Post' : 'New Post' }}</span>
+        <span>{{ isEdit ? trlang.edit_post : trlang.new_post }}</span>
       </div>
         <div class="blog-modal__heading">
-          <h2>{{ isEdit ? 'Update Blog Post' : 'Create Blog Post' }}</h2>
+          <h2>{{ isEdit ? trlang.update_blog_post : trlang.create_blog_post }}</h2>
           <p class="blog-modal__subtitle">
             {{
               isEdit
-                ? 'Make quick changes and keep your audience up to date.'
-                : 'Craft a new story and share it with your players.'
+                ? trlang.blog_edit_subtitle
+                : trlang.blog_create_subtitle
             }}
           </p>
         </div>
       </div>
 
     <a-form layout="vertical" class="blog-modal__form">
-      <a-form-item label="Title" required>
+      <a-form-item :label="trlang.title" required>
         <a-input
           v-model:value="formState.title"
-          placeholder="Enter a descriptive title"
+          :placeholder="trlang.enter_descriptive_title"
           :disabled="submitting"
           size="large"
         />
       </a-form-item>
 
-      <a-form-item label="Description" required>
+      <a-form-item :label="trlang.description" required>
         <a-textarea
           v-model:value="formState.description"
           :auto-size="{ minRows: 4, maxRows: 8 }"
-          placeholder="Write your post content"
+          :placeholder="trlang.write_post_content"
           :disabled="submitting"
         />
       </a-form-item>
 
-      <a-form-item label="Image URL">
+      <a-form-item :label="trlang.image_url">
         <a-input
           v-model:value="formState.image"
-          placeholder="https://example.com/cover.jpg"
+          :placeholder="trlang.image_url_placeholder"
           :disabled="submitting"
         />
       </a-form-item>
-      <a-form-item label="Category" required>
+      <a-form-item :label="trlang.category" required>
         <a-select
           v-model:value="formState.category"
           :options="categoryOptions"
@@ -145,7 +145,7 @@
 
     <div class="blog-modal__footer">
       <a-button class="blog-modal__btn blog-modal__btn--ghost" @click="handleModalCancel" :disabled="submitting">
-        Cancel
+        {{ trlang.cancel }}
       </a-button>
       <a-button
         class="blog-modal__btn blog-modal__btn--primary"
@@ -153,18 +153,36 @@
         @click="handleSubmit"
         :loading="submitting"
       >
-        {{ isEdit ? 'Save Changes' : 'Create Post' }}
+        {{ isEdit ? trlang.save_changes : trlang.create_post }}
       </a-button>
     </div>
   </a-modal>
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
 import { message, Modal } from 'ant-design-vue';
 
 import { deleteData, getData, postData, putData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link.js';
+
+// ✅ i18n
+const langState = inject('langState');
+const trlang = computed(() => langState?.translations || {});
+
+const getTranslation = (key) =>
+  trlang.value?.[key] ?? key;
+
+const formatTranslation = (key, params = {}) => {
+  let template = getTranslation(key);
+  Object.entries(params).forEach(([paramKey, paramValue]) => {
+    template = template.replace(
+      new RegExp(`{${paramKey}}`, 'g'),
+      String(paramValue)
+    );
+  });
+  return template;
+};
 
 const posts = ref([]);
 const pagination = reactive({
@@ -195,36 +213,36 @@ const formState = reactive({
   status: 'draft',
 });
 
-const statusOptions = [
-  { label: 'Draft', value: 'draft' },
-  { label: 'Published', value: 'published' },
-  { label: 'Archived', value: 'archived' },
-];
+const statusOptions = computed(() => [
+  { label: getTranslation('status_draft'), value: 'draft' },
+  { label: getTranslation('status_published'), value: 'published' },
+  { label: getTranslation('status_archived'), value: 'archived' },
+]);
 
-const categoryOptions = [
-  { label: 'General', value: 'General' },
-  { label: 'Announcements', value: 'Announcements' },
-  { label: 'Events', value: 'Events' },
-  { label: 'Tips', value: 'Tips' },
-  { label: 'Updates', value: 'Updates' },
-];
+const categoryOptions = computed(() => [
+  { label: getTranslation('category_general'), value: 'General' },
+  { label: getTranslation('category_announcements'), value: 'Announcements' },
+  { label: getTranslation('category_events'), value: 'Events' },
+  { label: getTranslation('category_tips'), value: 'Tips' },
+  { label: getTranslation('category_updates'), value: 'Updates' },
+]);
 
-const statusFilterOptions = [
-  { label: 'All statuses', value: 'all' },
-  ...statusOptions,
-];
+const statusFilterOptions = computed(() => [
+  { label: getTranslation('filter_all_statuses'), value: 'all' },
+  ...statusOptions.value,
+]);
 
-const categoryFilterOptions = [
-  { label: 'All categories', value: 'all' },
-  ...categoryOptions,
-];
+const categoryFilterOptions = computed(() => [
+  { label: getTranslation('filter_all_categories'), value: 'all' },
+  ...categoryOptions.value,
+]);
 
-const columns = [
-  { title: 'Title', dataIndex: 'title', key: 'title' },
-  { title: 'Category', dataIndex: 'category', key: 'category' },
-  { title: 'Status', dataIndex: 'status', key: 'status' },
-  { title: 'Actions', key: 'action' },
-];
+const columns = computed(() => [
+  { title: getTranslation('title'), dataIndex: 'title', key: 'title' },
+  { title: getTranslation('category'), dataIndex: 'category', key: 'category' },
+  { title: getTranslation('status'), dataIndex: 'status', key: 'status' },
+  { title: getTranslation('actions'), key: 'action' },
+]);
 
 const decodeJwtPayload = () => {
   if (typeof window === 'undefined') {
@@ -266,12 +284,14 @@ const statusColor = (status) => {
   }
 };
 
-const formatStatus = (status) => {
-  if (!status) {
-    return 'Unknown';
-  }
-  return status.charAt(0).toUpperCase() + status.slice(1);
-};
+const statusLabels = computed(() => ({
+  draft: getTranslation('status_draft'),
+  published: getTranslation('status_published'),
+  archived: getTranslation('status_archived'),
+}));
+
+const formatStatus = (status) =>
+  statusLabels.value[status] || getTranslation('status_unknown');
 
 const resetForm = () => {
   formState._id = null;
@@ -428,7 +448,7 @@ const handleSubmit = async () => {
   const payload = buildPayload();
 
   if (!payload) {
-    message.error('Please provide a title and description.');
+    message.error(getTranslation('please_provide_title_description'));
     return;
   }
 
@@ -443,7 +463,10 @@ const handleSubmit = async () => {
     }
 
     if (result.status) {
-      message.success(result.message || 'Changes saved successfully.');
+      message.success(
+        result.message ||
+          getTranslation('changes_saved_successfully')
+      );
       modalVisible.value = false;
       resetForm();
       if (modalMode.value === 'create') {
@@ -458,11 +481,13 @@ const handleSubmit = async () => {
 
 const confirmDelete = (record) => {
   Modal.confirm({
-    title: 'Delete blog post',
-    content: `Are you sure you want to delete "${record.title}"?`,
-    okText: 'Delete',
+    title: getTranslation('delete_blog_post'),
+    content: formatTranslation('confirm_delete_blog_post', {
+      title: record.title,
+    }),
+    okText: getTranslation('delete'),
     okType: 'danger',
-    cancelText: 'Cancel',
+    cancelText: getTranslation('cancel'),
     onOk: () => handleDelete(record._id),
   });
 };
@@ -471,7 +496,9 @@ const handleDelete = async (postId) => {
   const result = await deleteData(apiLink.delete_blog_post(postId));
 
   if (result.status) {
-    message.success(result.message || 'Blog post deleted.');
+    message.success(
+      result.message || getTranslation('blog_post_deleted')
+    );
     if (posts.value.length <= 1 && pagination.page > 1) {
       pagination.page = Math.max(1, pagination.page - 1);
     }

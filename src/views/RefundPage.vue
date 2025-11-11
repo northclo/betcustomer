@@ -1,27 +1,30 @@
 <template>
   <div class="refund-page">
     <div class="bg-primary-light radius-2 p-5 mt-5">
-      <a-card title="Withdraw Funds" class="game-result-card">
+      <a-card :title="trlang.withdraw_funds" class="game-result-card">
         <a-space direction="vertical" size="large" class="w-100">
           <!-- Balance Display -->
           <div class="balance-display">
-            <div class="balance-label">Available Balance</div>
-            <div class="balance-amount">{{ availableBalance.toLocaleString() }} $</div>
+            <div class="balance-label">{{ trlang.available_balance }}</div>
+            <div class="balance-amount">
+              {{ availableBalance.toLocaleString() }} {{ trlang.currency }}
+            </div>
             <div class="pending-amount" v-if="pendingRefundBalance > 0">
-              Pending Approval: {{ pendingRefundBalance.toLocaleString() }} $
+              {{ trlang.pending_approval }}:
+              {{ pendingRefundBalance.toLocaleString() }} {{ trlang.currency }}
             </div>
           </div>
 
           <!-- Withdrawal Amount -->
           <div>
-            <div class="section-title">Withdrawal Amount</div>
+            <div class="section-title">{{ trlang.withdrawal_amount }}</div>
             <a-input-number
               v-model:value="withdrawalAmount"
               :min="1"
               :max="availableBalance"
               :step="1"
               class="w-100 mt-3"
-              placeholder="Enter withdrawal amount"
+              :placeholder="trlang.enter_withdrawal_amount"
               size="large"
             />
             <div class="amount-options mt-3">
@@ -43,7 +46,7 @@
               :disabled="!canWithdraw || loading"
               @click="handleWithdraw"
             >
-              {{ loading ? 'Processing...' : 'Request Withdrawal' }}
+              {{ loading ? trlang.processing : trlang.request_withdrawal }}
             </button>
           </div>
         </a-space>
@@ -53,10 +56,17 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, inject } from 'vue';
 import { message } from 'ant-design-vue';
 import { getData, postData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link.js';
+
+// ✅ i18n
+const langState = inject('langState');
+const trlang = computed(() => langState?.translations || {});
+
+const getTranslation = (key) =>
+  trlang.value?.[key] ?? key;
 
 // ✅ state
 const availableBalance = ref(0);
@@ -83,7 +93,7 @@ const setPercentAmount = (percent) => {
 
 const handleWithdraw = async () => {
   if (!canWithdraw.value) {
-    return message.error('Please fill all required fields');
+    return message.error(getTranslation('please_fill_required_fields'));
   }
 
   loading.value = true;
@@ -93,7 +103,10 @@ const handleWithdraw = async () => {
     });
 
     if (result.status) {
-      message.success(result.message || 'Withdrawal request submitted and awaiting approval.');
+      message.success(
+        result.message ||
+          getTranslation('withdrawal_request_submitted')
+      );
       withdrawalAmount.value = null;
       if (result.data) {
         availableBalance.value = result.data.balance ?? availableBalance.value;
@@ -102,11 +115,16 @@ const handleWithdraw = async () => {
         fetchBalance();
       }
     } else {
-      message.error(result.message || 'Failed to process withdrawal');
+      message.error(
+        result.message ||
+          getTranslation('failed_to_process_withdrawal')
+      );
     }
   } catch (error) {
     console.error('Error processing withdrawal:', error);
-    message.error('An error occurred. Please try again.');
+    message.error(
+      getTranslation('unexpected_error_try_again')
+    );
   } finally {
     loading.value = false;
   }

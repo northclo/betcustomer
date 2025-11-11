@@ -138,6 +138,20 @@ import { apiLink } from '../../utils/api-link';
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
 
+const getTranslation = (key) =>
+  trlang.value?.[key] ?? key;
+
+const formatTranslation = (key, params = {}) => {
+  let template = getTranslation(key);
+  Object.entries(params).forEach(([paramKey, paramValue]) => {
+    template = template.replace(
+      new RegExp(`{${paramKey}}`, 'g'),
+      String(paramValue)
+    );
+  });
+  return template;
+};
+
 // ✅ constants
 const BET_AMOUNTS = [10000, 20000, 50000, 100000];
 
@@ -259,11 +273,11 @@ const fetchData = async () => {
       ];
     } else {
       console.error('Failed to fetch betting options:', result);
-      message.error('Failed to load betting options');
+      message.error(getTranslation('failed_to_load_betting_options'));
     }
   } catch (error) {
     console.error('Error fetching betting options:', error);
-    message.error('Error loading betting options');
+    message.error(getTranslation('error_loading_betting_options'));
   } finally {
     loading.value = false;
   }
@@ -300,15 +314,18 @@ const startBetting = async () => {
   // After 1.5 mins (90s) - block betting
   const remainTime = props.bettingRemainTime || 0;
   if (remainTime < 90 || remainTime > 180) {
-    const timeMsg = remainTime === 0 
-      ? 'No active game. Please wait for the next game to start.'
-      : remainTime > 180
-        ? `Betting is not available yet. Please wait ${Math.ceil((remainTime - 180) / 60)} minute(s).`
-        : `Betting window has closed. ${Math.ceil((90 - remainTime) / 60)} minute(s) have passed.`;
+    const timeMsg =
+      remainTime === 0
+        ? getTranslation('no_active_game')
+        : remainTime > 180
+          ? formatTranslation('betting_not_available_yet', {
+              minutes: Math.ceil((remainTime - 180) / 60),
+            })
+          : formatTranslation('betting_window_closed', {
+              minutes: Math.ceil((90 - remainTime) / 60),
+            });
     return message.error(timeMsg);
   }
-
-  console.log(numberSort.value)
 
   if (!bettingAmount.value || !bettingRate.value)
     return message.error(trlang.value.you_should_set_betting_amount_and_type);

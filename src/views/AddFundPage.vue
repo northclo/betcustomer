@@ -1,20 +1,23 @@
 <template>
   <div class="add-fund-page">
     <div class="bg-primary-light radius-2 p-5 mt-5">
-      <a-card title="Add Funds" class="game-result-card">
+      <a-card :title="trlang.add_funds" class="game-result-card">
         <a-space direction="vertical" size="large" class="w-100">
           <!-- Balance Display -->
           <div class="balance-display">
-            <div class="balance-label">Current Balance</div>
-            <div class="balance-amount">{{ balance.toLocaleString() }} $</div>
+            <div class="balance-label">{{ trlang.current_balance }}</div>
+            <div class="balance-amount">
+              {{ balance.toLocaleString() }} {{ trlang.currency }}
+            </div>
             <div class="pending-amount" v-if="pendingAddBalance > 0">
-              Pending Approval: {{ pendingAddBalance.toLocaleString() }} $
+              {{ trlang.pending_approval }}:
+              {{ pendingAddBalance.toLocaleString() }} {{ trlang.currency }}
             </div>
           </div>
 
           <!-- Amount Selection -->
           <div>
-            <div class="section-title">Select Amount</div>
+            <div class="section-title">{{ trlang.select_amount }}</div>
             <a-row :gutter="[16, 16]" class="mt-3">
               <a-col
                 v-for="amount in quickAmounts"
@@ -34,14 +37,14 @@
 
           <!-- Custom Amount Input -->
           <div>
-            <div class="section-title">Or Enter Custom Amount</div>
+            <div class="section-title">{{ trlang.enter_custom_amount }}</div>
             <a-input-number
               v-model:value="customAmount"
               :min="1"
               :max="10000000"
               :step="1"
               class="w-100 mt-3"
-              placeholder="Enter amount"
+              :placeholder="trlang.enter_amount"
               size="large"
               @change="handleCustomAmountChange"
             />
@@ -54,7 +57,7 @@
               :disabled="!canProceed || loading"
               @click="handleAddFund"
             >
-              {{ loading ? 'Processing...' : 'Add Funds' }}
+              {{ loading ? trlang.processing : trlang.add_funds }}
             </button>
           </div>
         </a-space>
@@ -64,10 +67,28 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, inject } from 'vue';
 import { message } from 'ant-design-vue';
 import { getData, postData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link.js';
+
+// ✅ i18n
+const langState = inject('langState');
+const trlang = computed(() => langState?.translations || {});
+
+const getTranslation = (key) =>
+  trlang.value?.[key] ?? key;
+
+const formatTranslation = (key, params = {}) => {
+  let template = getTranslation(key);
+  Object.entries(params).forEach(([paramKey, paramValue]) => {
+    template = template.replace(
+      new RegExp(`{${paramKey}}`, 'g'),
+      String(paramValue)
+    );
+  });
+  return template;
+};
 
 // ✅ state
 const balance = ref(0);
@@ -77,6 +98,7 @@ const customAmount = ref(null);
 const loading = ref(false);
 
 // ✅ constants
+const MIN_ADD_AMOUNT = 1;
 const quickAmounts = [1, 10, 20, 50, 100, 200];
 const canProceed = computed(() => {
   return Boolean(selectedAmount.value || customAmount.value);
@@ -95,8 +117,10 @@ const handleCustomAmountChange = (value) => {
 const handleAddFund = async () => {
   const amount = selectedAmount.value || customAmount.value;
   
-  if (!amount || amount < 1) {
-    return message.error('Minimum amount is 1');
+  if (!amount || amount < MIN_ADD_AMOUNT) {
+    return message.error(
+      formatTranslation('minimum_amount_is', { amount: MIN_ADD_AMOUNT })
+    );
   }
 
   loading.value = true;
@@ -106,16 +130,22 @@ const handleAddFund = async () => {
     });
 
     if (result.status) {
-      message.success(result.message || 'Fund request submitted and awaiting approval.');
+      message.success(
+        result.message || getTranslation('fund_request_submitted')
+      );
       selectedAmount.value = null;
       customAmount.value = null;
       fetchBalance();
     } else {
-      message.error(result.message || 'Failed to add funds');
+      message.error(
+        result.message || getTranslation('failed_to_add_funds')
+      );
     }
   } catch (error) {
     console.error('Error adding funds:', error);
-    message.error('An error occurred. Please try again.');
+    message.error(
+      getTranslation('unexpected_error_try_again')
+    );
   } finally {
     loading.value = false;
   }

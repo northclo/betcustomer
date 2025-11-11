@@ -1,6 +1,6 @@
 <template>
   <div class="bg-primary-light radius-1 p-5 mt-5">
-    <a-card title="Betting History" class="game-result-card">
+    <a-card :title="trlang.recent_betting_history" class="game-result-card">
       <a-table
         :columns="columns"
         :data-source="bettingHistory"
@@ -34,7 +34,7 @@
           </template>
           <template v-else-if="column.key === 'win'">
             <a-tag :color="record.win ? 'success' : 'default'">
-              {{ record.win ? 'Win' : 'Lose' }}
+              {{ record.win ? trlang.win : trlang.lose }}
             </a-tag>
           </template>
           <template v-else-if="column.key === 'earning_amount'">
@@ -60,6 +60,20 @@ import { apiLink } from '@/utils/api-link.js';
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
 
+const getTranslation = (key) =>
+  trlang.value?.[key] ?? key;
+
+const formatTranslation = (key, params = {}) => {
+  let template = getTranslation(key);
+  Object.entries(params).forEach(([paramKey, paramValue]) => {
+    template = template.replace(
+      new RegExp(`{${paramKey}}`, 'g'),
+      String(paramValue)
+    );
+  });
+  return template;
+};
+
 // ✅ state
 const bettingHistory = ref([]);
 const loading = ref(false);
@@ -68,20 +82,21 @@ const pagination = ref({
   pageSize: 10,
   total: 0,
   showSizeChanger: true,
-  showTotal: (total) => `Total ${total} bets`,
+  showTotal: (total) =>
+    formatTranslation('bet_history_total', { total }),
 });
 
 // ✅ columns
 const columns = computed(() => [
   { 
     key: 'id', 
-    title: 'ID', 
+    title: getTranslation('id'), 
     dataIndex: 'id',
     width: 80,
   },
   { 
     key: 'game_id', 
-    title: 'Game ID', 
+    title: getTranslation('game_id'), 
     dataIndex: 'game_id',
     width: 150,
   },
@@ -99,7 +114,7 @@ const columns = computed(() => [
   },
   { 
     key: 'win', 
-    title: 'Result', 
+    title: getTranslation('result'), 
     dataIndex: 'win',
     width: 100,
   },
@@ -111,7 +126,7 @@ const columns = computed(() => [
   },
   { 
     key: 'createdAt', 
-    title: 'Date', 
+    title: getTranslation('date'), 
     dataIndex: 'createdAt',
     width: 180,
   },

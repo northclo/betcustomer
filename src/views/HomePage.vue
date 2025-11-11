@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount, ref } from 'vue';
+import { computed, inject, onMounted, onBeforeUnmount, ref } from 'vue';
 import BannerCard from '@/components/Headers/BannerCard.vue';
 import BettingOption from '@/components/Home/BettingOption.vue';
 import BettingProgress from '@/components/Home/BettingProgress.vue';
@@ -48,6 +48,24 @@ import { getData, postData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link';
 import { socket } from '@/plugins/socket.js';
 import { message } from 'ant-design-vue';
+
+// ✅ i18n
+const langState = inject('langState');
+const trlang = computed(() => langState?.translations || {});
+
+const getTranslation = (key) =>
+  trlang.value?.[key] ?? key;
+
+const formatTranslation = (key, params = {}) => {
+  let template = getTranslation(key);
+  Object.entries(params).forEach(([paramKey, paramValue]) => {
+    template = template.replace(
+      new RegExp(`{${paramKey}}`, 'g'),
+      String(paramValue)
+    );
+  });
+  return template;
+};
 
 // ✅ state
 const gameId = ref('');
@@ -127,7 +145,7 @@ const startBetting = async (bettingData) => {
 const cancelBetting = async ({ id }) => {
   // Can only cancel during betting window: 3 mins (180s) to 1.5 mins (90s)
   if (remainTime.value < 90 || remainTime.value > 180) {
-    message.error('Cannot cancel betting outside the betting window');
+    message.error(getTranslation('cannot_cancel_betting_outside_window'));
     return;
   }
 
@@ -145,12 +163,16 @@ const previousGame = () => fetchData(previousGameId.value);
 const nextGame = () => fetchData(nextGameId.value);
 
 const handleStartGame = ({ game_id }) => {
-  message.success(`Started new game: ${game_id}`);
+  message.success(
+    formatTranslation('started_new_game', { gameId: game_id })
+  );
   fetchData(game_id);
 };
 
 const handleEndGame = ({ game_id }) => {
-  message.success(`Game ended: ${game_id}`);
+  message.success(
+    formatTranslation('game_ended', { gameId: game_id })
+  );
   fetchData(game_id);
 };
 

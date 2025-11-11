@@ -3,6 +3,7 @@ import { message } from "ant-design-vue";
 import httpStatusCodes from 'http-status-codes'
 import router from '@/Router'
 import { config } from "@/config/index.js";
+import translations from "@/lang/en.js";
 
 /**
  * @summary
@@ -27,7 +28,7 @@ const handleError =
                         status: false,
                     };
                 } else {
-                    message.error("No response from server. Please check your network.");
+                    message.error(translations.no_response_from_server);
                     return {
                         status: false,
                     };
@@ -42,7 +43,7 @@ export const getData = handleError(async (url) => {
         headers: {
             authorization: token
         },
-        timeout: 5000
+        timeout: 20000
     })
 
     return {
@@ -59,7 +60,7 @@ export const postData = handleError(async (url, data = {}) => {
         headers: {
             authorization: token
         },
-        timeout: 5000,
+        timeout: 20000,
     });
 
     return {
@@ -76,7 +77,7 @@ export const putData = handleError(async (url, data = {}) => {
         headers: {
             authorization: token
         },
-        timeout: 5000,
+        timeout: 20000,
     });
 
     return {
@@ -93,7 +94,7 @@ export const deleteData = handleError(async (url) => {
         headers: {
             authorization: token
         },
-        timeout: 5000
+        timeout: 20000
     })
 
     return {

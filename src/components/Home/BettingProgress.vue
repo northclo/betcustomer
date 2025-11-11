@@ -128,7 +128,7 @@ const trlang = computed(() => langState?.translations || {});
 
 // ✅ constants
 const DEFAULT_COLUMNS = (t) => [
-  { key: 'id', title: 'ID', dataIndex: 'id' },
+  { key: 'id', title: t.id, dataIndex: 'id' },
   { key: 'bet_amount', title: t.bet_amount, dataIndex: 'bet_amount' },
   { key: 'bet_info', title: t.bet_info, dataIndex: 'bet_info' },
   { key: 'result', title: t.result, dataIndex: 'result' },
