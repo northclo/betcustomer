@@ -23,9 +23,13 @@
               :min="1"
               :max="availableBalance"
               :step="1"
-              class="w-100 mt-3"
+              :controls="false"
+              class="w-100 mt-3 custom-withdrawal-input"
               :placeholder="trlang.enter_withdrawal_amount"
               size="large"
+              @change="handleWithdrawalAmountChange"
+              @keypress="handleKeyPress"
+              @paste="handlePaste"
             />
             <div class="amount-options mt-3">
               <button
@@ -68,6 +72,17 @@ const trlang = computed(() => langState?.translations || {});
 const getTranslation = (key) =>
   trlang.value?.[key] ?? key;
 
+const formatTranslation = (key, params = {}) => {
+  let template = getTranslation(key);
+  Object.entries(params).forEach(([paramKey, paramValue]) => {
+    template = template.replace(
+      new RegExp(`{${paramKey}}`, 'g'),
+      String(paramValue)
+    );
+  });
+  return template;
+};
+
 // ✅ state
 const availableBalance = ref(0);
 const pendingRefundBalance = ref(0);
@@ -84,6 +99,56 @@ const canWithdraw = computed(() => {
 });
 
 // ✅ methods
+const validateAmount = (amount) => {
+  if (!amount) {
+    return { valid: false, error: formatTranslation('minimum_amount_is', { amount: MIN_WITHDRAW_AMOUNT }) };
+  }
+  
+  const numAmount = Number(amount);
+  if (isNaN(numAmount) || !isFinite(numAmount)) {
+    return { valid: false, error: getTranslation('invalid_amount') };
+  }
+  
+  if (numAmount < MIN_WITHDRAW_AMOUNT) {
+    return { 
+      valid: false, 
+      error: formatTranslation('minimum_amount_is', { amount: MIN_WITHDRAW_AMOUNT }) 
+    };
+  }
+  
+  if (numAmount > availableBalance.value) {
+    return { valid: false, error: getTranslation('insufficient_balance') };
+  }
+  
+  return { valid: true, value: numAmount };
+};
+
+const handleKeyPress = (event) => {
+  const allowedKeys = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
+  
+  if (event.ctrlKey || event.metaKey || allowedKeys.includes(event.key)) {
+    return;
+  }
+  
+  const char = event.key || String.fromCharCode(event.which || event.keyCode);
+  if (!/[\d.]/.test(char)) {
+    event.preventDefault();
+  }
+};
+
+const handlePaste = (event) => {
+  event.preventDefault();
+  const pastedText = (event.clipboardData || window.clipboardData).getData('text');
+  const sanitized = pastedText.replace(/[^\d.]/g, '');
+  if (sanitized) {
+    withdrawalAmount.value = Number(sanitized) || null;
+  }
+};
+
+const handleWithdrawalAmountChange = (value) => {
+  withdrawalAmount.value = value;
+};
+
 const setPercentAmount = (percent) => {
   withdrawalAmount.value = Math.max(
     MIN_WITHDRAW_AMOUNT,
@@ -92,14 +157,16 @@ const setPercentAmount = (percent) => {
 };
 
 const handleWithdraw = async () => {
-  if (!canWithdraw.value) {
-    return message.error(getTranslation('please_fill_required_fields'));
+  const validation = validateAmount(withdrawalAmount.value);
+  
+  if (!validation.valid) {
+    return message.error(validation.error);
   }
 
   loading.value = true;
   try {
     const result = await postData(apiLink.withdraw, {
-      amount: withdrawalAmount.value,
+      amount: validation.value,
     });
 
     if (result.status) {
@@ -247,11 +314,29 @@ onMounted(() => {
   font-size: 16px;
 }
 
+:deep(.ant-input-number input) {
+  color: var(--white-color);
+}
+
+/* Placeholder styling */
+:deep(.ant-input-number input::placeholder) {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
 :deep(.ant-input:focus),
 :deep(.ant-input-number:focus),
 :deep(.ant-input-number-focused) {
   border-color: var(--glass-blue-border);
   box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+}
+
+/* Hide spinner arrows */
+:deep(.ant-input-number-handler-wrap) {
+  display: none !important;
+}
+
+:deep(.ant-input-number-input-wrap) {
+  padding-right: 0 !important;
 }
 
 :deep(.ant-tag) {

@@ -103,3 +103,39 @@ export const deleteData = handleError(async (url) => {
         data: res.data.data,
     };
 })
+
+export const postDataWithFile = handleError(async (url, formData) => {
+    let token = localStorage.getItem('token');
+
+    const res = await axios.post(`${config.baseURL}${url}`, formData, {
+        headers: {
+            authorization: token,
+            'Content-Type': 'multipart/form-data'
+        },
+        timeout: 30000,
+    });
+
+    return {
+        status: true,
+        message: res.data.message,
+        data: res.data.data,
+    };
+});
+
+export const putDataWithFile = handleError(async (url, formData) => {
+    let token = localStorage.getItem('token');
+
+    const res = await axios.put(`${config.baseURL}${url}`, formData, {
+        headers: {
+            authorization: token,
+            'Content-Type': 'multipart/form-data'
+        },
+        timeout: 30000,
+    });
+
+    return {
+        status: true,
+        message: res.data.message,
+        data: res.data.data,
+    };
+});

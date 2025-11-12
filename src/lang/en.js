@@ -106,6 +106,8 @@ export default {
   enter_custom_amount: "Or Enter Custom Amount",
   enter_amount: "Enter amount",
   minimum_amount_is: "Minimum amount is {amount}",
+  invalid_amount: "Please enter a valid amount",
+  amount_must_be_between: "Amount must be between {min} and {max}",
   fund_request_submitted: "Fund request submitted and awaiting approval.",
   failed_to_add_funds: "Failed to add funds",
   withdrawal_request_submitted: "Withdrawal request submitted and awaiting approval.",
@@ -113,6 +115,7 @@ export default {
   please_fill_required_fields: "Please fill all required fields",
   unexpected_error_try_again: "An error occurred. Please try again.",
   no_response_from_server: "No response from server. Please check your network.",
+  insufficient_balance: "Insufficient balance",
 
   // Blog
   blog_posts: "Blog Posts",
@@ -128,8 +131,11 @@ export default {
   description: "Description",
   enter_descriptive_title: "Enter a descriptive title",
   write_post_content: "Write your post content",
+  image: "Image",
   image_url: "Image URL",
   image_url_placeholder: "https://example.com/cover.jpg",
+  upload_image: "Upload Image",
+  remove: "Remove",
   category: "Category",
   save_changes: "Save Changes",
   create_post: "Create Post",
@@ -151,6 +157,9 @@ export default {
   delete_blog_post: "Delete blog post",
   confirm_delete_blog_post: "Are you sure you want to delete \"{title}\"?",
   blog_post_deleted: "Blog post deleted.",
+  delete_warning: "This action cannot be undone. The blog post will be permanently deleted.",
+  please_upload_image_file: "Please upload an image file!",
+  image_must_be_smaller_than_5mb: "Image must be smaller than 5MB!",
 
   // Contact
   contact_us: "Contact Us",

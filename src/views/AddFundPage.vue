@@ -43,10 +43,13 @@
               :min="1"
               :max="10000000"
               :step="1"
+              :controls="false"
               class="w-100 mt-3"
               :placeholder="trlang.enter_amount"
               size="large"
               @change="handleCustomAmountChange"
+              @keypress="handleKeyPress"
+              @paste="handlePaste"
             />
           </div>
 
@@ -105,28 +108,66 @@ const canProceed = computed(() => {
 });
 
 // ✅ methods
-const handleCustomAmountChange = (value) => {
-  if (!value) {
-    customAmount.value = null;
+const validateAmount = (amount) => {
+  if (!amount) {
+    return { valid: false, error: formatTranslation('minimum_amount_is', { amount: MIN_ADD_AMOUNT }) };
+  }
+  
+  const numAmount = Number(amount);
+  if (isNaN(numAmount) || !isFinite(numAmount)) {
+    return { valid: false, error: getTranslation('invalid_amount') };
+  }
+  
+  if (numAmount < MIN_ADD_AMOUNT || numAmount > 10000000) {
+    return { 
+      valid: false, 
+      error: formatTranslation('amount_must_be_between', { min: MIN_ADD_AMOUNT, max: 10000000 }) 
+    };
+  }
+  
+  return { valid: true, value: numAmount };
+};
+
+const handleKeyPress = (event) => {
+  const allowedKeys = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
+  
+  if (event.ctrlKey || event.metaKey || allowedKeys.includes(event.key)) {
     return;
   }
+  
+  const char = event.key || String.fromCharCode(event.which || event.keyCode);
+  if (!/[\d.]/.test(char)) {
+    event.preventDefault();
+  }
+};
+
+const handlePaste = (event) => {
+  event.preventDefault();
+  const pastedText = (event.clipboardData || window.clipboardData).getData('text');
+  const sanitized = pastedText.replace(/[^\d.]/g, '');
+  if (sanitized) {
+    customAmount.value = Number(sanitized) || null;
+    selectedAmount.value = null;
+  }
+};
+
+const handleCustomAmountChange = (value) => {
   selectedAmount.value = null;
   customAmount.value = value;
 };
 
 const handleAddFund = async () => {
   const amount = selectedAmount.value || customAmount.value;
+  const validation = validateAmount(amount);
   
-  if (!amount || amount < MIN_ADD_AMOUNT) {
-    return message.error(
-      formatTranslation('minimum_amount_is', { amount: MIN_ADD_AMOUNT })
-    );
+  if (!validation.valid) {
+    return message.error(validation.error);
   }
 
   loading.value = true;
   try {
     const result = await postData(apiLink.add_fund, {
-      amount: amount,
+      amount: validation.value,
     });
 
     if (result.status) {
@@ -298,10 +339,27 @@ onMounted(() => {
   font-size: 18px;
 }
 
+:deep(.ant-input-number input) {
+  color: var(--white-color);
+}
+
+:deep(.ant-input-number input::placeholder) {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
 :deep(.ant-input-number:focus),
 :deep(.ant-input-number-focused) {
   border-color: var(--glass-blue-border);
   box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+}
+
+/* Hide spinner arrows */
+:deep(.ant-input-number-handler-wrap) {
+  display: none !important;
+}
+
+:deep(.ant-input-number-input-wrap) {
+  padding-right: 0 !important;
 }
 </style>
 

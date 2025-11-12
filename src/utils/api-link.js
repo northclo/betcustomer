@@ -9,6 +9,8 @@ export const apiLink = {
     get_game_result: 'customer/game/result',
     add_fund: 'customer/fund/add',
     withdraw: 'customer/fund/withdraw',
+    get_fund_history: 'customer/fund/history',
+    get_withdrawal_history: 'customer/fund/withdrawal-history',
     blog_posts: 'customer/blog/posts',
     get_blog_posts: 'customer/blog/posts',
     create_blog_post: 'customer/blog/posts',
