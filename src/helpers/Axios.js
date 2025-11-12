@@ -114,6 +114,7 @@ export const postDataWithFile = handleError(async (url, formData) => {
             authorization: token,
             // Content-Type will be automatically set by browser with boundary parameter
         },
+        withCredentials: true, // Required for CORS with credentials
         timeout: 30000,
     });
 
@@ -134,6 +135,7 @@ export const putDataWithFile = handleError(async (url, formData) => {
             authorization: token,
             // Content-Type will be automatically set by browser with boundary parameter
         },
+        withCredentials: true, // Required for CORS with credentials
         timeout: 30000,
     });
 
