@@ -107,10 +107,12 @@ export const deleteData = handleError(async (url) => {
 export const postDataWithFile = handleError(async (url, formData) => {
     let token = localStorage.getItem('token');
 
+    // Don't set Content-Type manually - let the browser set it with boundary for FormData
+    // This is critical for CORS preflight requests to work correctly
     const res = await axios.post(`${config.baseURL}${url}`, formData, {
         headers: {
             authorization: token,
-            'Content-Type': 'multipart/form-data'
+            // Content-Type will be automatically set by browser with boundary parameter
         },
         timeout: 30000,
     });
@@ -125,10 +127,12 @@ export const postDataWithFile = handleError(async (url, formData) => {
 export const putDataWithFile = handleError(async (url, formData) => {
     let token = localStorage.getItem('token');
 
+    // Don't set Content-Type manually - let the browser set it with boundary for FormData
+    // This is critical for CORS preflight requests to work correctly
     const res = await axios.put(`${config.baseURL}${url}`, formData, {
         headers: {
             authorization: token,
-            'Content-Type': 'multipart/form-data'
+            // Content-Type will be automatically set by browser with boundary parameter
         },
         timeout: 30000,
     });
