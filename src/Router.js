@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 
 const HomePage = () => import('./views/HomePage.vue');
 const LoginPage = () => import('./views/LoginPage.vue');
@@ -96,7 +96,7 @@ const isTokenValid = (token) => {
 };
 
 const router = createRouter({
-  history: createWebHashHistory(process.env.BASE_URL),
+  history: createWebHistory(process.env.BASE_URL),
   routes,
   linkActiveClass: 'active'
 });

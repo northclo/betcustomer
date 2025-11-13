@@ -204,7 +204,7 @@ const fetchBalance = async () => {
       // Check if user data exists in response
       if (result.data.user) {
         const userData = result.data.user;
-        availableBalance.value = userData.current_balance || 0;
+        availableBalance.value = userData.own_money || 0;
         pendingRefundBalance.value = userData.pending_refund_balance ?? 0;
       } else {
         console.warn('User balance not found in API response:', result.data);

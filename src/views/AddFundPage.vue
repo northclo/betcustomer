@@ -197,7 +197,7 @@ const fetchBalance = async () => {
     const result = await getData(apiLink.get_betting_info);
     if (result.status && result.data) {
       const userData = result.data.user || {};
-      const latestBalance = userData.current_balance || 0;
+      const latestBalance = userData.own_money || 0;
 
       if (typeof latestBalance !== 'undefined') {
         balance.value = latestBalance || 0;

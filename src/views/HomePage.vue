@@ -97,7 +97,7 @@ const fetchData = async (currentGameId) => {
     remainTime.value = game.remain_time;
     todayNo.value = game.today_no || 0;
     totalNo.value = game.total_no || 0;
-    ownMoney.value = user?.current_balance || 0;
+    ownMoney.value = user?.own_money || 0;
 
     // pending bets
     bettingHistory.value = pendingBet.map((el) => {
