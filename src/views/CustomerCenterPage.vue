@@ -25,9 +25,9 @@
                 <button
                   class="send-message-btn"
                   type="button"
-                  @click="handleSubmitContact"
                   :disabled="!canSubmit"
                   :aria-busy="isSubmitting"
+                  @click="handleSubmitContact"
                 >
                   <span>{{ isSubmitting ? trlang.sending : trlang.send_message }}</span>
                   <span v-if="!isSubmitting" class="btn-icon">→</span>

@@ -93,7 +93,52 @@ const emit = defineEmits(['update:remainTime']);
 const formattedTime = ref('');
 const counterText = ref('00:00');
 let clockInterval = null;
-const remain = ref(props.remainTime);
+const remain = ref(0);
+
+// ✅ Calculate time until next 3-minute interval (betting site logic)
+function calculateTimeToNextInterval() {
+  const now = new Date();
+  
+  // Get Tokyo time components using Intl.DateTimeFormat
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Tokyo',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  });
+  
+  const parts = formatter.formatToParts(now);
+  const minute = parseInt(parts.find(p => p.type === 'minute').value);
+  const second = parseInt(parts.find(p => p.type === 'second').value);
+  
+  // Calculate total seconds elapsed in current hour
+  const totalSecondsInHour = minute * 60 + second;
+  
+  // Find the next 3-minute interval (0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57)
+  const currentInterval = Math.floor(minute / 3) * 3;
+  const nextIntervalMinute = currentInterval + 3;
+  
+  // Calculate seconds until next interval
+  let secondsUntilNext;
+  if (nextIntervalMinute >= 60) {
+    // Next interval is at minute 0 of the next hour (e.g., if current is 57, next is 00 of next hour)
+    const secondsInCurrentHour = 3600 - totalSecondsInHour;
+    secondsUntilNext = secondsInCurrentHour;
+  } else {
+    const nextIntervalSeconds = nextIntervalMinute * 60;
+    secondsUntilNext = nextIntervalSeconds - totalSecondsInHour;
+  }
+  
+  // If we're exactly at an interval mark (secondsUntilNext is 0 or very close), 
+  // the next interval is 3 minutes (180 seconds) away
+  if (secondsUntilNext <= 0) {
+    return 180;
+  }
+  
+  // Ensure we don't exceed 180 seconds (shouldn't happen, but safety check)
+  return Math.min(secondsUntilNext, 180);
+}
 
 // ✅ update Tokyo Time
 function updateTokyoTime() {
@@ -108,30 +153,24 @@ function updateTokyoTime() {
 
 // ✅ update Counter
 function updateCounter() {
-  if (remain.value > 0) {
-    remain.value -= 1;
-    emit('update:remainTime', remain.value);
+  // Recalculate time to next interval based on current time
+  remain.value = calculateTimeToNextInterval();
+  emit('update:remainTime', remain.value);
 
-    const minutes = String(Math.floor(remain.value / 60)).padStart(2, '0');
-    const seconds = String(remain.value % 60).padStart(2, '0');
-    counterText.value = `${minutes}:${seconds}`;
-  }
+  const minutes = String(Math.floor(remain.value / 60)).padStart(2, '0');
+  const seconds = String(remain.value % 60).padStart(2, '0');
+  counterText.value = `${minutes}:${seconds}`;
 }
 
 // ✅ start clock
 function startClock() {
   stopClock();
-  remain.value = props.remainTime;
-
-  // Timer shows for 3 minutes (180 seconds)
-  if (remain.value > 0 && remain.value <= 180 && !props.loading) {
-    const minutes = String(Math.floor(remain.value / 60)).padStart(2, '0');
-    const seconds = String(remain.value % 60).padStart(2, '0');
-    counterText.value = `${minutes}:${seconds}`;
-  } else {
-    counterText.value = '00:00';
-  }
-
+  
+  // Calculate initial time to next 3-minute interval
+  remain.value = calculateTimeToNextInterval();
+  
+  // Update counter display
+  updateCounter();
   updateTokyoTime();
 
   clockInterval = setInterval(() => {

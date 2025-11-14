@@ -5,11 +5,16 @@
         <a-space direction="vertical" size="large" class="w-100">
           <!-- Balance Display -->
           <div class="balance-display">
-            <div class="balance-label">{{ trlang.current_balance }}</div>
+            <div class="balance-label">
+              {{ trlang.current_balance }}
+            </div>
             <div class="balance-amount">
               {{ balance.toLocaleString() }} {{ trlang.currency }}
             </div>
-            <div class="pending-amount" v-if="pendingAddBalance > 0">
+            <div
+              v-if="pendingAddBalance > 0"
+              class="pending-amount"
+            >
               {{ trlang.pending_approval }}:
               {{ pendingAddBalance.toLocaleString() }} {{ trlang.currency }}
             </div>
@@ -17,7 +22,9 @@
 
           <!-- Amount Selection -->
           <div>
-            <div class="section-title">{{ trlang.select_amount }}</div>
+            <div class="section-title">
+              {{ trlang.select_amount }}
+            </div>
             <a-row :gutter="[16, 16]" class="mt-3">
               <a-col
                 v-for="amount in quickAmounts"
@@ -37,7 +44,9 @@
 
           <!-- Custom Amount Input -->
           <div>
-            <div class="section-title">{{ trlang.enter_custom_amount }}</div>
+            <div class="section-title">
+              {{ trlang.enter_custom_amount }}
+            </div>
             <a-input-number
               v-model:value="customAmount"
               :min="1"

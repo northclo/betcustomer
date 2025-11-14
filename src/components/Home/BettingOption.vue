@@ -172,6 +172,18 @@ const loading = ref(false);
 
 const emit = defineEmits(['startBetting']);
 
+// Helper function to normalize rate values from API
+// API may return values as: 193 (representing 1.93%), 1.93 (direct), or 0.0193 (decimal)
+const normalizeRate = (value) => {
+  if (typeof value !== 'number') return value;
+  // If value is > 10, it's likely in format like 193 (representing 1.93%), divide by 100
+  if (value > 10) return value / 100;
+  // If value is < 0.1, it might be in decimal format like 0.0193, multiply by 100
+  if (value < 0.1) return value * 100;
+  // Otherwise, use value directly (already in correct format like 1.93)
+  return value;
+};
+
 const fetchData = async () => {
   loading.value = true;
   try {
@@ -187,26 +199,26 @@ const fetchData = async () => {
             {
               key: 'odd',
               label: trlang.value.odd,
-              rate: result.data.odd / 100,
+              rate: normalizeRate(result.data.odd),
               bgColor: 'success',
               radius: 'radius-left-2',
             },
             {
               key: 'even',
               label: trlang.value.even,
-              rate: result.data.even / 100,
+              rate: normalizeRate(result.data.even),
               bgColor: 'danger',
             },
             {
               key: 'under',
               label: trlang.value.under,
-              rate: result.data.under / 100,
+              rate: normalizeRate(result.data.under),
               bgColor: 'success',
             },
             {
               key: 'over',
               label: trlang.value.over,
-              rate: result.data.over / 100,
+              rate: normalizeRate(result.data.over),
               bgColor: 'danger',
               radius: 'radius-right-2',
             },
@@ -219,26 +231,26 @@ const fetchData = async () => {
             {
               key: 'odd_under',
               label: trlang.value.odd_under,
-              rate: result.data.odd_under / 100,
+              rate: normalizeRate(result.data.odd_under),
               bgColor: 'primary',
               radius: 'radius-left-2',
             },
             {
               key: 'odd_over',
               label: trlang.value.odd_over,
-              rate: result.data.odd_over / 100,
+              rate: normalizeRate(result.data.odd_over),
               bgColor: 'pink',
             },
             {
               key: 'even_under',
               label: trlang.value.even_under,
-              rate: result.data.even_under / 100,
+              rate: normalizeRate(result.data.even_under),
               bgColor: 'primary',
             },
             {
               key: 'even_over',
               label: trlang.value.even_over,
-              rate: result.data.even_over / 100,
+              rate: normalizeRate(result.data.even_over),
               bgColor: 'pink',
               radius: 'radius-right-2',
             },
@@ -251,20 +263,20 @@ const fetchData = async () => {
             {
               key: 'number_13',
               label: trlang.value.number_13,
-              rate: result.data.match_number1 / 100,
+              rate: normalizeRate(result.data.match_number1),
               bgColor: 'danger',
               radius: 'radius-left-2',
             },
             {
               key: 'number_14',
               label: trlang.value.number_14,
-              rate: result.data.match_number2 / 100,
+              rate: normalizeRate(result.data.match_number2),
               bgColor: 'success',
             },
             {
               key: 'number_16',
               label: trlang.value.number_16,
-              rate: result.data.match_number3 / 100,
+              rate: normalizeRate(result.data.match_number3),
               bgColor: 'primary',
               radius: 'radius-right-2',
             },

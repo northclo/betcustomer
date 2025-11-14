@@ -43,20 +43,24 @@
           <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'image'">
               <div class="image-cell">
-                <img 
-                  v-if="record.image" 
-                  :src="getImageUrl(record.image)" 
+                <img
+                  v-if="record.image"
+                  :src="getImageUrl(record.image)"
                   alt="Post image"
                   class="post-image"
-                />
+                >
                 <span v-else class="no-image">-</span>
               </div>
             </template>
             <template v-else-if="column.key === 'title'">
-              <div class="title-cell">{{ record.title }}</div>
+              <div class="title-cell">
+                {{ record.title }}
+              </div>
             </template>
             <template v-else-if="column.key === 'description'">
-              <div class="description-cell">{{ record.description }}</div>
+              <div class="description-cell">
+                {{ record.description }}
+              </div>
             </template>
             <template v-else-if="column.key === 'status'">
               <a-tag :color="statusColor(record.status)">
@@ -65,12 +69,21 @@
             </template>
             <template v-else-if="column.key === 'action'">
               <a-space>
-                <a-button type="link" @click.stop="openEditModal(record)" :title="trlang.edit">
+                <a-button
+                  type="link"
+                  :title="trlang.edit"
+                  @click.stop="openEditModal(record)"
+                >
                   <template #icon>
                     <EditOutlined />
                   </template>
                 </a-button>
-                <a-button type="link" danger @click.stop="confirmDelete(record)" :title="trlang.delete">
+                <a-button
+                  type="link"
+                  danger
+                  :title="trlang.delete"
+                  @click.stop="confirmDelete(record)"
+                >
                   <template #icon>
                     <DeleteOutlined />
                   </template>
@@ -163,13 +176,22 @@
             :disabled="submitting"
           >
             <div v-if="fileList.length < 1">
-              <div class="upload-icon">+</div>
-              <div class="upload-text">{{ trlang.upload_image }}</div>
+              <div class="upload-icon">
+                +
+              </div>
+              <div class="upload-text">
+                {{ trlang.upload_image }}
+              </div>
             </div>
           </a-upload>
           <div v-if="formState.image && !fileList.length" class="image-preview">
-            <img :src="getImageUrl(formState.image)" alt="Preview" />
-            <a-button type="link" danger @click="clearImage" :disabled="submitting">
+            <img :src="getImageUrl(formState.image)" alt="Preview">
+            <a-button
+              type="link"
+              danger
+              :disabled="submitting"
+              @click="clearImage"
+            >
               {{ trlang.remove }}
             </a-button>
           </div>
@@ -191,14 +213,18 @@
     </a-form>
 
     <div class="blog-modal__footer">
-      <a-button class="blog-modal__btn blog-modal__btn--ghost" @click="handleModalCancel" :disabled="submitting">
+      <a-button
+        class="blog-modal__btn blog-modal__btn--ghost"
+        :disabled="submitting"
+        @click="handleModalCancel"
+      >
         {{ trlang.cancel }}
       </a-button>
       <a-button
         class="blog-modal__btn blog-modal__btn--primary"
         type="primary"
-        @click="handleSubmit"
         :loading="submitting"
+        @click="handleSubmit"
       >
         {{ isEdit ? trlang.save_changes : trlang.create_post }}
       </a-button>
@@ -232,10 +258,10 @@
     </div>
 
     <div class="blog-modal__footer">
-      <a-button 
-        class="blog-modal__btn blog-modal__btn--ghost" 
-        @click="handleDeleteModalCancel" 
+      <a-button
+        class="blog-modal__btn blog-modal__btn--ghost"
         :disabled="deleting"
+        @click="handleDeleteModalCancel"
       >
         {{ trlang.cancel }}
       </a-button>
@@ -243,8 +269,8 @@
         class="blog-modal__btn blog-modal__btn--danger"
         type="primary"
         danger
-        @click="handleDeleteConfirm"
         :loading="deleting"
+        @click="handleDeleteConfirm"
       >
         {{ trlang.delete }}
       </a-button>

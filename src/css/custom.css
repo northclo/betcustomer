@@ -94,6 +94,21 @@
   transform: scale(1.1);
 }
 
+/* Odd and Under buttons - Green when active (matching betting options) */
+.game-btn-odd.active,
+.game-btn-under.active {
+  background: var(--glass-green-active) !important;
+  border-color: var(--glass-green-active-border) !important;
+  box-shadow: var(--glass-shadow), 0 0 25px rgba(16, 185, 129, 0.5) !important;
+}
+
+.game-btn-odd.active:hover,
+.game-btn-under.active:hover {
+  background: var(--glass-green-active) !important;
+  border-color: var(--glass-green-active-border) !important;
+  box-shadow: var(--glass-shadow), 0 0 30px rgba(16, 185, 129, 0.6) !important;
+}
+
 .game-result-card table,
 .game-result-card table tbody,
 .game-result-card table thead {
@@ -240,32 +255,33 @@
   box-shadow: var(--glass-shadow), 0 0 20px rgba(99, 102, 241, 0.3);
 }
 
+/* Ball colors matching betting site standards */
 .running-ball1 {
-  background: linear-gradient(135deg, rgba(100, 116, 139, 0.3), rgba(71, 85, 105, 0.3)) !important;
-  border-color: rgba(100, 116, 139, 0.3) !important;
+  background: linear-gradient(135deg, rgba(148, 163, 184, 0.5), rgba(100, 116, 139, 0.5)) !important;
+  border-color: rgba(148, 163, 184, 0.7) !important;
 }
 
 .running-ball2 {
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(245, 158, 11, 0.3)) !important;
-  border-color: rgba(251, 191, 36, 0.3) !important;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.5), rgba(220, 38, 38, 0.5)) !important;
+  border-color: rgba(239, 68, 68, 0.7) !important;
 }
 
 .running-ball3 {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(5, 150, 105, 0.3)) !important;
-  border-color: rgba(16, 185, 129, 0.3) !important;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.5), rgba(5, 150, 105, 0.5)) !important;
+  border-color: rgba(16, 185, 129, 0.7) !important;
 }
 
 .running-ball4 {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(220, 38, 38, 0.3)) !important;
-  border-color: rgba(239, 68, 68, 0.3) !important;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.5), rgba(220, 38, 38, 0.5)) !important;
+  border-color: rgba(239, 68, 68, 0.7) !important;
 }
 
 .running-ball5 {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(37, 99, 235, 0.3)) !important;
-  border-color: rgba(59, 130, 246, 0.3) !important;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.5), rgba(37, 99, 235, 0.5)) !important;
+  border-color: rgba(59, 130, 246, 0.7) !important;
 }
 
 .running-ball6 {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(124, 58, 237, 0.3)) !important;
-  border-color: rgba(139, 92, 246, 0.3) !important;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.5), rgba(124, 58, 237, 0.5)) !important;
+  border-color: rgba(139, 92, 246, 0.7) !important;
 }

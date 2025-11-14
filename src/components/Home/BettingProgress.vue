@@ -16,7 +16,7 @@
             @click="emit('previousGame')"
           />
         </div>
-        <a-typography-text v-if="!game?.list.length" class="text-white text-xl md:text-3xl">
+        <a-typography-text v-if="!game?.list?.length" class="text-white text-xl md:text-3xl">
           {{
             remainTime >= 90 && remainTime <= 180
               ? trlang.betting_available
@@ -25,10 +25,10 @@
         </a-typography-text>
         <div v-else>
           <a-layout-content class="flex-1 flex justify-center flex-wrap gap-2">
-            <a-button :class="game?.odd ? 'active game-btn' : 'game-btn'">
+            <a-button :class="game?.odd ? 'active game-btn game-btn-odd' : 'game-btn game-btn-odd'">
               {{ trlang.odd }}
             </a-button>
-            <a-button :class="game?.under ? 'active game-btn' : 'game-btn'">
+            <a-button :class="game?.under ? 'active game-btn game-btn-under' : 'game-btn game-btn-under'">
               {{ trlang.under }}
             </a-button>
           </a-layout-content>
@@ -44,7 +44,7 @@
       <a-flex justify="center">
         <div class="mt-5 flex gap-5">
           <a-button
-            v-for="item in game?.list"
+            v-for="item in (game?.list || [])"
             :key="item"
             :class="'running-ball running-ball' + item"
           >
@@ -96,7 +96,7 @@
           </template>
           <template v-else-if="column.key === 'result'">
             <a-typography-text
-              v-if="game?.list?.length !== 0"
+              v-if="game?.list && game.list.length > 0"
               class="text-white"
             >
               {{ record?.earning_amount || 0 }}
@@ -152,10 +152,10 @@ const props = defineProps({
 
 // ✅ state
 const totalBettingAmount = computed(() =>
-  dataSource.value.reduce((sum, el) => sum + el.bet_amount, 0)
+  dataSource.value.reduce((sum, el) => sum + (el?.bet_amount || 0), 0)
 );
 const totalEarningAmount = computed(() =>
-  dataSource.value.reduce((sum, el) => sum + el?.earning_amount, 0)
+  dataSource.value.reduce((sum, el) => sum + (el?.earning_amount || 0), 0)
 );
 const columns = computed(() => DEFAULT_COLUMNS(trlang.value));
 const dataSource = computed(() => props.bettingHistory || []);

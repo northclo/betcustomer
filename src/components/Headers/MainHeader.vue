@@ -12,14 +12,14 @@
           type="button"
           class="mobile-menu-toggle"
           :class="{ 'is-open': isMobileMenuOpen }"
-          @click="toggleMobileMenu"
           :aria-expanded="isMobileMenuOpen"
           aria-controls="main-header-drawer"
+          @click="toggleMobileMenu"
         >
           <span class="sr-only">{{ trlang.toggle_navigation }}</span>
-          <span class="mobile-menu-toggle__bar"></span>
-          <span class="mobile-menu-toggle__bar"></span>
-          <span class="mobile-menu-toggle__bar"></span>
+          <span class="mobile-menu-toggle__bar" />
+          <span class="mobile-menu-toggle__bar" />
+          <span class="mobile-menu-toggle__bar" />
         </button>
         <!-- Desktop navigation -->
         <div
@@ -84,15 +84,15 @@
         placement="left"
         :width="drawerWidth"
         :title="trlang.menu"
-        @close="closeMobileMenu"
-        :maskClosable="true"
-        :destroyOnClose="true"
         class="header-mobile-drawer"
+        :mask-closable="true"
+        :destroy-on-close="true"
         :body-style="{ padding: '16px 0' }"
+        @close="closeMobileMenu"
       >
         <a-menu
           mode="inline"
-          :selectedKeys="[currentRoute]"
+          :selected-keys="[currentRoute]"
           @click="handleMenuItemClick"
         >
           <a-menu-item key="/">

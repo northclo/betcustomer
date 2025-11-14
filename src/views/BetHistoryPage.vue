@@ -208,6 +208,11 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* Card border radius override for Bet History page */
+.game-result-card {
+  border-radius: 10px !important;
+}
+
 /* Table Styling */
 :deep(.ant-table) {
   background: transparent !important;
@@ -225,6 +230,10 @@ onMounted(() => {
   background: transparent !important;
   border-color: var(--glass-border) !important;
   color: var(--white-color) !important;
+}
+
+:deep(.ant-table-tbody > tr:last-child > td) {
+  border-bottom: none !important;
 }
 
 :deep(.ant-table-tbody > tr:hover > td) {

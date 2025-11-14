@@ -1,13 +1,4 @@
 <template>
-  <BannerCard
-    :loading="loading"
-    :today-no="todayNo"
-    :total-no="totalNo"
-    :own-money="ownMoney"
-    :remain-time="remainTime"
-    @update:remain-time="(val) => (remainTime = val)"
-  />
-
   <div class="bg-primary-light radius-1 p-5 mt-5">
     <a-row :gutter="[15, 15]">
       <!-- Left side: 60% (14.4/24 ≈ 60%) -->
@@ -41,7 +32,6 @@
 
 <script setup>
 import { computed, inject, onMounted, onBeforeUnmount, ref } from 'vue';
-import BannerCard from '@/components/Headers/BannerCard.vue';
 import BettingOption from '@/components/Home/BettingOption.vue';
 import BettingProgress from '@/components/Home/BettingProgress.vue';
 import { getData, postData } from '@/helpers/Axios.js';
@@ -89,18 +79,18 @@ const fetchData = async (currentGameId) => {
 
   if (result.status) {
     const { game, pendingBet, user, aroundGameId } = result.data;
-    previousGameId.value = aroundGameId.previousGameId;
-    nextGameId.value = aroundGameId.nextGameId;
-    gameId.value = game.id;
-    gameResult.value = game;
-    numberList.value = game.list;
-    remainTime.value = game.remain_time;
-    todayNo.value = game.today_no || 0;
-    totalNo.value = game.total_no || 0;
+    previousGameId.value = aroundGameId?.previousGameId || null;
+    nextGameId.value = aroundGameId?.nextGameId || null;
+    gameId.value = game?.id || '';
+    gameResult.value = game || null;
+    numberList.value = game?.list || [];
+    remainTime.value = game?.remain_time || 0;
+    todayNo.value = game?.today_no || 0;
+    totalNo.value = game?.total_no || 0;
     ownMoney.value = user?.own_money || 0;
 
     // pending bets
-    bettingHistory.value = pendingBet.map((el) => {
+    bettingHistory.value = (pendingBet || []).map((el) => {
       return {
         id: el._id,
         bet_amount: el.bet_amount,

@@ -5,11 +5,16 @@
         <a-space direction="vertical" size="large" class="w-100">
           <!-- Balance Display -->
           <div class="balance-display">
-            <div class="balance-label">{{ trlang.available_balance }}</div>
+            <div class="balance-label">
+              {{ trlang.available_balance }}
+            </div>
             <div class="balance-amount">
               {{ availableBalance.toLocaleString() }} {{ trlang.currency }}
             </div>
-            <div class="pending-amount" v-if="pendingRefundBalance > 0">
+            <div
+              v-if="pendingRefundBalance > 0"
+              class="pending-amount"
+            >
               {{ trlang.pending_approval }}:
               {{ pendingRefundBalance.toLocaleString() }} {{ trlang.currency }}
             </div>
@@ -17,7 +22,9 @@
 
           <!-- Withdrawal Amount -->
           <div>
-            <div class="section-title">{{ trlang.withdrawal_amount }}</div>
+            <div class="section-title">
+              {{ trlang.withdrawal_amount }}
+            </div>
             <a-input-number
               v-model:value="withdrawalAmount"
               :min="1"
