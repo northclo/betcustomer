@@ -1,14 +1,12 @@
 <template>
-  <div class="bg-primary-light radius-1 p-5 mt-5">
+  <div class="bg-primary-light radius-1 p-3 mt-2">
     <a-row :gutter="[15, 15]">
-      <!-- Left side: 60% (14.4/24 ≈ 60%) -->
-      <a-col :xs="24" :lg="14" class="flex flex-column gap-4">
+      <a-col :xs="24" :lg="14" class="flex flex-column gap-2">
         <BettingOption
           :betting-remain-time="remainTime"
           @start-betting="startBetting"
         />
       </a-col>
-      <!-- Right side: 40% (9.6/24 ≈ 40%) -->
       <a-col :xs="24" :lg="10">
         <BettingProgress
           :previous-game-id="previousGameId"

@@ -1,29 +1,26 @@
 <template>
-  <a-space v-if="!loading" direction="vertical" size="middle">
+  <a-space v-if="!loading" direction="vertical" size="small">
     <div v-for="item in bettingOptions" :key="item.key">
       <div class="glass-label radius-top-2 text-white w-fit mb-2 p-2">
         {{ item.label }}
       </div>
-      <a-row class="gap-2 glass-card p-4 radius-2 flex-col sm:flex-row">
+      <a-row class="gap-2 glass-card p-2 radius-2 flex-col sm:flex-row">
         <a-col
           v-for="child in item.child"
           :key="child.key"
           :xs="24"
           :sm="Math.floor(24 / item.child.length)"
           :class="[
-            'glass-option-btn flex-1 text-white flex justify-between items-center cursor-pointer p-3',
+            'glass-option-btn flex-1 text-white flex items-center justify-center cursor-pointer p-2',
             child.radius,
             `glass-option-${child.bgColor}`,
             bettingType === child.key ? 'glass-option-active' : '',
           ]"
           @click="setBettingOption(child)"
         >
-          <div class="fs-4 font-bold">
-            {{ child.label }}
-          </div>
-          <div class="fs-4">
-            {{ child.rate }}
-          </div>
+          <span class="fs-4 font-bold">
+            {{ child.label }} {{ child.rate }}
+          </span>
         </a-col>
       </a-row>
     </div>
@@ -43,8 +40,8 @@
       </a-flex>
     </div>
 
-    <div class="glass-card p-4 radius-2">
-      <a-row :gutter="[15, 8]">
+    <div class="glass-card p-3 radius-2">
+      <a-row :gutter="[12, 6]">
         <a-col
           v-for="item in bettingAmountOptions"
           :key="item"
@@ -52,7 +49,7 @@
           :sm="Math.floor(24 / bettingAmountOptions.length)"
         >
           <button
-            class="glass-btn w-100 p-3 fs-3 font-bold cursor-pointer"
+            class="glass-btn w-100 p-2 fs-3 font-bold cursor-pointer"
             @click="setBetAmount(item)"
           >
             {{ item }}
@@ -60,8 +57,7 @@
         </a-col>
       </a-row>
 
-      <a-row :gutter="[15, 12]" class="pt-5">
-        <!-- Reset -->
+      <a-row :gutter="[12, 8]" class="pt-3">
         <a-col :xs="24" :md="5">
           <button
             class="glass-action-btn glass-action-pink text-white w-100 radius-1 cursor-pointer h-100 shadow-dark py-2"
@@ -71,7 +67,6 @@
           </button>
         </a-col>
 
-        <!-- Percentage, Benefit, Betting Amount -->
         <a-col :xs="24" :md="14">
           <a-flex justify="space-between" class="gap-2 flex-col sm:flex-row">
             <div class="flex flex-1">
@@ -114,7 +109,6 @@
           </button>
         </a-col>
 
-        <!-- Start Bet -->
         <a-col :xs="24" :md="5">
           <button
             class="glass-action-btn glass-action-green text-white w-100 radius-1 cursor-pointer h-100 shadow-dark py-2"
@@ -389,12 +383,11 @@ onMounted(() => {
   -webkit-backdrop-filter: var(--blur-lg);
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: box-shadow 0.2s ease;
 }
 
 .glass-card:hover {
   box-shadow: var(--glass-shadow-strong);
-  transform: translateY(-2px);
 }
 
 .glass-btn {
@@ -404,13 +397,12 @@ onMounted(() => {
   border: 1px solid var(--glass-border);
   color: var(--white-color);
   border-radius: 10px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
   box-shadow: var(--glass-shadow-soft);
 }
 
 .glass-btn:hover {
   background: var(--glass-bg-light);
-  transform: translateY(-2px);
   box-shadow: var(--glass-shadow);
 }
 
@@ -443,17 +435,23 @@ onMounted(() => {
   -webkit-backdrop-filter: var(--blur-sm);
   border: 2px solid !important;
   border-radius: 12px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
   box-shadow: var(--glass-shadow-soft);
   position: relative;
   overflow: hidden;
   display: flex;
-  flex-direction: column;
+  min-height: 48px;
+  white-space: nowrap;
 }
 
 .glass-option-btn:hover {
-  transform: translateY(-2px);
   box-shadow: var(--glass-shadow);
+}
+
+.glass-option-btn > span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .glass-option-btn > * {
@@ -508,35 +506,10 @@ onMounted(() => {
 
 /* Active State - Enhanced Selected Effect */
 .glass-option-active {
-  transform: scale(1.05);
+  transform: scale(1.02);
   border-width: 3px !important;
   position: relative;
   font-weight: 700;
-}
-
-.glass-option-active::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: 10px;
-  background: inherit;
-  opacity: 0.3;
-  animation: pulse-glow 2s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes pulse-glow {
-  0%, 100% {
-    opacity: 0.3;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.5;
-    transform: scale(1.02);
-  }
 }
 
 .glass-option-active.glass-option-success {
@@ -576,13 +549,12 @@ onMounted(() => {
   backdrop-filter: var(--blur-sm);
   -webkit-backdrop-filter: var(--blur-sm);
   border: 2px solid;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: box-shadow 0.2s ease, background-color 0.2s ease;
   box-shadow: var(--glass-shadow-soft);
   font-weight: 600;
 }
 
 .glass-action-btn:hover {
-  transform: translateY(-2px);
   box-shadow: var(--glass-shadow);
 }
 

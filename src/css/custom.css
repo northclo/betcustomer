@@ -55,8 +55,8 @@
 .game-result-card .ant-card-body {
   background: transparent !important;
   text-align: center;
-  padding: 20px !important;
-  min-height: 195px;
+  padding: 12px 16px !important;
+  min-height: auto;
 }
 
 .game-btn {

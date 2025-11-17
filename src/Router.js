@@ -1,12 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
+// AUTHENTICATION TOGGLE: Set to true to enable authentication, false to disable
+const ENABLE_AUTHENTICATION = true;
+
 const HomePage = () => import('./views/HomePage.vue');
 const LoginPage = () => import('./views/LoginPage.vue');
 const BetHistoryPage = () => import('./views/BetHistoryPage.vue');
 const AddFundPage = () => import('./views/AddFundPage.vue');
-const RefundPage = () => import('./views/RefundPage.vue');
-const BlogPostPage = () => import('./views/BlogPostPage.vue');
+const ExchangePage = () => import('./views/ExchangePage.vue');
 const CustomerCenterPage = () => import('./views/CustomerCenterPage.vue');
+const NoticeListPage = () => import('./views/NoticeListPage.vue');
 
 const routes = [
   {
@@ -33,16 +36,16 @@ const routes = [
     meta: { breadcrumb: 'Add Funds', requiresAuth: true }
   },
   {
-    path: '/refund',
-    name: 'refund',
-    component: RefundPage,
-    meta: { breadcrumb: 'Withdraw Funds', requiresAuth: true }
+    path: '/exchange',
+    name: 'exchange',
+    component: ExchangePage,
+    meta: { breadcrumb: 'Money Exchange', requiresAuth: true }
   },
   {
-    path: '/blog',
-    name: 'blog',
-    component: BlogPostPage,
-    meta: { breadcrumb: 'News & Updates', requiresAuth: true }
+    path: '/notice',
+    name: 'notice',
+    component: NoticeListPage,
+    meta: { breadcrumb: 'Notice List', requiresAuth: true }
   },
   {
     path: '/contact',
@@ -102,6 +105,11 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  // Skip authentication checks if authentication is disabled
+  if (!ENABLE_AUTHENTICATION) {
+    return next();
+  }
+
   const requiresAuth = to.meta.requiresAuth !== false;
   const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null;
   const tokenValid = isTokenValid(token);

@@ -1,3 +1,161 @@
 button {
   border: none !important;
 }
+
+.question-modal .ant-modal-content {
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  border: 1px solid var(--glass-border) !important;
+}
+
+.question-modal .ant-modal-header {
+  background: transparent !important;
+}
+
+.question-modal .ant-modal-title {
+  color: var(--white-color) !important;
+  font-weight: 600;
+}
+
+.question-modal .ant-modal-close {
+  color: var(--white-color) !important;
+}
+
+.question-modal .ant-modal-close:hover {
+  color: var(--main-color) !important;
+}
+
+.question-modal .ant-modal-body {
+  color: var(--white-color) !important;
+}
+
+.question-modal .ant-modal-footer {
+  background: transparent !important;
+}
+
+.question-modal .ant-modal-footer .ant-btn:not(.ant-btn-primary):not(.ant-btn-dangerous) {
+  color: var(--white-color) !important;
+  background: transparent !important;
+  border: 1px solid var(--glass-border) !important;
+  font-weight: 600;
+}
+
+.question-modal .ant-modal-footer .ant-btn:not(.ant-btn-primary):not(.ant-btn-dangerous):hover {
+  color: var(--white-color) !important;
+  background: var(--glass-bg-light) !important;
+  border-color: var(--glass-border-light) !important;
+}
+
+.question-modal .ant-modal-footer .ant-btn-primary {
+  background: var(--glass-blue) !important;
+  border-color: var(--glass-blue-border) !important;
+  color: var(--white-color) !important;
+  font-weight: 600;
+}
+
+.question-modal .ant-modal-footer .ant-btn-primary:hover:not(:disabled) {
+  background: var(--glass-blue-light) !important;
+  border-color: var(--glass-blue-border) !important;
+  color: var(--white-color) !important;
+}
+
+.question-modal .ant-modal-footer .ant-btn-primary:disabled {
+  background: rgba(99, 102, 241, 0.15) !important;
+  border-color: rgba(99, 102, 241, 0.3) !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  cursor: not-allowed;
+}
+
+/* Confirm Modal Glassmorphism Styles */
+.confirm-modal-glass .ant-modal-content {
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow);
+}
+
+.confirm-modal-glass .ant-modal-header {
+  background: var(--glass-bg-light) !important;
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border-bottom: 1px solid var(--glass-border) !important;
+}
+
+.confirm-modal-glass .ant-modal-title {
+  color: var(--white-color) !important;
+  font-weight: 600;
+}
+
+.confirm-modal-glass .ant-modal-close {
+  color: var(--white-color) !important;
+}
+
+.confirm-modal-glass .ant-modal-close:hover {
+  color: var(--main-color) !important;
+}
+
+.confirm-modal-glass .ant-modal-body {
+  color: var(--white-color) !important;
+  background: transparent !important;
+}
+
+.confirm-modal-glass .ant-modal-confirm-body {
+  color: var(--white-color) !important;
+}
+
+.confirm-modal-glass .ant-modal-confirm-title {
+  color: var(--white-color) !important;
+}
+
+.confirm-modal-glass .ant-modal-confirm-content {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.confirm-modal-glass .anticon {
+  color: var(--yellow-color) !important;
+}
+
+.confirm-modal-glass .ant-modal-footer {
+  background: var(--glass-bg-light) !important;
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border-top: 1px solid var(--glass-border) !important;
+}
+
+.confirm-modal-glass .ant-modal-confirm-btns {
+  margin-top: 24px;
+}
+
+.confirm-modal-glass .ant-modal-confirm-btns .ant-btn,
+.confirm-modal-glass .ant-modal-footer .ant-btn {
+  background: var(--glass-bg-dark) !important;
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border: 1px solid var(--glass-border) !important;
+  color: var(--white-color) !important;
+  font-weight: 600;
+  height: 36px;
+  padding: 4px 16px;
+  border-radius: 6px;
+}
+
+.confirm-modal-glass .ant-modal-confirm-btns .ant-btn-primary,
+.confirm-modal-glass .ant-modal-footer .ant-btn-primary {
+  background: var(--glass-red) !important;
+  border-color: var(--glass-red-border) !important;
+  color: var(--white-color) !important;
+}
+
+.confirm-modal-glass .ant-modal-confirm-btns .ant-btn-primary:hover:not(:disabled),
+.confirm-modal-glass .ant-modal-footer .ant-btn-primary:hover:not(:disabled) {
+  background: var(--glass-red-light) !important;
+  border-color: var(--glass-red-border) !important;
+}
+
+.confirm-modal-glass .ant-modal-confirm-btns .ant-btn:not(.ant-btn-primary):hover,
+.confirm-modal-glass .ant-modal-footer .ant-btn:not(.ant-btn-primary):hover {
+  background: var(--glass-bg-light) !important;
+  border-color: var(--glass-blue-border) !important;
+}

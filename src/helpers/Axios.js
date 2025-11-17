@@ -5,13 +5,8 @@ import router from '@/Router'
 import { config } from "@/config/index.js";
 import translations from "@/lang/en.js";
 
-/**
- * @summary
- * This feature checks response of axios is success.
- * If result is success, return response data from backend and if result is failed, return error message.
- *
- * @param {function} fn
- */
+const ENABLE_AUTHENTICATION = true;
+
 const handleError =
     (fn) =>
         async (...params) => {
@@ -19,8 +14,7 @@ const handleError =
                 return await fn(...params);
             } catch (error) {
                 if (error.response) {
-                    // in the case of unautherized user
-                    if (error.response.status == httpStatusCodes.UNAUTHORIZED) {
+                    if (ENABLE_AUTHENTICATION && error.response.status == httpStatusCodes.UNAUTHORIZED) {
                         router.push('/auth/login')
                     }
                     message.error(`${error.response.data.message}`);
@@ -28,6 +22,8 @@ const handleError =
                         status: false,
                     };
                 } else {
+                    console.error('Network error:', error.message);
+                    console.error('Request URL:', error.config?.url);
                     message.error(translations.no_response_from_server);
                     return {
                         status: false,

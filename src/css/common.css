@@ -5,7 +5,7 @@
   overflow-x: hidden;
 }
 
-/* Animated Gradient Background */
+/* Static Gradient Background (animation removed per client feedback) */
 #app::before {
   content: '';
   position: fixed;
@@ -17,22 +17,12 @@
     radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
     radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
     radial-gradient(circle at 40% 20%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
-  animation: gradient-shift 20s ease infinite;
+  /* animation: gradient-shift 20s ease infinite; - DISABLED: continuous animation removed */
   pointer-events: none;
   z-index: 0;
 }
 
-@keyframes gradient-shift {
-  0%, 100% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-  33% {
-    transform: translate(5%, 5%) rotate(5deg);
-  }
-  66% {
-    transform: translate(-5%, -5%) rotate(-5deg);
-  }
-}
+/* @keyframes gradient-shift - REMOVED: continuous animation disabled per client feedback */
 
 .main-container {
   max-width: 1200px;

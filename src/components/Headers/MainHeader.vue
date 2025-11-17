@@ -51,17 +51,10 @@
             </button>
             <button
               class="menu-btn white-space-nowrap"
-              :class="{ 'menu-btn-active': currentRoute === '/refund' }"
-              @click="navigateTo('/refund')"
+              :class="{ 'menu-btn-active': currentRoute === '/exchange' }"
+              @click="navigateTo('/exchange')"
             >
-              {{ trlang.refund_menu }}
-            </button>
-            <button
-              class="menu-btn white-space-nowrap"
-              :class="{ 'menu-btn-active': currentRoute === '/blog' }"
-              @click="navigateTo('/blog')"
-            >
-              {{ trlang.blog_menu }}
+              {{ trlang.exchange_menu }}
             </button>
             <button
               class="menu-btn white-space-nowrap"
@@ -69,6 +62,13 @@
               @click="navigateTo('/contact')"
             >
               {{ trlang.customer_center_menu }}
+            </button>
+            <button
+              class="menu-btn white-space-nowrap"
+              :class="{ 'menu-btn-active': currentRoute === '/notice' }"
+              @click="navigateTo('/notice')"
+            >
+              {{ trlang.notice_menu }}
             </button>
           </div>
         </div>
@@ -86,8 +86,9 @@
         :title="trlang.menu"
         class="header-mobile-drawer"
         :mask-closable="true"
-        :destroy-on-close="true"
+        :destroy-on-close="false"
         :body-style="{ padding: '16px 0' }"
+        :z-index="1000"
         @close="closeMobileMenu"
       >
         <a-menu
@@ -104,14 +105,14 @@
           <a-menu-item key="/addfund">
             {{ trlang.addfund_menu }}
           </a-menu-item>
-          <a-menu-item key="/refund">
-            {{ trlang.refund_menu }}
-          </a-menu-item>
-          <a-menu-item key="/blog">
-            {{ trlang.blog_menu }}
+          <a-menu-item key="/exchange">
+            {{ trlang.exchange_menu }}
           </a-menu-item>
           <a-menu-item key="/contact">
             {{ trlang.customer_center_menu }}
+          </a-menu-item>
+          <a-menu-item key="/notice">
+            {{ trlang.notice_menu }}
           </a-menu-item>
         </a-menu>
         <div class="drawer-footer">

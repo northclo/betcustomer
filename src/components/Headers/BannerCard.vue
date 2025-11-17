@@ -1,7 +1,6 @@
 <template>
-  <div class="glass-banner mt-5">
+  <div class="glass-banner mt-3 mb-3">
     <a-flex justify="space-between" align="center" wrap="wrap">
-      <!-- Game Index -->
       <a-flex class="p-2" gap="small" align="center" wrap="nowrap">
         <a-typography-text class="sp-icon mb-0 white-space-nowrap">
           {{ trlang.game_index }}
@@ -16,7 +15,6 @@
         </a-flex>
       </a-flex>
 
-      <!-- Timer -->
       <a-flex class="p-2" gap="small" align="center" wrap="nowrap">
         <a-typography-text class="sp-icon mb-0 white-space-nowrap">
           {{ trlang.time_intro }}
@@ -27,7 +25,6 @@
         </a-flex>
       </a-flex>
 
-      <!-- Store Amount -->
       <a-flex class="p-2" align="center" gap="small" wrap="nowrap">
         <a-typography-text class="sp-icon mb-0 white-space-nowrap">
           {{ trlang.store_amount }}
@@ -37,7 +34,6 @@
         </a-flex>
       </a-flex>
 
-      <!-- Store Link -->
       <a-flex align="center" wrap="nowrap">
         <a
           :href="trlang.store_name_link"
@@ -51,17 +47,6 @@
         </a>
       </a-flex>
 
-      <!-- Partner Dashboard -->
-      <!-- <div class="p-2">
-        <div class="text-white">
-          Test
-        </div>
-        <button class="bg-white cursor-pointer">
-          {{ trlang.partner_dashboard }}
-        </button>
-      </div> -->
-
-      <!-- Messages -->
       <a-flex class="p-2" align="center" gap="small" wrap="nowrap">
         <a-image src="/icons/msg-icon.png" />
         <a-typography-text class="text-white fs-3">
@@ -207,11 +192,11 @@ watch(
   -webkit-backdrop-filter: var(--blur-lg);
   border: 1px solid var(--glass-border-light);
   border-radius: 20px;
-  padding: 20px;
+  padding: 12px 16px;
   box-shadow: var(--glass-shadow-strong);
 }
 
 .glass-banner:hover {
-  box-shadow: var(--glass-shadow-strong), 0 0 40px rgba(99, 102, 241, 0.15);
+  box-shadow: var(--glass-shadow-strong);
 }
 </style>
