@@ -38,6 +38,7 @@
           class="text-center mb-4"
           @click="loadCaptcha"
           v-html="captcha"
+          style="cursor: pointer;"
         ></div>
         <!-- eslint-enable vue/html-self-closing, vue/no-v-html -->
         <a-input
@@ -73,6 +74,15 @@
       <a-button class="w-100 bg-primary text-white" @click="login">
         {{ trlang.login }}
       </a-button>
+
+      <div v-if="isRegistrationEnabled" class="text-center">
+        <a-typography-text class="text-white">
+          {{ trlang.dont_have_account }} 
+          <a @click="goToRegister" class="text-primary" style="cursor: pointer;">
+            {{ trlang.sign_up }}
+          </a>
+        </a-typography-text>
+      </div>
     </a-space>
   </a-layout>
 </template>
@@ -88,9 +98,14 @@ import { checkValidEmail } from '@/helpers/Common.js';
 /* Router */
 const router = useRouter();
 
-/* Inject translations */
 const langState = inject('langState');
+const membershipSettings = inject('membershipSettings', ref(null));
 const trlang = computed(() => langState?.translations || {});
+
+const isRegistrationEnabled = computed(() => {
+  if (!membershipSettings?.value) return false;
+  return membershipSettings.value.membership_registration !== 'no_use';
+});
 
 /* Reactive states */
 const email = ref('');
@@ -102,6 +117,7 @@ const captchaText = ref('');
 const captchaInput = ref('');
 const retry = ref(false);
 const retryRemainedTime = ref(0);
+const securityEnabled = ref(true);
 
 let retryTimer = null;
 
@@ -112,6 +128,27 @@ const getCaptcha = async () => {
     captchaText.value = result.data.text;
     captcha.value = result.data.data;
     captchaShow.value = true;
+  }
+};
+
+const loadCaptcha = async () => {
+  await getCaptcha();
+};
+
+const fetchSecuritySetting = async () => {
+  try {
+    const result = await getData(apiLink.get_site_setting);
+    if (result.status && result.data) {
+      securityEnabled.value = result.data.security ?? true;
+      
+      if (securityEnabled.value) {
+        await getCaptcha();
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching security setting:', error);
+    securityEnabled.value = true;
+    await getCaptcha();
   }
 };
 
@@ -159,7 +196,7 @@ const saveCredentials = () => {
 };
 
 /* Load saved data on mount */
-onMounted(() => {
+onMounted(async () => {
   const savedEmail = localStorage.getItem('email');
   const savedPassword = localStorage.getItem('password');
 
@@ -170,12 +207,17 @@ onMounted(() => {
   }
 
   initRetryState();
-  getCaptcha();
+  
+  await fetchSecuritySetting();
 });
 
 onUnmounted(() => {
   if (retryTimer) clearInterval(retryTimer);
 });
+
+const goToRegister = () => {
+  router.push('/auth/register');
+};
 
 /* Login method */
 const login = async () => {
@@ -187,9 +229,11 @@ const login = async () => {
   if (!checkValidEmail(email.value)) {
     return message.error(trlang.value.not_correct_email);
   }
-  if (captchaShow.value && captchaText.value !== captchaInput.value) {
-    handleLoginFailed();
-    return message.error(trlang.value.captcha_is_wrong);
+  if (captchaShow.value) {
+    if (!captchaInput.value || captchaText.value !== captchaInput.value) {
+      handleLoginFailed();
+      return message.error(trlang.value.captcha_is_wrong);
+    }
   }
 
   const res = await postData(apiLink.login, {

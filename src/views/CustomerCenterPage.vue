@@ -183,6 +183,7 @@ const editingQuestionId = ref(null);
 const currentPage = ref(1);
 const pageSize = ref(10);
 const totalPages = ref(1);
+const siteSettings = ref(null);
 
 // Form fields
 const questionTitle = ref('');
@@ -363,7 +364,36 @@ const handleDeleteList = () => {
   });
 };
 
+const fetchSiteSettings = async () => {
+  try {
+    const result = await getData(apiLink.get_site_setting);
+    if (result.status && result.data) {
+      siteSettings.value = result.data;
+    }
+  } catch (error) {
+    console.warn('Failed to fetch site settings:', error);
+    siteSettings.value = { customer_center: true };
+  }
+};
+
+const checkPendingInquiries = () => {
+  if (siteSettings.value?.customer_center) {
+    const hasPending = questionList.value.some(
+      (q) => q.status === 'pending' || q.status === 'PENDING'
+    );
+    
+    return hasPending;
+  }
+  
+  return false;
+};
+
 const handleNewQuestion = () => {
+  if (checkPendingInquiries()) {
+    message.error(getTranslation('cannot_submit_new_inquiry_with_pending'));
+    return;
+  }
+  
   isEditMode.value = false;
   editingQuestionId.value = null;
   questionTitle.value = '';
@@ -417,6 +447,11 @@ const handleDelete = (record) => {
 const handleSendQuestion = async () => {
   if (!canSendQuestion.value) {
     return message.error(getTranslation('please_fill_in_all_fields'));
+  }
+
+  if (!isEditMode.value && checkPendingInquiries()) {
+    message.error(getTranslation('cannot_submit_new_inquiry_with_pending'));
+    return;
   }
 
   sending.value = true;
@@ -482,6 +517,7 @@ const goToPage = (page) => {
 
 // ✅ lifecycle
 onMounted(() => {
+  fetchSiteSettings();
   fetchQuestions();
 });
 </script>

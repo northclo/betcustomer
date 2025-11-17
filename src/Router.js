@@ -5,6 +5,7 @@ const ENABLE_AUTHENTICATION = true;
 
 const HomePage = () => import('./views/HomePage.vue');
 const LoginPage = () => import('./views/LoginPage.vue');
+const RegisterPage = () => import('./views/RegisterPage.vue');
 const BetHistoryPage = () => import('./views/BetHistoryPage.vue');
 const AddFundPage = () => import('./views/AddFundPage.vue');
 const ExchangePage = () => import('./views/ExchangePage.vue');
@@ -58,6 +59,12 @@ const routes = [
     name: 'login',
     component: LoginPage,
     meta: { breadcrumb: 'Login', requiresAuth: false }
+  },
+  {
+    path: '/auth/register',
+    name: 'register',
+    component: RegisterPage,
+    meta: { breadcrumb: 'Register', requiresAuth: false }
   }
 ];
 

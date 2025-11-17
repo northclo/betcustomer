@@ -126,8 +126,8 @@
                   <a-col :xs="16" :sm="18">
             <a-input-number
                       v-model:value="exchangeAmount"
-                      :min="0"
-              :max="availableBalance"
+                      :min="exchangeMin"
+              :max="exchangeMax"
                       :step="10000"
               :controls="false"
                       class="w-100"
@@ -143,7 +143,7 @@
                       class="w-100 glass-action-green request-exchange-btn"
                       size="large"
                       :loading="loading"
-                      :disabled="!exchangeAmount || exchangeAmount <= 0 || !exchangeSecureCode"
+                      :disabled="!exchangeAmount || exchangeAmount <= 0 || !exchangeSecureCode || !isWithinExchangeTimeRange"
                       @click="handleRequestExchange"
                     >
                       <span class="request-exchange-text">{{ getTranslation('request_exchange') }}</span>
@@ -185,6 +185,19 @@
                 </a-input>
               </div>
 
+              <div v-if="exchangeSettings.exchange_timezone && !isWithinExchangeTimeRange" class="warning-text text-danger">
+                {{ exchangeSettings.exchange_impossible_timezone_message || getTranslation('exchange_not_available_at_this_time') }}
+              </div>
+              <div v-if="exchangeSettings.exchange_min || exchangeSettings.exchange_max" class="warning-text" style="margin-top: 8px;">
+                <strong>{{ getTranslation('exchange_amount_selection') }}:</strong>
+                <span v-if="exchangeSettings.exchange_min">
+                  {{ getTranslation('minimum') }}: {{ exchangeSettings.exchange_min.toLocaleString() }} {{ trlang.currency }}
+                </span>
+                <span v-if="exchangeSettings.exchange_min && exchangeSettings.exchange_max"> / </span>
+                <span v-if="exchangeSettings.exchange_max">
+                  {{ getTranslation('maximum') }}: {{ exchangeSettings.exchange_max.toLocaleString() }} {{ trlang.currency }}
+                </span>
+              </div>
               <div class="warning-text text-danger">
                 {{ getTranslation('bank_account_change_warning') }}
           </div>
@@ -234,6 +247,20 @@ const showBankNumber = ref(false);
 const currentPage = ref(1);
 const pageSize = ref(10);
 const totalPages = ref(1);
+const exchangeSettings = ref({
+  exchange_min: null,
+  exchange_max: null,
+  exchange_timezone: false,
+  exchange_start_time: null,
+  exchange_end_time: null,
+  exchange_impossible_timezone_message: '',
+  exchange_restriction: 'impossible',
+  exchange_restriction_use: false,
+  exchange_restriction_limit: null,
+  charge_restriction_use: false,
+  charge_restriction_limit: null,
+  exchange_complete_message: '',
+});
 
 // ✅ computed
 const displayBankNumber = computed(() => {
@@ -244,6 +271,40 @@ const displayBankNumber = computed(() => {
 
 const pageNumbers = computed(() => {
   return Array.from({ length: totalPages.value }, (_, i) => i + 1);
+});
+
+const exchangeMin = computed(() => {
+  return exchangeSettings.value.exchange_min ?? 0;
+});
+
+const exchangeMax = computed(() => {
+  return Math.min(
+    exchangeSettings.value.exchange_max ?? availableBalance.value,
+    availableBalance.value
+  );
+});
+
+const isWithinExchangeTimeRange = computed(() => {
+  if (!exchangeSettings.value.exchange_timezone) return true;
+  
+  const startTime = exchangeSettings.value.exchange_start_time;
+  const endTime = exchangeSettings.value.exchange_end_time;
+  
+  if (!startTime || !endTime) return true;
+  
+  const now = new Date();
+  const currentHours = now.getHours();
+  const currentMinutes = now.getMinutes();
+  const currentTime = currentHours * 100 + currentMinutes;
+  
+  const start = Number(startTime);
+  const end = Number(endTime);
+  
+  if (start > end) {
+    return currentTime >= start || currentTime <= end;
+  }
+  
+  return currentTime >= start && currentTime <= end;
 });
 
 // ✅ table columns
@@ -341,17 +402,49 @@ const toggleBankNumber = () => {
   showBankNumber.value = !showBankNumber.value;
 };
 
-const handleRequestExchange = async () => {
+const validateExchangeAmount = () => {
   if (!exchangeAmount.value || exchangeAmount.value <= 0) {
-    return message.error(getTranslation('please_enter_valid_exchange_amount'));
+    message.error(getTranslation('please_enter_valid_exchange_amount'));
+    return false;
   }
 
   if (!exchangeSecureCode.value || exchangeSecureCode.value.trim() === '') {
-    return message.error(getTranslation('please_enter_exchange_secure_code'));
+    message.error(getTranslation('please_enter_exchange_secure_code'));
+    return false;
   }
 
   if (exchangeAmount.value > availableBalance.value) {
-    return message.error(getTranslation('insufficient_balance'));
+    message.error(getTranslation('insufficient_balance'));
+    return false;
+  }
+
+  if (exchangeSettings.value.exchange_min !== null && exchangeAmount.value < exchangeSettings.value.exchange_min) {
+    message.error(
+      getTranslation('minimum_exchange_amount').replace('{amount}', exchangeSettings.value.exchange_min.toLocaleString())
+    );
+    return false;
+  }
+
+  if (exchangeSettings.value.exchange_max !== null && exchangeAmount.value > exchangeSettings.value.exchange_max) {
+    message.error(
+      getTranslation('maximum_exchange_amount').replace('{amount}', exchangeSettings.value.exchange_max.toLocaleString())
+    );
+    return false;
+  }
+
+  if (!isWithinExchangeTimeRange.value) {
+    const errorMessage = exchangeSettings.value.exchange_impossible_timezone_message || 
+                        getTranslation('exchange_not_available_at_this_time');
+    message.error(errorMessage);
+    return false;
+  }
+
+  return true;
+};
+
+const handleRequestExchange = async () => {
+  if (!validateExchangeAmount()) {
+    return;
   }
 
   loading.value = true;
@@ -362,9 +455,10 @@ const handleRequestExchange = async () => {
     });
 
     if (result.status) {
-      message.success(
-        result.message || getTranslation('exchange_request_submitted')
-      );
+      const successMessage = result.data?.message || 
+                             exchangeSettings.value.exchange_complete_message || 
+                             getTranslation('exchange_request_submitted');
+      message.success(successMessage);
       resetExchangeAmount();
       fetchExchangeHistory();
       fetchBalance();
@@ -467,6 +561,30 @@ const fetchBankNumber = async () => {
   }
 };
 
+const fetchExchangeSettings = async () => {
+  try {
+    const result = await getData(apiLink.get_site_setting);
+    if (result.status && result.data) {
+      exchangeSettings.value = {
+        exchange_min: result.data.exchange_min ?? null,
+        exchange_max: result.data.exchange_max ?? null,
+        exchange_timezone: result.data.exchange_timezone ?? false,
+        exchange_start_time: result.data.exchange_start_time ?? null,
+        exchange_end_time: result.data.exchange_end_time ?? null,
+        exchange_impossible_timezone_message: result.data.exchange_impossible_timezone_message || '',
+        exchange_restriction: result.data.exchange_restriction ?? 'impossible',
+        exchange_restriction_use: result.data.exchange_restriction_use ?? false,
+        exchange_restriction_limit: result.data.exchange_restriction_limit ?? null,
+        charge_restriction_use: result.data.charge_restriction_use ?? false,
+        charge_restriction_limit: result.data.charge_restriction_limit ?? null,
+        exchange_complete_message: result.data.exchange_complete_message || '',
+      };
+    }
+  } catch (error) {
+    console.error('Error fetching exchange settings:', error);
+  }
+};
+
 const goToPage = (page) => {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page;
@@ -479,6 +597,7 @@ onMounted(() => {
   fetchExchangeHistory();
   fetchBalance();
   fetchBankNumber();
+  fetchExchangeSettings();
 });
 </script>
 

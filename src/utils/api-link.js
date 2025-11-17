@@ -1,6 +1,7 @@
 export const apiLink = {
     get_captcha: 'customer/auth/captcha',
     login: 'customer/auth',
+    register: 'customer/auth/register',
     get_betting_info: 'customer/game',
     get_bet_history: 'customer/game/history',
     get_init_betting_option: "customer/game/option",
@@ -19,4 +20,5 @@ export const apiLink = {
     delete_question: 'customer/support/questions',
     bulk_delete_questions: 'customer/support/questions/bulk-delete',
     get_notices: 'customer/notice/list',
+    get_site_setting: 'customer/site-setting',
 }

@@ -130,8 +130,8 @@
                   <a-col :xs="16" :sm="18">
                     <a-input-number
                       v-model:value="chargeAmount"
-                      :min="0"
-                      :max="10000000"
+                      :min="chargeMin"
+                      :max="chargeMax"
                       :step="10000"
                       :controls="false"
                       class="w-100"
@@ -147,7 +147,7 @@
                       class="w-100 glass-action-green request-charge-btn"
                       size="large"
                       :loading="loading"
-                      :disabled="!chargeAmount || chargeAmount <= 0"
+                      :disabled="!chargeAmount || chargeAmount <= 0 || !isWithinChargeTimeRange"
                       @click="handleRequestCharging"
                     >
                       <span class="request-charge-text">{{ getTranslation('request_charge') }}</span>
@@ -178,6 +178,26 @@
                 </a-input>
               </div>
 
+              <div v-if="depositAccount" class="deposit-account-info">
+                <div class="section-title">{{ getTranslation('deposit_account_information') }}</div>
+                <div class="deposit-account-content">
+                  <pre class="deposit-account-text">{{ depositAccount }}</pre>
+                </div>
+              </div>
+
+              <div v-if="chargeSettings.charge_timezone && !isWithinChargeTimeRange" class="warning-text text-danger">
+                {{ chargeSettings.charge_impossible_timezone_message || getTranslation('charging_not_available_at_this_time') }}
+              </div>
+              <div v-if="chargeSettings.charge_min || chargeSettings.charge_max" class="warning-text" style="margin-top: 8px;">
+                <strong>{{ getTranslation('charge_amount_selection') }}:</strong>
+                <span v-if="chargeSettings.charge_min">
+                  {{ getTranslation('minimum') }}: {{ chargeSettings.charge_min.toLocaleString() }} {{ trlang.currency }}
+                </span>
+                <span v-if="chargeSettings.charge_min && chargeSettings.charge_max"> / </span>
+                <span v-if="chargeSettings.charge_max">
+                  {{ getTranslation('maximum') }}: {{ chargeSettings.charge_max.toLocaleString() }} {{ trlang.currency }}
+                </span>
+              </div>
               <div class="warning-text text-danger">
                 {{ getTranslation('bank_account_change_warning') }}
               </div>
@@ -198,10 +218,15 @@ import { apiLink } from '@/utils/api-link.js';
 
 // ✅ i18n
 const langState = inject('langState');
+const siteText = inject('siteText', { value: {} });
 const trlang = computed(() => langState?.translations || {});
 
 const getTranslation = (key) =>
   trlang.value?.[key] ?? key;
+
+const depositAccount = computed(() => {
+  return siteText.value?.deposit_account || '';
+});
 
 // ✅ constants
 const MO_VALUE = 10000; // MO means 10,000
@@ -225,6 +250,15 @@ const showBankNumber = ref(false);
 const currentPage = ref(1);
 const pageSize = ref(10);
 const totalPages = ref(1);
+const chargeSettings = ref({
+  charge_min: null,
+  charge_max: null,
+  charge_timezone: false,
+  charge_start_time: null,
+  charge_end_time: null,
+  charge_impossible_timezone_message: '',
+  charge_complete_message: '',
+});
 
 // ✅ computed
 const displayBankNumber = computed(() => {
@@ -235,6 +269,37 @@ const displayBankNumber = computed(() => {
 
 const pageNumbers = computed(() => {
   return Array.from({ length: totalPages.value }, (_, i) => i + 1);
+});
+
+const chargeMin = computed(() => {
+  return chargeSettings.value.charge_min ?? 0;
+});
+
+const chargeMax = computed(() => {
+  return chargeSettings.value.charge_max ?? 10000000;
+});
+
+const isWithinChargeTimeRange = computed(() => {
+  if (!chargeSettings.value.charge_timezone) return true;
+  
+  const startTime = chargeSettings.value.charge_start_time;
+  const endTime = chargeSettings.value.charge_end_time;
+  
+  if (!startTime || !endTime) return true;
+  
+  const now = new Date();
+  const currentHours = now.getHours();
+  const currentMinutes = now.getMinutes();
+  const currentTime = currentHours * 100 + currentMinutes;
+  
+  const start = Number(startTime);
+  const end = Number(endTime);
+  
+  if (start > end) {
+    return currentTime >= start || currentTime <= end;
+  }
+  
+  return currentTime >= start && currentTime <= end;
 });
 
 // ✅ table columns
@@ -331,9 +396,39 @@ const toggleBankNumber = () => {
   showBankNumber.value = !showBankNumber.value;
 };
 
-const handleRequestCharging = async () => {
+const validateChargeAmount = () => {
   if (!chargeAmount.value || chargeAmount.value <= 0) {
-    return message.error(getTranslation('please_enter_valid_charge_amount'));
+    message.error(getTranslation('please_enter_valid_charge_amount'));
+    return false;
+  }
+
+  if (chargeSettings.value.charge_min !== null && chargeAmount.value < chargeSettings.value.charge_min) {
+    message.error(
+      getTranslation('minimum_charge_amount').replace('{amount}', chargeSettings.value.charge_min.toLocaleString())
+    );
+    return false;
+  }
+
+  if (chargeSettings.value.charge_max !== null && chargeAmount.value > chargeSettings.value.charge_max) {
+    message.error(
+      getTranslation('maximum_charge_amount').replace('{amount}', chargeSettings.value.charge_max.toLocaleString())
+    );
+    return false;
+  }
+
+  if (!isWithinChargeTimeRange.value) {
+    const errorMessage = chargeSettings.value.charge_impossible_timezone_message || 
+                        getTranslation('charging_not_available_at_this_time');
+    message.error(errorMessage);
+    return false;
+  }
+
+  return true;
+};
+
+const handleRequestCharging = async () => {
+  if (!validateChargeAmount()) {
+    return;
   }
 
   loading.value = true;
@@ -343,9 +438,10 @@ const handleRequestCharging = async () => {
     });
 
     if (result.status) {
-      message.success(
-        result.message || getTranslation('fund_request_submitted')
-      );
+      const successMessage = result.data?.message || 
+                             chargeSettings.value.charge_complete_message || 
+                             getTranslation('fund_request_submitted');
+      message.success(successMessage);
       resetChargeAmount();
       fetchChargeHistory();
     } else {
@@ -435,6 +531,25 @@ const fetchBankNumber = async () => {
   }
 };
 
+const fetchChargeSettings = async () => {
+  try {
+    const result = await getData(apiLink.get_site_setting);
+    if (result.status && result.data) {
+      chargeSettings.value = {
+        charge_min: result.data.charge_min ?? null,
+        charge_max: result.data.charge_max ?? null,
+        charge_timezone: result.data.charge_timezone ?? false,
+        charge_start_time: result.data.charge_start_time ?? null,
+        charge_end_time: result.data.charge_end_time ?? null,
+        charge_impossible_timezone_message: result.data.charge_impossible_timezone_message || '',
+        charge_complete_message: result.data.charge_complete_message || '',
+      };
+    }
+  } catch (error) {
+    console.error('Error fetching charge settings:', error);
+  }
+};
+
 const goToPage = (page) => {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page;
@@ -446,6 +561,7 @@ const goToPage = (page) => {
 onMounted(() => {
   fetchChargeHistory();
   fetchBankNumber();
+  fetchChargeSettings();
 });
 </script>
 
@@ -766,10 +882,33 @@ onMounted(() => {
   background: var(--glass-red-light) !important;
   border-color: var(--glass-red-border) !important;
 }
+
+.deposit-account-info {
+  margin-top: 16px;
+}
+
+.deposit-account-content {
+  background: var(--glass-bg-light);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 8px;
+}
+
+.deposit-account-text {
+  color: var(--white-color);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: inherit;
+}
 </style>
 
 <style>
-/* Override main-container max-width for AddFundPage only */
 .main-container:has(.add-fund-page) {
   max-width: 1600px !important;
 }

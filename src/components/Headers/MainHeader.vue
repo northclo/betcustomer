@@ -21,6 +21,11 @@
           <span class="mobile-menu-toggle__bar" />
           <span class="mobile-menu-toggle__bar" />
         </button>
+        <div v-if="siteName" class="site-name">
+          <a-typography-text class="site-name-text">
+            {{ siteName }}
+          </a-typography-text>
+        </div>
         <!-- Desktop navigation -->
         <div
           v-if="!isMobileView"
@@ -128,7 +133,7 @@
 <script>
 export default {
   name: 'MainHeader',
-  inject: ['langState'],
+  inject: ['langState', 'siteText'],
   props: {},
   data() {
     return {
@@ -140,6 +145,9 @@ export default {
   computed: {
     trlang() {
       return this.langState?.translations || {};
+    },
+    siteName() {
+      return this.siteText?.site_name || '';
     },
     currentRoute() {
       return this.$route.path;

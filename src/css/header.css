@@ -84,6 +84,20 @@
   background: rgba(255, 255, 255, 0.08);
 }
 
+.site-name {
+  display: flex;
+  align-items: center;
+  margin-right: 16px;
+  flex-shrink: 0;
+}
+
+.site-name-text {
+  color: var(--white-color);
+  font-size: 18px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 .AppBarBtnsSub {
   display: flex;
   justify-content: left;
