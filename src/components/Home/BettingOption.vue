@@ -112,6 +112,7 @@
         <a-col :xs="24" :md="5">
           <button
             class="glass-action-btn glass-action-green text-white w-100 radius-1 cursor-pointer h-100 shadow-dark py-2"
+            :disabled="!props.gameActivated"
             @click="startBetting"
           >
             {{ trlang.start_bet }}
@@ -152,6 +153,8 @@ const BET_AMOUNTS = [10000, 20000, 50000, 100000];
 // ✅ props
 const props = defineProps({
   bettingRemainTime: { type: Number, default: 0 },
+  gameActivated: { type: Boolean, default: true },
+  inactiveMessage: { type: String, default: '' },
 });
 
 // ✅ states
@@ -166,15 +169,10 @@ const loading = ref(false);
 
 const emit = defineEmits(['startBetting']);
 
-// Helper function to normalize rate values from API
-// API may return values as: 193 (representing 1.93%), 1.93 (direct), or 0.0193 (decimal)
 const normalizeRate = (value) => {
   if (typeof value !== 'number') return value;
-  // If value is > 10, it's likely in format like 193 (representing 1.93%), divide by 100
   if (value > 10) return value / 100;
-  // If value is < 0.1, it might be in decimal format like 0.0193, multiply by 100
   if (value < 0.1) return value * 100;
-  // Otherwise, use value directly (already in correct format like 1.93)
   return value;
 };
 
@@ -292,7 +290,6 @@ const fetchData = async () => {
 const setBettingOption = (item) => {
   bettingType.value = item.key;
   bettingRate.value = item.rate;
-  // Show number input form when number 13, 14, or 16 is selected
   const lengthMap = { number_13: 3, number_14: 4, number_16: 6 };
   if (lengthMap[item.key]) {
     numberSort.value = Array(lengthMap[item.key]).fill('');
@@ -316,8 +313,11 @@ const resetBetting = () => {
 };
 
 const startBetting = async () => {
-  // Betting window: 3 mins (180s) to 1.5 mins (90s) - can bet and cancel
-  // After 1.5 mins (90s) - block betting
+  if (!props.gameActivated) {
+    const messageText = props.inactiveMessage || getTranslation('game_is_currently_disabled');
+    return message.error(messageText);
+  }
+
   const remainTime = props.bettingRemainTime || 0;
   if (remainTime < 90 || remainTime > 180) {
     const timeMsg =

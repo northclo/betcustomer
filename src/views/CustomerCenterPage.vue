@@ -608,6 +608,8 @@ onMounted(() => {
   height: 32px;
   padding: 0;
   border-radius: 6px;
+  background: transparent !important;
+  border: none !important;
 }
 
 .action-btn-edit {
@@ -616,12 +618,24 @@ onMounted(() => {
 
 .action-btn-edit:hover:not(:disabled) {
   color: var(--main-color) !important;
+  background: transparent !important;
 }
 
 .action-btn-edit:disabled {
   color: rgba(255, 255, 255, 0.3) !important;
   cursor: not-allowed;
   opacity: 0.5;
+  background: transparent !important;
+}
+
+.action-btn-delete {
+  color: #ef4444 !important;
+  background: transparent !important;
+}
+
+.action-btn-delete:hover {
+  color: #dc2626 !important;
+  background: transparent !important;
 }
 
 .action-buttons :deep(.anticon) {
@@ -771,6 +785,18 @@ onMounted(() => {
 :deep(.ant-btn-dangerous:hover) {
   background: var(--glass-red-light) !important;
   border-color: var(--glass-red-border) !important;
+}
+
+.action-btn-delete :deep(.ant-btn-dangerous) {
+  background: transparent !important;
+  border: none !important;
+  color: #ef4444 !important;
+}
+
+.action-btn-delete :deep(.ant-btn-dangerous:hover) {
+  background: transparent !important;
+  border: none !important;
+  color: #dc2626 !important;
 }
 
 .text-center {

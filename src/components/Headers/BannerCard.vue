@@ -194,6 +194,18 @@ watch(
   border-radius: 20px;
   padding: 12px 16px;
   box-shadow: var(--glass-shadow-strong);
+  max-width: calc(1700px - 0px);
+  margin: 0 auto;
+  margin-left: 8px;
+  margin-right: 8px;
+  margin-top: 12px;
+}
+
+@media (min-width: 1216px) {
+  .glass-banner {
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
 .glass-banner:hover {

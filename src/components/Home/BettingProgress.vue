@@ -66,55 +66,6 @@
         </a-typography-text>
       </a-layout>
     </a-card>
-
-    <!-- Recent Bets -->
-    <a-card :title="trlang.recent_betting_history" class="game-result-card recent-betting-card">
-      <a-table
-        :columns="columns"
-        :data-source="dataSource"
-        row-key="key"
-        class="w-100 mt-2"
-        :pagination="false"
-      >
-        <template #emptyText>
-          <a-spin v-if="loading" />
-          <span v-else>{{ trlang.no_data }}</span>
-        </template>
-
-        <template #bodyCell="{ column, record, index }">
-          <template v-if="column.key === 'id'">
-            {{ dataSource.length - index }}
-          </template>
-          <template v-else-if="column.key === 'bet_amount'">
-            {{ record.bet_amount.toLocaleString() }}
-          </template>
-          <template v-else-if="column.key === 'bet_info'">
-            <a-tooltip :title="String(record.number_sort)" color="#0086e3">
-              {{ trlang[record.type] }}
-              <span class="ms-5">{{ record.benefit }}</span>
-            </a-tooltip>
-          </template>
-          <template v-else-if="column.key === 'result'">
-            <a-typography-text
-              v-if="game?.list && game.list.length > 0"
-              class="text-white"
-            >
-              {{ record?.earning_amount || 0 }}
-            </a-typography-text>
-            <a-button
-              v-else-if="remainTime >= 90 && remainTime <= 180"
-              class="w-100"
-              @click="emit('cancelBetting', { id: record.id })"
-            >
-              {{ trlang.cancel }}
-            </a-button>
-            <a-typography-text v-else class="text-white">
-              {{ trlang.no_available_betting }}
-            </a-typography-text>
-          </template>
-        </template>
-      </a-table>
-    </a-card>
   </a-space>
 </template>
 
@@ -125,14 +76,6 @@ import { LeftOutlined, RightOutlined } from '@ant-design/icons-vue';
 // ✅ i18n
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
-
-// ✅ constants
-const DEFAULT_COLUMNS = (t) => [
-  { key: 'id', title: t.id, dataIndex: 'id' },
-  { key: 'bet_amount', title: t.bet_amount, dataIndex: 'bet_amount' },
-  { key: 'bet_info', title: t.bet_info, dataIndex: 'bet_info' },
-  { key: 'result', title: t.result, dataIndex: 'result' },
-];
 
 const emit = defineEmits(['cancelBetting', 'previousGame', 'nextGame']);
 
@@ -152,13 +95,11 @@ const props = defineProps({
 
 // ✅ state
 const totalBettingAmount = computed(() =>
-  dataSource.value.reduce((sum, el) => sum + (el?.bet_amount || 0), 0)
+  (props.bettingHistory || []).reduce((sum, el) => sum + (el?.bet_amount || 0), 0)
 );
 const totalEarningAmount = computed(() =>
-  dataSource.value.reduce((sum, el) => sum + (el?.earning_amount || 0), 0)
+  (props.bettingHistory || []).reduce((sum, el) => sum + (el?.earning_amount || 0), 0)
 );
-const columns = computed(() => DEFAULT_COLUMNS(trlang.value));
-const dataSource = computed(() => props.bettingHistory || []);
 const game = computed(() => props.gameResult);
 </script>
 
@@ -223,43 +164,16 @@ const game = computed(() => props.gameResult);
   color: var(--white-color) !important;
 }
 
-/* Recent Betting History Card Styling - Match Game Result Card Size */
-.recent-betting-card {
-  min-height: 220px;
-}
-
-.recent-betting-card :deep(.ant-card-body) {
-  padding: 30px !important;
-  min-height: 195px;
+/* Match Game Result Card height with BettingOption */
+.game-result-card {
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
 
-.recent-betting-card :deep(.ant-table-wrapper) {
+.game-result-card :deep(.ant-card-body) {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow-x: auto;
-}
-
-.recent-betting-card :deep(.ant-table) {
-  font-size: 16px;
-  flex: 1;
-  min-width: 720px;
-}
-
-.recent-betting-card :deep(.ant-table-thead > tr > th) {
-  padding: 18px !important;
-  font-size: 17px;
-  font-weight: 600;
-}
-
-.recent-betting-card :deep(.ant-table-tbody > tr > td) {
-  padding: 18px !important;
-  font-size: 16px;
-}
-
-.recent-betting-card :deep(.ant-table-tbody) {
-  min-height: 100px;
 }
 </style>

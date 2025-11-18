@@ -74,6 +74,8 @@ export default {
   cannot_cancel_betting_outside_window: "Cannot cancel betting outside the betting window",
   started_new_game: "Started new game: {gameId}",
   game_ended: "Game ended: {gameId}",
+  game_is_currently_disabled: "Game is currently disabled",
+  failed_to_load_game_info: "Failed to load game information. Please try again.",
 
   // Auth names
   login: "Login",
@@ -267,4 +269,27 @@ export default {
   pending: "Pending",
   registration_pending_approval: "Your registration is pending approval. Please wait for admin approval.",
   membership_registration_disabled: "Membership registration is currently disabled.",
+
+  // MO Amount Labels
+  mo_1: "1 MO",
+  mo_3: "3 MO",
+  mo_5: "5 MO",
+  mo_10: "10 MO",
+  mo_50: "50 MO",
+  mo_100: "100 MO",
+
+  // Bank Number
+  enter_bank_number: "Enter bank number",
+
+  // Refund/Withdrawal
+  withdraw_funds: "Withdraw Funds",
+  available_balance: "Available Balance",
+  withdrawal_amount: "Withdrawal Amount",
+  request_withdrawal: "Request Withdrawal",
+  enter_withdrawal_amount: "Enter withdrawal amount",
+  minimum_amount_is: "Minimum amount is {amount}",
+  invalid_amount: "Invalid amount",
+  withdrawal_request_submitted: "Withdrawal request submitted successfully",
+  failed_to_process_withdrawal: "Failed to process withdrawal",
+
 };

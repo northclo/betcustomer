@@ -93,31 +93,23 @@
 
               <div>
                 <div class="section-title">{{ getTranslation('exchange_amount_selection') }}</div>
-                <a-row :gutter="[8, 8]" class="mt-2">
-                  <a-col
+                <div class="mo-buttons-container mt-2">
+                  <button
                     v-for="moAmount in moAmounts"
                     :key="moAmount.value"
-                    :xs="8"
-                    :sm="6"
-                    :md="4"
+                    class="mo-btn glass-btn cursor-pointer"
+                    :class="{ 'mo-btn-active': selectedMoAmount === moAmount.value }"
+                    @click="selectMoAmount(moAmount.value)"
                   >
-                    <button
-                      class="mo-btn glass-btn w-100 cursor-pointer"
-                      :class="{ 'mo-btn-active': selectedMoAmount === moAmount.value }"
-                      @click="selectMoAmount(moAmount.value)"
-                    >
-                      {{ moAmount.label }}
-                    </button>
-                  </a-col>
-                  <a-col :xs="8" :sm="6" :md="4">
-                    <button
-                      class="mo-btn glass-btn glass-action-pink w-100 cursor-pointer"
-                      @click="resetExchangeAmount"
-                    >
-                      {{ getTranslation('reset') }}
-                    </button>
-                  </a-col>
-                </a-row>
+                    {{ moAmount.label }}
+                  </button>
+                  <button
+                    class="mo-btn glass-btn glass-action-pink cursor-pointer"
+                    @click="resetExchangeAmount"
+                  >
+                    {{ getTranslation('reset') }}
+                  </button>
+                </div>
           </div>
 
           <div>
@@ -156,7 +148,7 @@
                 <div class="section-title">{{ getTranslation('exchange_secure_code') }}</div>
                 <a-input
                   v-model:value="exchangeSecureCode"
-                  :placeholder="trlang.enter_secure_code"
+                  :placeholder="getTranslation('enter_secure_code')"
                   class="mt-2"
                   size="large"
                   :maxlength="50"
@@ -166,23 +158,12 @@
               <div>
                 <div class="section-title">{{ getTranslation('bank_number') }}</div>
                 <a-input
-                  :value="displayBankNumber"
-                  :type="showBankNumber ? 'text' : 'password'"
-                  readonly
+                  v-model:value="bankNumber"
+                  type="text"
                   class="mt-2"
                   size="large"
-                >
-                  <template #suffix>
-                    <a-button
-                      type="text"
-                      @click="toggleBankNumber"
-                      class="bank-view-btn"
-                    >
-                      <EyeOutlined v-if="!showBankNumber" />
-                      <EyeInvisibleOutlined v-else />
-                    </a-button>
-                  </template>
-                </a-input>
+                  :placeholder="getTranslation('enter_bank_number')"
+                />
               </div>
 
               <div v-if="exchangeSettings.exchange_timezone && !isWithinExchangeTimeRange" class="warning-text text-danger">
@@ -212,7 +193,6 @@
 <script setup>
 import { ref, computed, onMounted, inject } from 'vue';
 import { message } from 'ant-design-vue';
-import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons-vue';
 import { getData, postData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link.js';
 
@@ -225,14 +205,14 @@ const getTranslation = (key) =>
 
 // ✅ constants
 const MO_VALUE = 10000; // MO means 10,000
-const moAmounts = [
-  { label: '1 MO', value: 1 * MO_VALUE },
-  { label: '3 MO', value: 3 * MO_VALUE },
-  { label: '5 MO', value: 5 * MO_VALUE },
-  { label: '10 MO', value: 10 * MO_VALUE },
-  { label: '50 MO', value: 50 * MO_VALUE },
-  { label: '100 MO', value: 100 * MO_VALUE },
-];
+const moAmounts = computed(() => [
+  { label: getTranslation('mo_1'), value: 1 * MO_VALUE },
+  { label: getTranslation('mo_3'), value: 3 * MO_VALUE },
+  { label: getTranslation('mo_5'), value: 5 * MO_VALUE },
+  { label: getTranslation('mo_10'), value: 10 * MO_VALUE },
+  { label: getTranslation('mo_50'), value: 50 * MO_VALUE },
+  { label: getTranslation('mo_100'), value: 100 * MO_VALUE },
+]);
 
 // ✅ state
 const loading = ref(false);
@@ -243,7 +223,6 @@ const exchangeSecureCode = ref('');
 const selectedMoAmount = ref(null);
 const availableBalance = ref(0);
 const bankNumber = ref('');
-const showBankNumber = ref(false);
 const currentPage = ref(1);
 const pageSize = ref(10);
 const totalPages = ref(1);
@@ -263,11 +242,6 @@ const exchangeSettings = ref({
 });
 
 // ✅ computed
-const displayBankNumber = computed(() => {
-  if (!bankNumber.value) return '******';
-  if (showBankNumber.value) return bankNumber.value;
-  return '******';
-});
 
 const pageNumbers = computed(() => {
   return Array.from({ length: totalPages.value }, (_, i) => i + 1);
@@ -394,13 +368,6 @@ const resetExchangeAmount = () => {
   exchangeSecureCode.value = '';
 };
 
-const toggleBankNumber = () => {
-  if (!bankNumber.value) {
-    message.warning(getTranslation('bank_number_not_available'));
-    return;
-  }
-  showBankNumber.value = !showBankNumber.value;
-};
 
 const validateExchangeAmount = () => {
   if (!exchangeAmount.value || exchangeAmount.value <= 0) {
@@ -514,7 +481,7 @@ const fetchExchangeHistory = async () => {
         _id: item._id,
         index: (currentPage.value - 1) * pageSize.value + index + 1,
         exchangeAmount: item.original_amount || item.amount || 0,
-        exchangerName: item.payment_method ? '*' : '*',
+        exchangerName: item.payment_method || '*',
         requestDate: item.createdAt,
         status: item.status || 'PENDING',
         cancelling: false,
@@ -645,6 +612,13 @@ onMounted(() => {
   margin-bottom: 8px;
 }
 
+.mo-buttons-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+}
+
 .mo-btn {
   background: var(--glass-bg-dark);
   backdrop-filter: var(--blur-sm);
@@ -663,7 +637,42 @@ onMounted(() => {
   line-height: 1.2;
   text-align: center;
   word-break: break-word;
-  padding: 8px 4px;
+  padding: 8px 12px;
+  flex: 1 1 calc(25% - 6px);
+  min-width: calc(25% - 6px);
+  max-width: calc(25% - 6px);
+}
+
+/* Force 4 buttons per row on desktop - creates 2 rows (4 + 3) */
+@media (min-width: 993px) {
+  .mo-btn:nth-child(4n+1) {
+    flex-basis: calc(25% - 6px);
+  }
+  .mo-btn:nth-child(4n+2) {
+    flex-basis: calc(25% - 6px);
+  }
+  .mo-btn:nth-child(4n+3) {
+    flex-basis: calc(25% - 6px);
+  }
+  .mo-btn:nth-child(4n) {
+    flex-basis: calc(25% - 6px);
+  }
+}
+
+@media (max-width: 768px) {
+  .mo-btn {
+    flex: 1 1 calc(33.33% - 6px);
+    min-width: calc(33.33% - 6px);
+    max-width: calc(33.33% - 6px);
+  }
+}
+
+@media (min-width: 769px) and (max-width: 992px) {
+  .mo-btn {
+    flex: 1 1 calc(25% - 6px);
+    min-width: calc(25% - 6px);
+    max-width: calc(25% - 6px);
+  }
 }
 
 .mo-btn:hover {
@@ -678,13 +687,6 @@ onMounted(() => {
   box-shadow: 0 0 15px rgba(99, 102, 241, 0.4) !important;
 }
 
-.bank-view-btn {
-  color: var(--white-color);
-}
-
-.bank-view-btn:hover {
-  color: var(--main-color);
-}
 
 .text-gray {
   color: rgba(255, 255, 255, 0.5);
@@ -837,12 +839,23 @@ onMounted(() => {
   color: var(--white-color);
 }
 
+:deep(.ant-input::placeholder),
+:deep(.ant-input-number-input::placeholder) {
+  color: rgba(255, 255, 255, 0.7) !important;
+  opacity: 1 !important;
+}
+
 :deep(.ant-input:focus),
 :deep(.ant-input-number:focus),
 :deep(.ant-input-number-focused) {
   background: var(--glass-bg-light);
   border-color: var(--glass-blue-border);
   box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+}
+
+:deep(.ant-input:focus::placeholder),
+:deep(.ant-input-number-input:focus::placeholder) {
+  color: rgba(255, 255, 255, 0.8) !important;
 }
 
 :deep(.ant-input[readonly]) {
@@ -891,17 +904,32 @@ onMounted(() => {
   line-height: 1.2;
   text-align: center;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
+  color: #ffffff !important;
 }
 
 :deep(.ant-btn-primary) {
   background: var(--glass-green) !important;
   border-color: var(--glass-green-border) !important;
+  color: #ffffff !important;
 }
 
 :deep(.ant-btn-primary:hover) {
   background: var(--glass-green-light) !important;
   border-color: var(--glass-green-border) !important;
+  color: #ffffff !important;
+}
+
+:deep(.ant-btn-primary:disabled) {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.request-exchange-btn :deep(.ant-btn-primary) {
+  color: #ffffff !important;
+}
+
+.request-exchange-btn :deep(.ant-btn-primary:hover:not(:disabled)) {
+  color: #ffffff !important;
 }
 
 :deep(.ant-btn-dangerous) {

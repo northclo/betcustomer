@@ -1,30 +1,44 @@
 <template>
-  <div class="bg-primary-light radius-1 p-3 mt-2">
-    <a-row :gutter="[15, 15]">
-      <a-col :xs="24" :lg="14" class="flex flex-column gap-2">
-        <BettingOption
+  <div class="home-page-container">
+    <div class="bg-primary-light radius-1 p-3 mt-2">
+      <a-row :gutter="[15, 15]">
+        <a-col :xs="24" :lg="14" class="flex flex-column gap-2">
+          <BettingOption
           :betting-remain-time="remainTime"
+          :game-activated="gameActivated"
+          :inactive-message="inactiveMessage"
           @start-betting="startBetting"
         />
-      </a-col>
-      <a-col :xs="24" :lg="10">
-        <BettingProgress
-          :previous-game-id="previousGameId"
-          :next-game-id="nextGameId"
-          :game-result="gameResult"
-          :remain-time="remainTime"
-          :game-id="gameId"
-          :number-list="numberList"
-          :today-no="todayNo"
-          :total-no="totalNo"
-          :betting-history="bettingHistory"
-          :loading="loading"
-          @cancel-betting="cancelBetting"
-          @previous-game="previousGame"
-          @next-game="nextGame"
-        />
-      </a-col>
-    </a-row>
+        </a-col>
+        <a-col :xs="24" :lg="10">
+          <BettingProgress
+            :previous-game-id="previousGameId"
+            :next-game-id="nextGameId"
+            :game-result="gameResult"
+            :remain-time="remainTime"
+            :game-id="gameId"
+            :number-list="numberList"
+            :today-no="todayNo"
+            :total-no="totalNo"
+            :betting-history="bettingHistory"
+            :loading="loading"
+            @cancel-betting="cancelBetting"
+            @previous-game="previousGame"
+            @next-game="nextGame"
+          />
+        </a-col>
+      </a-row>
+    </div>
+    
+    <div class="bg-primary-light radius-1 p-3 mt-2">
+      <BettingHistorySection
+        :betting-history="bettingHistory"
+        :game-result="gameResult"
+        :remain-time="remainTime"
+        :loading="loading"
+        @cancel-betting="cancelBetting"
+      />
+    </div>
   </div>
 </template>
 
@@ -32,6 +46,7 @@
 import { computed, inject, onMounted, onBeforeUnmount, ref } from 'vue';
 import BettingOption from '@/components/Home/BettingOption.vue';
 import BettingProgress from '@/components/Home/BettingProgress.vue';
+import BettingHistorySection from '@/components/Home/BettingHistorySection.vue';
 import { getData, postData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link';
 import { socket } from '@/plugins/socket.js';
@@ -67,6 +82,8 @@ const ownMoney = ref(0);
 const bettingHistory = ref([]);
 const previousGameId = ref(null);
 const nextGameId = ref(null);
+const gameActivated = ref(true);
+const inactiveMessage = ref('');
 
 // ✅ methods
 const fetchData = async (currentGameId) => {
@@ -76,7 +93,7 @@ const fetchData = async (currentGameId) => {
   );
 
   if (result.status) {
-    const { game, pendingBet, user, aroundGameId } = result.data;
+    const { game, pendingBet, user, aroundGameId, gameSetting } = result.data;
     previousGameId.value = aroundGameId?.previousGameId || null;
     nextGameId.value = aroundGameId?.nextGameId || null;
     gameId.value = game?.id || '';
@@ -86,6 +103,13 @@ const fetchData = async (currentGameId) => {
     todayNo.value = game?.today_no || 0;
     totalNo.value = game?.total_no || 0;
     ownMoney.value = user?.own_money || 0;
+    
+    gameActivated.value = gameSetting?.activate !== false;
+    inactiveMessage.value = gameSetting?.inactive_message || '';
+    
+    if (!gameActivated.value && inactiveMessage.value) {
+      message.warning(inactiveMessage.value);
+    }
 
     // pending bets
     bettingHistory.value = (pendingBet || []).map((el) => {
@@ -106,6 +130,10 @@ const fetchData = async (currentGameId) => {
 };
 
 const startBetting = async (bettingData) => {
+  const originalBalance = ownMoney.value;
+  
+  ownMoney.value = ownMoney.value - bettingData.bettingAmount;
+  
   const result = await postData(apiLink.start_bet, {
     game_id: gameId.value,
     bettingAmount: bettingData.bettingAmount,
@@ -125,8 +153,10 @@ const startBetting = async (bettingData) => {
       win: false,
       earning_amount: 0,
     });
-
-    ownMoney.value = ownMoney.value - bettingData.bettingAmount;
+    
+    await fetchData(gameId.value);
+  } else {
+    ownMoney.value = originalBalance;
   }
 };
 
@@ -144,6 +174,8 @@ const cancelBetting = async ({ id }) => {
     );
 
     ownMoney.value = ownMoney.value + result.data.bettingAmount;
+  } else {
+    await fetchData(gameId.value);
   }
 };
 
@@ -176,3 +208,27 @@ onBeforeUnmount(() => {
   socket.off('end_game', handleEndGame);
 });
 </script>
+
+<style scoped>
+.home-page-container {
+  width: 100%;
+}
+
+/* Make columns equal height */
+:deep(.ant-row) {
+  display: flex;
+  align-items: stretch;
+}
+
+:deep(.ant-col) {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ensure BettingOption and BettingProgress cards have same height */
+:deep(.ant-col .bg-primary-light) {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+</style>
