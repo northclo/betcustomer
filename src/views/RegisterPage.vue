@@ -4,7 +4,7 @@
       direction="vertical"
       size="middle"
       class="w-100"
-      style="max-width: 400px"
+      style="max-width: 500px"
     >
       <div>
         <a-typography-title :level="2" class="text-white text-center">
@@ -39,74 +39,133 @@
         class="mb-2"
       />
 
-      <div class="flex flex-column gap-4" v-if="isRegistrationEnabled">
-        <div>
-          <a-typography-text class="text-white">
-            {{ trlang.email }}
-            <span class="text-danger">*</span>
-          </a-typography-text>
-          <a-input v-model:value="email" :placeholder="trlang.input_email" />
-        </div>
+      <div v-if="isRegistrationEnabled" class="register-form">
+        <a-row :gutter="[16, 16]">
+          <a-col :xs="24" :sm="12">
+            <div class="form-field">
+              <a-typography-text class="text-white">
+                {{ trlang.email }}
+                <span class="text-danger">*</span>
+              </a-typography-text>
+              <a-input v-model:value="email" :placeholder="trlang.input_email" />
+            </div>
+          </a-col>
 
-        <div>
-          <a-typography-text class="text-white">
-            {{ trlang.password }}
-            <span class="text-danger">*</span>
-          </a-typography-text>
-          <a-input-password
-            v-model:value="password"
-            :placeholder="trlang.input_password"
-          />
-        </div>
+          <a-col :xs="24" :sm="12">
+            <div class="form-field">
+              <a-typography-text class="text-white">
+                {{ trlang.nickname }}
+                <span class="text-danger">*</span>
+              </a-typography-text>
+              <a-input v-model:value="nickname" :placeholder="trlang.input_nickname" />
+            </div>
+          </a-col>
 
-        <div>
-          <a-typography-text class="text-white">
-            {{ trlang.confirm_password }}
-            <span class="text-danger">*</span>
-          </a-typography-text>
-          <a-input-password
-            v-model:value="confirmPassword"
-            :placeholder="trlang.confirm_password_placeholder"
-          />
-        </div>
+          <a-col :xs="24" :sm="12">
+            <div class="form-field">
+              <a-typography-text class="text-white">
+                {{ trlang.password }}
+                <span class="text-danger">*</span>
+              </a-typography-text>
+              <a-input-password
+                v-model:value="password"
+                :placeholder="trlang.input_password"
+              />
+            </div>
+          </a-col>
 
-        <div>
-          <a-typography-text class="text-white">
-            {{ trlang.nickname }}
-            <span class="text-danger">*</span>
-          </a-typography-text>
-          <a-input v-model:value="nickname" :placeholder="trlang.input_nickname" />
-        </div>
+          <a-col :xs="24" :sm="12">
+            <div class="form-field">
+              <a-typography-text class="text-white">
+                {{ trlang.confirm_password }}
+                <span class="text-danger">*</span>
+              </a-typography-text>
+              <a-input-password
+                v-model:value="confirmPassword"
+                :placeholder="trlang.confirm_password_placeholder"
+              />
+            </div>
+          </a-col>
 
-        <div v-if="requiresRecommender">
-          <a-typography-text class="text-white">
-            {{ trlang.recommender_code }}
-            <span class="text-danger">*</span>
-          </a-typography-text>
-          <a-input
-            v-model:value="recommenderCode"
-            :placeholder="trlang.input_recommender_code"
-          />
-        </div>
+          <a-col :xs="24" :sm="12">
+            <div class="form-field">
+              <a-typography-text class="text-white">
+                {{ trlang.real_name }}
+                <span class="text-danger">*</span>
+              </a-typography-text>
+              <a-input v-model:value="realName" :placeholder="trlang.input_real_name" />
+            </div>
+          </a-col>
 
-        <div v-if="canSelectReferrer && !requiresRecommender">
-          <a-typography-text class="text-white">
-            {{ trlang.recommender_code }}
-            <span class="text-muted">({{ trlang.optional }})</span>
-          </a-typography-text>
-          <a-input
-            v-model:value="recommenderCode"
-            :placeholder="trlang.input_recommender_code"
-          />
-        </div>
+          <a-col :xs="24" :sm="12">
+            <div class="form-field">
+              <a-typography-text class="text-white">
+                {{ trlang.bank_id }}
+                <span class="text-danger">*</span>
+              </a-typography-text>
+              <a-select
+                v-model:value="bankId"
+                :placeholder="trlang.select_bank"
+                :options="bankOptions"
+                class="w-100 glass-select bank-select"
+                dropdown-class-name="glass-select-dropdown"
+              >
+                <template #suffixIcon>
+                  <span class="glass-select__icon">▾</span>
+                </template>
+              </a-select>
+            </div>
+          </a-col>
+          <a-col :xs="24" :sm="12">
+            <div class="form-field">
+              <a-typography-text class="text-white">
+                {{ trlang.bank_number }}
+                <span class="text-danger">*</span>
+              </a-typography-text>
+              <a-input v-model:value="bankNumber" :placeholder="trlang.input_bank_number" />
+            </div>
+          </a-col>
 
-        <div v-if="captchaShow">
-          <div
-            class="text-center mb-4"
-            @click="loadCaptcha"
-            v-html="captcha"
-            style="cursor: pointer;"
-          ></div>
+          <a-col :xs="24" :sm="12">
+            <div class="form-field">
+              <a-typography-text class="text-white">
+                {{ trlang.bank_owner_name }}
+                <span class="text-danger">*</span>
+              </a-typography-text>
+              <a-input v-model:value="bankOwnerName" :placeholder="trlang.input_bank_owner_name" />
+            </div>
+          </a-col>
+
+          <a-col v-if="requiresRecommender" :xs="24">
+            <div class="form-field">
+              <a-typography-text class="text-white">
+                {{ trlang.recommender_code }}
+                <span class="text-danger">*</span>
+              </a-typography-text>
+              <a-input
+                v-model:value="recommenderCode"
+                :placeholder="trlang.input_recommender_code"
+              />
+            </div>
+          </a-col>
+
+          <a-col v-if="canSelectReferrer && !requiresRecommender" :xs="24">
+            <div class="form-field">
+              <a-typography-text class="text-white">
+                {{ trlang.recommender_code }}
+                <span class="text-muted">({{ trlang.optional }})</span>
+              </a-typography-text>
+              <a-input
+                v-model:value="recommenderCode"
+                :placeholder="trlang.input_recommender_code"
+              />
+            </div>
+          </a-col>
+        </a-row>
+
+        <div v-if="captchaShow" class="mt-4">
+          <!-- eslint-disable-next-line vue/no-v-html -->
+          <div class="text-center mb-4" style="cursor: pointer;" @click="loadCaptcha" v-html="captcha" />
           <a-input
             v-model:value="captchaInput"
             :placeholder="trlang.enter_captcha"
@@ -114,19 +173,29 @@
           />
         </div>
 
-        <a-button
-          class="w-100 bg-primary text-white"
-          :loading="registering"
-          @click="register"
-        >
-          {{ trlang.register }}
-        </a-button>
+        <div class="mt-4">
+          <div class="mb-4">
+            <a-checkbox v-model:checked="acceptedTerms" class="text-white">
+              {{ trlang.accept_terms_and_conditions }}
+              <span class="text-danger">*</span>
+            </a-checkbox>
+          </div>
+
+          <a-button
+            class="w-100 bg-primary text-white"
+            :loading="registering"
+            :disabled="!acceptedTerms"
+            @click="register"
+          >
+            {{ trlang.register }}
+          </a-button>
+        </div>
       </div>
 
       <div class="text-center">
         <a-typography-text class="text-white">
           {{ trlang.already_have_account }}
-          <a @click="goToLogin" class="text-primary" style="cursor: pointer;">
+          <a class="text-primary" style="cursor: pointer;" @click="goToLogin">
             {{ trlang.login }}
           </a>
         </a-typography-text>
@@ -153,13 +222,19 @@ const email = ref('');
 const password = ref('');
 const confirmPassword = ref('');
 const nickname = ref('');
+const realName = ref('');
+const bankId = ref(null);
+const bankNumber = ref('');
+const bankOwnerName = ref('');
 const recommenderCode = ref('');
 const captchaShow = ref(false);
 const captcha = ref('');
 const captchaText = ref('');
 const captchaInput = ref('');
+const acceptedTerms = ref(false);
 const registering = ref(false);
 const securityEnabled = ref(true);
+const bankOptions = ref([]);
 
 const membershipRegistration = computed(() => {
   return membershipSettings?.value?.membership_registration || 'no_use';
@@ -204,6 +279,18 @@ const fetchSecuritySetting = async () => {
     if (result.status && result.data) {
       securityEnabled.value = result.data.security ?? true;
       
+      // Load bank options
+      if (result.data.deposit_banks && Array.isArray(result.data.deposit_banks)) {
+        bankOptions.value = result.data.deposit_banks
+          .filter(bank => bank && bank.trim() !== '')
+          .map(bankName => ({
+            value: bankName,
+            label: bankName,
+          }));
+      } else {
+        bankOptions.value = [];
+      }
+      
       if (securityEnabled.value) {
         await getCaptcha();
       }
@@ -224,8 +311,12 @@ const register = async () => {
     return message.error(trlang.value.membership_registration_disabled);
   }
 
-  if (!email.value || !password.value || !nickname.value) {
-    return message.error(trlang.value.fill_required_fields);
+  if (!email.value || !password.value || !nickname.value || !realName.value) {
+    return message.error(trlang.value.please_fill_required_fields);
+  }
+
+  if (!bankId.value || !bankNumber.value || !bankOwnerName.value) {
+    return message.error(trlang.value.bank_information_required);
   }
 
   if (!checkValidEmail(email.value)) {
@@ -238,6 +329,10 @@ const register = async () => {
 
   if (password.value.length < 6) {
     return message.error(trlang.value.password_min_length);
+  }
+
+  if (!acceptedTerms.value) {
+    return message.error(trlang.value.must_accept_terms);
   }
 
   if (requiresRecommender.value && !recommenderCode.value) {
@@ -258,10 +353,21 @@ const register = async () => {
       email: email.value.toLowerCase(),
       password: password.value,
       nickname: nickname.value,
+      real_name: realName.value,
+      bank_id: bankId.value,
+      bank_number: bankNumber.value,
+      bank_owner_name: bankOwnerName.value,
     };
 
     if (recommenderCode.value) {
       payload.recommender_code = recommenderCode.value;
+    }
+
+    if (captchaShow.value && captchaInput.value) {
+      payload.captcha = captchaInput.value;
+      if (captchaText.value) {
+        payload.captcha_text = captchaText.value;
+      }
     }
 
     const res = await postData(apiLink.register, payload);
@@ -300,4 +406,16 @@ onMounted(async () => {
   await fetchSecuritySetting();
 });
 </script>
+<style scoped>
+.bank-select {
+  background: transparent !important;
+  color: red !important;
+}
 
+.bank-select :deep(.ant-select-selector) {
+  height: 32px !important;
+  border-radius: 6px !important;
+  background: transparent !important;
+
+}
+</style>

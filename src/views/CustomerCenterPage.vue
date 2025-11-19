@@ -3,63 +3,70 @@
     <div class="bg-primary-light radius-2 p-3 mt-2">
       <a-card :title="trlang.customer_center" class="game-result-card">
         <div>
-          <a-table
-            :columns="questionColumns"
-            :data-source="questionList"
-            :loading="loading"
-            :pagination="false"
-            :row-selection="rowSelection"
-            :row-key="(record) => record._id || record.id"
-            size="middle"
-            :bordered="false"
-            class="question-table"
-          >
-            <template #bodyCell="{ column, record }">
-              <template v-if="column.key === 'index'">
-                <span class="table-cell-content">{{ record.index }}</span>
+          <div class="table-container">
+            <a-table
+              :columns="questionColumns"
+              :data-source="questionList"
+              :loading="loading"
+              :pagination="false"
+              :row-selection="rowSelection"
+              :row-key="(record) => record._id || record.id"
+              size="middle"
+              :bordered="false"
+              class="question-table"
+            >
+              <template #bodyCell="{ column, record }">
+                <template v-if="column.key === 'index'">
+                  <span class="table-cell-content">{{ record.index }}</span>
+                </template>
+                <template v-else-if="column.key === 'title'">
+                  <span class="table-cell-content">
+                    <span :class="getStatusClass(record.status)">{{ getStatusText(record.status) }}</span>
+                    {{ record.title }}
+                  </span>
+                </template>
+                <template v-else-if="column.key === 'writer'">
+                  <span class="table-cell-content">{{ record.writer }}</span>
+                </template>
+                <template v-else-if="column.key === 'date'">
+                  <span class="table-cell-content">{{ formatDate(record.date) }}</span>
+                </template>
+                <template v-else-if="column.key === 'actions'">
+                  <div class="action-buttons">
+                    <a-button
+                      type="text"
+                      size="small"
+                      :disabled="record.status !== 'pending'"
+                      class="action-btn-edit"
+                      :title="trlang.edit"
+                      @click="handleEdit(record)"
+                    >
+                      <template #icon>
+                        <EditOutlined />
+                      </template>
+                    </a-button>
+                    <a-button
+                      type="text"
+                      size="small"
+                      danger
+                      class="action-btn-delete"
+                      :title="trlang.delete"
+                      @click="handleDelete(record)"
+                    >
+                      <template #icon>
+                        <DeleteOutlined />
+                      </template>
+                    </a-button>
+                  </div>
+                </template>
               </template>
-              <template v-else-if="column.key === 'title'">
-                <span class="table-cell-content">
-                  <span :class="getStatusClass(record.status)">{{ getStatusText(record.status) }}</span>
-                  {{ record.title }}
-                </span>
-              </template>
-              <template v-else-if="column.key === 'writer'">
-                <span class="table-cell-content">{{ record.writer }}</span>
-              </template>
-              <template v-else-if="column.key === 'date'">
-                <span class="table-cell-content">{{ formatDate(record.date) }}</span>
-              </template>
-              <template v-else-if="column.key === 'actions'">
-                <div class="action-buttons">
-                  <a-button
-                    type="text"
-                    size="small"
-                    :disabled="record.status !== 'pending'"
-                    @click="handleEdit(record)"
-                    class="action-btn-edit"
-                    :title="trlang.edit"
-                  >
-                    <template #icon><EditOutlined /></template>
-                  </a-button>
-                  <a-button
-                    type="text"
-                    size="small"
-                    danger
-                    @click="handleDelete(record)"
-                    class="action-btn-delete"
-                    :title="trlang.delete"
-                  >
-                    <template #icon><DeleteOutlined /></template>
-                  </a-button>
+              <template #emptyText>
+                <div class="text-center text-white py-4">
+                  {{ trlang.no_data }}
                 </div>
               </template>
-            </template>
-            <template #emptyText>
-              <div class="text-center text-white py-4">{{ trlang.no_data }}</div>
-            </template>
-          </a-table>
-
+            </a-table>
+          </div>
           <div class="action-bar mt-3">
             <a-button
               type="primary"
@@ -71,31 +78,28 @@
               {{ trlang.delete_list }}
             </a-button>
 
-            <div class="pagination-controls">
-              <a-button
-                class="pagination-nav-btn"
-                :disabled="currentPage === 1"
-                @click="goToPage(currentPage - 1)"
-              >
-                {{ trlang.prev_page }}
-              </a-button>
-              <template v-for="pageNum in pageNumbers" :key="pageNum">
-                <a-button
-                  :type="currentPage === pageNum ? 'primary' : 'default'"
-                  class="page-number-btn"
-                  :class="{ 'active': currentPage === pageNum }"
-                  @click="goToPage(pageNum)"
+            <div class="pagination-footer">
+              <a-pagination
+                v-model:current="pagination.page"
+                :page-size="pagination.limit"
+                :total="pagination.total"
+                :show-size-changer="false"
+                :show-total="false"
+                @change="handlePaginationChange"
+              />
+              <div class="pagination-size-selector">
+                <a-select
+                  v-model:value="pagination.limit"
+                  class="page-size-select glass-select"
+                  :options="pageSizeOptions"
+                  dropdown-class-name="glass-select-dropdown"
+                  @change="handlePageSizeChange"
                 >
-                  {{ pageNum }}
-                </a-button>
-              </template>
-              <a-button
-                class="pagination-nav-btn"
-                :disabled="currentPage >= totalPages || totalPages <= 1"
-                @click="goToPage(currentPage + 1)"
-              >
-                {{ trlang.next_page }}
-              </a-button>
+                  <template #suffixIcon>
+                    <span class="glass-select__icon">▾</span>
+                  </template>
+                </a-select>
+              </div>
             </div>
 
             <a-button
@@ -158,20 +162,18 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, inject, h } from 'vue';
+import { ref, computed, onMounted, inject, h, reactive } from 'vue';
 import { message, Modal } from 'ant-design-vue';
 import { EditOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { getData, postData, putData, deleteData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link.js';
 
-// ✅ i18n
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
 
 const getTranslation = (key) =>
   trlang.value?.[key] ?? key;
 
-// ✅ state
 const loading = ref(false);
 const deleting = ref(false);
 const sending = ref(false);
@@ -180,23 +182,27 @@ const selectedRowKeys = ref([]);
 const showModal = ref(false);
 const isEditMode = ref(false);
 const editingQuestionId = ref(null);
-const currentPage = ref(1);
-const pageSize = ref(10);
-const totalPages = ref(1);
+const pagination = reactive({
+  page: 1,
+  limit: 10,
+  total: 0,
+  totalPages: 1,
+});
 const siteSettings = ref(null);
 
-// Form fields
 const questionTitle = ref('');
 const questionContent = ref('');
 
-// ✅ computed
 const canSendQuestion = computed(() => {
   return questionTitle.value.trim() && questionContent.value.trim() && !sending.value;
 });
 
-const pageNumbers = computed(() => {
-  return Array.from({ length: totalPages.value }, (_, i) => i + 1);
-});
+const pageSizeOptions = computed(() => [
+  { label: '10', value: 10 },
+  { label: '20', value: 20 },
+  { label: '50', value: 50 },
+  { label: '100', value: 100 },
+]);
 
 const rowSelection = computed(() => ({
   selectedRowKeys: selectedRowKeys.value,
@@ -208,10 +214,9 @@ const rowSelection = computed(() => ({
   }),
 }));
 
-// ✅ table columns
 const questionColumns = computed(() => [
   {
-    title: trlang.value.index,
+    title: trlang.value.no,
     key: 'index',
     width: 80,
     align: 'center',
@@ -244,7 +249,6 @@ const questionColumns = computed(() => [
   },
 ]);
 
-// ✅ methods
 const formatDate = (dateString) => {
   if (!dateString) return '-';
   const date = new Date(dateString);
@@ -258,7 +262,6 @@ const formatDate = (dateString) => {
 };
 
 const getStatusText = (status) => {
-  // Map backend status to display text
   if (status === 'resolved') {
     return getTranslation('answer_completed');
   }
@@ -272,24 +275,24 @@ const getStatusClass = (status) => {
   return 'status-waiting';
 };
 
-const fetchQuestions = async () => {
+const fetchQuestions = async (page = 1, pageSize = 10) => {
   loading.value = true;
   try {
-    // Check if API endpoint exists, if not return empty list
     if (!apiLink.get_questions) {
       questionList.value = [];
-      totalPages.value = 1;
-      currentPage.value = 1;
+      pagination.totalPages = 1;
+      pagination.page = 1;
+      pagination.total = 0;
       return;
     }
 
-    const result = await getData(`${apiLink.get_questions}?page=${currentPage.value}&limit=${pageSize.value}`);
+    const result = await getData(`${apiLink.get_questions}?page=${page}&limit=${pageSize}`);
     
     if (result.status && result.data) {
-      const { questions, page, totalPages: pages, total } = result.data;
+      const { questions, page: pageNum, totalPages: pages, total } = result.data;
       questionList.value = (questions || []).map((item, index) => ({
         _id: item._id || item.id,
-        index: item.index || (page - 1) * pageSize.value + index + 1,
+        index: item.index || (page - 1) * pageSize + index + 1,
         title: item.title || '',
         writer: item.writer || '',
         date: item.createdAt ? new Date(item.createdAt) : (item.date ? new Date(item.date) : new Date()),
@@ -297,25 +300,31 @@ const fetchQuestions = async () => {
         question: item.question || '',
       }));
       if (pages !== undefined && pages !== null) {
-        totalPages.value = pages;
+        pagination.totalPages = pages;
       } else if (total !== undefined && total !== null) {
-        totalPages.value = Math.ceil(total / pageSize.value) || 1;
+        pagination.total = total;
+        pagination.totalPages = Math.ceil(total / pageSize) || 1;
       } else {
-        totalPages.value = 1;
+        pagination.total = questionList.value.length;
+        pagination.totalPages = Math.ceil(pagination.total / pagination.limit) || 1;
       }
-      if (page !== undefined && page !== null) {
-        currentPage.value = page;
+      if (pageNum !== undefined && pageNum !== null) {
+        pagination.page = pageNum;
+      } else {
+        pagination.page = page;
       }
+      pagination.limit = pageSize;
     } else {
       questionList.value = [];
-      totalPages.value = 1;
-      currentPage.value = 1;
+      pagination.totalPages = 1;
+      pagination.page = 1;
+      pagination.total = 0;
     }
   } catch (error) {
-    // Silently handle 404 or other API errors - API endpoint may not be implemented yet
     console.warn('Questions API not available yet:', error);
     questionList.value = [];
-    totalPages.value = 1;
+    pagination.totalPages = 1;
+    pagination.total = 0;
   } finally {
     loading.value = false;
   }
@@ -350,7 +359,7 @@ const handleDeleteList = () => {
                                  getTranslation('questions_deleted_successfully');
           message.success(successMessage);
           selectedRowKeys.value = [];
-          fetchQuestions();
+          fetchQuestions(pagination.page, pagination.limit);
         } else {
           message.error(getTranslation('failed_to_delete_questions'));
         }
@@ -431,7 +440,7 @@ const handleDelete = (record) => {
         
         if (result.status) {
           message.success(result.message || getTranslation('question_deleted_successfully'));
-          fetchQuestions();
+          fetchQuestions(pagination.page, pagination.limit);
           selectedRowKeys.value = selectedRowKeys.value.filter(id => id !== questionId);
         } else {
           message.error(result.message || getTranslation('failed_to_delete_question'));
@@ -508,17 +517,20 @@ const handleModalCancel = () => {
   showModal.value = false;
 };
 
-const goToPage = (page) => {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page;
-    fetchQuestions();
-  }
+const handlePaginationChange = (page) => {
+  pagination.page = page;
+  fetchQuestions(page, pagination.limit);
 };
 
-// ✅ lifecycle
+const handlePageSizeChange = (pageSize) => {
+  pagination.limit = pageSize;
+  pagination.page = 1;
+  fetchQuestions(1, pageSize);
+};
+
 onMounted(() => {
   fetchSiteSettings();
-  fetchQuestions();
+  fetchQuestions(pagination.page, pagination.limit);
 });
 </script>
 
@@ -529,33 +541,6 @@ onMounted(() => {
 
 .question-table {
   background: transparent;
-}
-
-:deep(.ant-table-wrapper),
-:deep(.ant-table),
-:deep(.ant-table-container) {
-  background: transparent !important;
-}
-
-:deep(.ant-table-thead > tr > th) {
-  background: var(--glass-bg-light) !important;
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
-  border-color: var(--glass-border) !important;
-  color: var(--white-color) !important;
-  font-weight: 600;
-  padding: 12px 16px !important;
-}
-
-:deep(.ant-table-tbody > tr > td) {
-  background: transparent !important;
-  border-color: var(--glass-border) !important;
-  color: var(--white-color) !important;
-  padding: 12px 16px !important;
-}
-
-:deep(.ant-table-tbody > tr:hover > td) {
-  background: var(--glass-bg-light) !important;
 }
 
 :deep(.ant-checkbox-wrapper) {
@@ -582,14 +567,6 @@ onMounted(() => {
   color: #10b981;
   font-weight: 600;
   margin-right: 8px;
-}
-
-.table-cell-content {
-  display: inline-block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
 }
 
 .action-buttons {
@@ -650,66 +627,6 @@ onMounted(() => {
   gap: 16px;
 }
 
-.pagination-controls {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.pagination-controls :deep(.ant-btn) {
-  background: var(--glass-bg-dark) !important;
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
-  border: 1px solid var(--glass-border) !important;
-  color: var(--white-color) !important;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  box-shadow: var(--glass-shadow-soft);
-}
-
-.pagination-controls :deep(.ant-btn:hover:not(:disabled)) {
-  background: var(--glass-bg-light) !important;
-  border-color: var(--glass-blue-border) !important;
-  box-shadow: var(--glass-shadow);
-  transform: translateY(-1px);
-}
-
-.pagination-controls :deep(.ant-btn:disabled) {
-  background: transparent !important;
-  background-color: transparent !important;
-  color: rgba(255, 255, 255, 0.3) !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
-.pagination-nav-btn {
-  min-width: auto;
-  padding: 6px 16px;
-  border-radius: 8px;
-}
-
-.page-number-btn {
-  min-width: 40px;
-  height: 40px;
-  padding: 0;
-  border-radius: 8px;
-  border: 1px solid var(--glass-border) !important;
-}
-
-.page-number-btn.active {
-  background: var(--glass-red) !important;
-  border-color: var(--glass-red-border) !important;
-  color: var(--white-color) !important;
-  box-shadow: 0 0 15px rgba(239, 68, 68, 0.4), var(--glass-shadow-soft);
-  font-weight: 700;
-}
-
-.page-number-btn:not(.active):hover:not(:disabled) {
-  background: var(--glass-bg-light) !important;
-  border-color: var(--glass-blue-border) !important;
-}
-
 .action-bar :deep(.ant-btn-dangerous) {
   color: #ffffff !important;
   font-weight: 600;
@@ -746,47 +663,6 @@ onMounted(() => {
   width: 100%;
 }
 
-:deep(.ant-input),
-:deep(.ant-textarea) {
-  background: var(--glass-bg-dark);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
-  border: 1px solid var(--glass-border);
-  color: var(--white-color);
-}
-
-:deep(.ant-input:focus),
-:deep(.ant-textarea:focus) {
-  background: var(--glass-bg-light);
-  border-color: var(--glass-blue-border);
-  box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
-}
-
-:deep(.ant-input::placeholder),
-:deep(.ant-textarea::placeholder) {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-:deep(.ant-btn-primary) {
-  background: var(--glass-blue) !important;
-  border-color: var(--glass-blue-border) !important;
-}
-
-:deep(.ant-btn-primary:hover) {
-  background: var(--glass-blue-light) !important;
-  border-color: var(--glass-blue-border) !important;
-}
-
-:deep(.ant-btn-dangerous) {
-  background: var(--glass-red) !important;
-  border-color: var(--glass-red-border) !important;
-}
-
-:deep(.ant-btn-dangerous:hover) {
-  background: var(--glass-red-light) !important;
-  border-color: var(--glass-red-border) !important;
-}
-
 .action-btn-delete :deep(.ant-btn-dangerous) {
   background: transparent !important;
   border: none !important;
@@ -797,18 +673,6 @@ onMounted(() => {
   background: transparent !important;
   border: none !important;
   color: #dc2626 !important;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.text-white {
-  color: var(--white-color);
-}
-
-.mt-3 {
-  margin-top: 12px;
 }
 
 /* Question Modal Styles */
@@ -857,5 +721,4 @@ onMounted(() => {
   background: var(--glass-bg-light) !important;
   border-color: var(--glass-blue-border) !important;
 }
-
 </style>

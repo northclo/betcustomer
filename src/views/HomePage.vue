@@ -7,6 +7,7 @@
           :betting-remain-time="remainTime"
           :game-activated="gameActivated"
           :inactive-message="inactiveMessage"
+          :loading="startBettingLoading"
           @start-betting="startBetting"
         />
         </a-col>
@@ -36,6 +37,7 @@
         :game-result="gameResult"
         :remain-time="remainTime"
         :loading="loading"
+        :cancel-loading="cancelLoading"
         @cancel-betting="cancelBetting"
       />
     </div>
@@ -52,7 +54,6 @@ import { apiLink } from '@/utils/api-link';
 import { socket } from '@/plugins/socket.js';
 import { message } from 'ant-design-vue';
 
-// ✅ i18n
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
 
@@ -70,7 +71,6 @@ const formatTranslation = (key, params = {}) => {
   return template;
 };
 
-// ✅ state
 const gameId = ref('');
 const gameResult = ref(null);
 const numberList = ref([]);
@@ -84,98 +84,124 @@ const previousGameId = ref(null);
 const nextGameId = ref(null);
 const gameActivated = ref(true);
 const inactiveMessage = ref('');
+const cancelLoading = ref(false);
+const startBettingLoading = ref(false);
 
-// ✅ methods
 const fetchData = async (currentGameId) => {
   loading.value = true;
-  const result = await getData(
-    `${apiLink.get_betting_info}?gameId=${currentGameId}`
-  );
+  try {
+    const result = await getData(
+      `${apiLink.get_betting_info}?gameId=${currentGameId}`
+    );
 
-  if (result.status) {
-    const { game, pendingBet, user, aroundGameId, gameSetting } = result.data;
-    previousGameId.value = aroundGameId?.previousGameId || null;
-    nextGameId.value = aroundGameId?.nextGameId || null;
-    gameId.value = game?.id || '';
-    gameResult.value = game || null;
-    numberList.value = game?.list || [];
-    remainTime.value = game?.remain_time || 0;
-    todayNo.value = game?.today_no || 0;
-    totalNo.value = game?.total_no || 0;
-    ownMoney.value = user?.own_money || 0;
-    
-    gameActivated.value = gameSetting?.activate !== false;
-    inactiveMessage.value = gameSetting?.inactive_message || '';
-    
-    if (!gameActivated.value && inactiveMessage.value) {
-      message.warning(inactiveMessage.value);
+    if (result.status) {
+      const { game, pendingBet, user, aroundGameId, gameSetting } = result.data;
+      previousGameId.value = aroundGameId?.previousGameId || null;
+      nextGameId.value = aroundGameId?.nextGameId || null;
+      gameId.value = game?.id || '';
+      gameResult.value = game || null;
+      numberList.value = game?.list || [];
+      remainTime.value = game?.remain_time || 0;
+      todayNo.value = game?.today_no || 0;
+      totalNo.value = game?.total_no || 0;
+      ownMoney.value = user?.own_money || 0;
+      
+      gameActivated.value = gameSetting?.activate !== false;
+      inactiveMessage.value = gameSetting?.inactive_message || '';
+      
+      if (!gameActivated.value && inactiveMessage.value) {
+        message.warning(inactiveMessage.value);
+      }
+
+      bettingHistory.value = (pendingBet || []).map((el) => {
+        return {
+          id: el._id,
+          bet_amount: el.bet_amount,
+          type: el.betting_type,
+          benefit: el.betting_rate,
+          number_sort: el.number_sort,
+          win: el.win || false,
+          earning_amount: el.earning_amount || 0,
+          result: 0,
+        };
+      });
     }
-
-    // pending bets
-    bettingHistory.value = (pendingBet || []).map((el) => {
-      return {
-        id: el._id,
-        bet_amount: el.bet_amount,
-        type: el.betting_type,
-        benefit: el.betting_rate,
-        number_sort: el.number_sort,
-        win: el.win || false,
-        earning_amount: el.earning_amount || 0,
-        result: 0,
-      };
-    });
+  } catch (error) {
+    console.error('Error fetching game data:', error);
+    message.error(getTranslation('error_loading_game_data'));
+  } finally {
+    loading.value = false;
   }
-
-  loading.value = false;
 };
 
 const startBetting = async (bettingData) => {
   const originalBalance = ownMoney.value;
+  startBettingLoading.value = true;
   
-  ownMoney.value = ownMoney.value - bettingData.bettingAmount;
-  
-  const result = await postData(apiLink.start_bet, {
-    game_id: gameId.value,
-    bettingAmount: bettingData.bettingAmount,
-    bettingType: bettingData.bettingType,
-    bettingRate: bettingData.bettingRate,
-    numberSort: bettingData.numberSort,
-  });
-
-  if (result.status) {
-    bettingHistory.value.unshift({
-      id: result.data._id,
-      bet_amount: result.data.bet_amount,
-      type: result.data.betting_type,
-      benefit: result.data.betting_rate,
-      result: 0,
-      number_sort: result.data.number_sort,
-      win: false,
-      earning_amount: 0,
-    });
+  try {
+    ownMoney.value = ownMoney.value - bettingData.bettingAmount;
     
-    await fetchData(gameId.value);
-  } else {
+    const result = await postData(apiLink.start_bet, {
+      game_id: gameId.value,
+      bettingAmount: bettingData.bettingAmount,
+      bettingType: bettingData.bettingType,
+      bettingRate: bettingData.bettingRate,
+      numberSort: bettingData.numberSort,
+    });
+
+    if (result.status) {
+      bettingHistory.value.unshift({
+        id: result.data._id,
+        bet_amount: result.data.bet_amount,
+        type: result.data.betting_type,
+        benefit: result.data.betting_rate,
+        result: 0,
+        number_sort: result.data.number_sort,
+        win: false,
+        earning_amount: 0,
+      });
+      
+      await fetchData(gameId.value);
+      message.success(getTranslation('bet_placed_successfully'));
+    } else {
+      ownMoney.value = originalBalance;
+      message.error(result.message || getTranslation('failed_to_place_bet'));
+    }
+  } catch (error) {
+    console.error('Error placing bet:', error);
     ownMoney.value = originalBalance;
+    message.error(getTranslation('error_placing_bet'));
+  } finally {
+    startBettingLoading.value = false;
   }
 };
 
 const cancelBetting = async ({ id }) => {
-  // Can only cancel during betting window: 3 mins (180s) to 1.5 mins (90s)
   if (remainTime.value < 90 || remainTime.value > 180) {
     message.error(getTranslation('cannot_cancel_betting_outside_window'));
     return;
   }
 
-  const result = await postData(apiLink.cancel_bet, { id: id });
-  if (result.status) {
-    bettingHistory.value = bettingHistory.value.filter(
-      (item) => item.id !== id
-    );
+  cancelLoading.value = true;
+  try {
+    const result = await postData(apiLink.cancel_bet, { id: id });
+    if (result.status) {
+      bettingHistory.value = bettingHistory.value.filter(
+        (item) => item.id !== id
+      );
 
-    ownMoney.value = ownMoney.value + result.data.bettingAmount;
-  } else {
+      ownMoney.value = ownMoney.value + result.data.bettingAmount;
+      message.success(getTranslation('bet_cancelled_successfully'));
+    } else {
+      message.error(result.message || getTranslation('failed_to_cancel_bet'));
+      await fetchData(gameId.value);
+    }
+  } catch (error) {
+    console.error('Error cancelling bet:', error);
+    message.error(getTranslation('error_cancelling_bet'));
     await fetchData(gameId.value);
+  } finally {
+    cancelLoading.value = false;
   }
 };
 

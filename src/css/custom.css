@@ -285,3 +285,422 @@
   background: linear-gradient(135deg, rgba(139, 92, 246, 0.5), rgba(124, 58, 237, 0.5)) !important;
   border-color: rgba(139, 92, 246, 0.7) !important;
 }
+
+.mo-buttons-container {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+}
+
+.mo-btn {
+  background: var(--glass-bg-dark);
+  border: 2px solid var(--glass-border);
+  color: var(--white-color);
+  border-radius: 8px;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  font-weight: 600;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  word-break: break-word;
+  padding: 4px 2px;
+  flex: 1;
+}
+
+.mo-btn:hover {
+  background: var(--glass-bg-light);
+  border-color: var(--glass-blue-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-bottom: 1px solid var(--glass-border);
+  margin-bottom: 16px;
+}
+
+.ant-table-wrapper,
+.ant-table,
+.ant-table-container {
+  background: transparent !important;
+}
+
+.ant-table-thead > tr > th {
+  background: var(--glass-bg-light) !important;
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border-color: var(--glass-border) !important;
+  color: var(--white-color) !important;
+  font-weight: 600;
+  white-space: nowrap;
+  word-wrap: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 12px 16px !important;
+}
+
+.ant-table-tbody > tr > td {
+  background: transparent !important;
+  border-color: var(--glass-border) !important;
+  color: var(--white-color) !important;
+  white-space: nowrap;
+  word-wrap: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 12px 16px !important;
+}
+
+.ant-table-tbody > tr:last-child > td {
+  border-bottom: none !important;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: var(--glass-bg-light) !important;
+}
+
+.ant-table-tbody > tr {
+  background: transparent !important;
+}
+
+.ant-table-placeholder {
+  background: transparent !important;
+}
+
+.ant-empty-description {
+  color: var(--white-color) !important;
+}
+
+.ant-table {
+  min-width: 100%;
+}
+
+.ant-table-container {
+  overflow-x: auto;
+}
+
+.table-cell-content {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.ant-pagination {
+  color: var(--white-color) !important;
+}
+
+.ant-pagination-item {
+  background: var(--glass-bg-dark) !important;
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border-color: var(--glass-border) !important;
+}
+
+.ant-pagination-item a {
+  color: var(--white-color) !important;
+}
+
+.ant-pagination-item:hover {
+  border-color: var(--glass-border-light) !important;
+}
+
+.ant-pagination-item-active {
+  background: var(--glass-bg-light) !important;
+  border-color: var(--main-color) !important;
+}
+
+.ant-pagination-item-active a {
+  color: var(--white-color) !important;
+}
+
+.ant-pagination-prev,
+.ant-pagination-next {
+  background: var(--glass-bg-dark) !important;
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 10px;
+}
+
+.ant-pagination-prev .ant-pagination-item-link,
+.ant-pagination-next .ant-pagination-item-link {
+  background: transparent !important;
+  border: none !important;
+  color: var(--white-color) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ant-pagination-prev:hover,
+.ant-pagination-next:hover {
+  border-color: var(--glass-border-light) !important;
+  background: var(--glass-bg-light) !important;
+}
+
+.ant-pagination-prev:hover .ant-pagination-item-link,
+.ant-pagination-next:hover .ant-pagination-item-link {
+  color: var(--white-color) !important;
+}
+
+.ant-pagination-disabled,
+.ant-pagination-disabled:hover {
+  background: var(--glass-bg-dark) !important;
+  border-color: var(--glass-border) !important;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ant-pagination-disabled .ant-pagination-item-link {
+  color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.pagination-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+}
+
+.pagination-size-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-size-select {
+  min-width: 80px;
+}
+
+.glass-select .ant-select-selector {
+  background: var(--glass-bg-dark) !important;
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border: 1px solid var(--glass-border) !important;
+  color: var(--white-color) !important;
+  border-radius: 10px !important;
+  height: 44px !important;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.glass-select .ant-select-selection-item,
+.glass-select .ant-select-selection-placeholder {
+  color: var(--white-color) !important;
+}
+
+.glass-select .ant-select-selector:hover,
+.glass-select .ant-select-focused .ant-select-selector {
+  background: var(--glass-bg-light) !important;
+  border-color: var(--glass-blue-border) !important;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+}
+
+.glass-select__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white-color);
+  font-size: 12px;
+  transition: color 0.2s ease;
+}
+
+.glass-select-dropdown {
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow) !important;
+  color: var(--white-color) !important;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.glass-select-dropdown .ant-select-item-option {
+  color: var(--white-color) !important;
+  background: transparent !important;
+}
+
+.glass-select-dropdown .ant-select-item-option:hover {
+  background: var(--glass-bg-light) !important;
+}
+
+.glass-select-dropdown .ant-select-item-option-active,
+.glass-select-dropdown .ant-select-item-option-selected {
+  background: var(--glass-blue) !important;
+  color: var(--white-color) !important;
+}
+
+.ant-input,
+.ant-input-number,
+.ant-input-number-input,
+.ant-input-password,
+.ant-input-password input,
+.ant-textarea {
+  background: transparent !important;
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border: 1px solid var(--glass-border);
+  color: var(--white-color);
+}
+
+.ant-input-password svg {
+  color: var(--white-color) !important;
+  fill: var(--white-color) !important;
+}
+
+.ant-input::placeholder,
+.ant-input-number-input::placeholder,
+.ant-input-password::placeholder,
+.ant-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.7) !important;
+  opacity: 1 !important;
+}
+
+.ant-input:focus,
+.ant-input-number:focus,
+.ant-input-number-focused,
+.ant-input-password:focus,
+.ant-textarea:focus {
+  background: var(--glass-bg-light);
+  border-color: var(--glass-blue-border);
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+}
+
+.ant-input:focus::placeholder,
+.ant-input-number-input:focus::placeholder,
+.ant-input-password:focus::placeholder,
+.ant-textarea:focus::placeholder {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.ant-input[readonly] {
+  cursor: default;
+  background: var(--glass-bg-dark) !important;
+}
+
+.ant-input-number-handler-wrap {
+  display: none !important;
+}
+
+/* ============================================
+   Button Styles (Global)
+   ============================================ */
+.ant-btn-primary {
+  background: var(--glass-green) !important;
+  border-color: var(--glass-green-border) !important;
+  color: #ffffff !important;
+}
+
+.ant-btn-primary:hover:not(:disabled) {
+  background: var(--glass-green-light) !important;
+  border-color: var(--glass-green-border) !important;
+  color: #ffffff !important;
+}
+
+.ant-btn-primary:disabled {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.ant-btn-dangerous {
+  background: var(--glass-red) !important;
+  border-color: var(--glass-red-border) !important;
+}
+
+.ant-btn-dangerous:hover:not(:disabled) {
+  background: var(--glass-red-light) !important;
+  border-color: var(--glass-red-border) !important;
+}
+
+/* ============================================
+   Utility Classes for Common UI Elements
+   ============================================ */
+
+/* Instruction text box */
+.instruction-text {
+  background: var(--glass-bg-light);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 12px;
+  color: var(--white-color);
+  font-size: 14px;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+.instruction-text p {
+  margin: 0;
+}
+
+.warning-text {
+  color: var(--white-color);
+  font-size: 14px;
+  padding: 8px 12px;
+  background: var(--glass-bg-light);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+}
+
+.warning-text.text-danger {
+  color: rgba(239, 68, 68, 0.9);
+}
+
+.section-title {
+  color: var(--white-color);
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.text-gray {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.matching-height-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.matching-height-card .ant-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.ant-tag {
+  border: none;
+  font-weight: 500;
+}
+
+.status-complete,
+.ant-tag.status-complete,
+.ant-tag[class*="complete"] {
+  background-color: #10b981 !important;
+  border-color: #10b981 !important;
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+.ant-tag-green,
+.ant-tag[data-color="green"] {
+  background-color: #10b981 !important;
+  border-color: #10b981 !important;
+  color: #ffffff !important;
+}
+
+.ant-tag-success {
+  background: rgba(16, 185, 129, 0.2) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+  color: #10b981 !important;
+}

@@ -76,6 +76,13 @@ export default {
   game_ended: "Game ended: {gameId}",
   game_is_currently_disabled: "Game is currently disabled",
   failed_to_load_game_info: "Failed to load game information. Please try again.",
+  error_loading_game_data: "Failed to load game data",
+  bet_placed_successfully: "Bet placed successfully",
+  failed_to_place_bet: "Failed to place bet",
+  error_placing_bet: "Error placing bet. Please try again.",
+  bet_cancelled_successfully: "Bet cancelled successfully",
+  failed_to_cancel_bet: "Failed to cancel bet",
+  error_cancelling_bet: "Error cancelling bet. Please try again.",
 
   // Auth names
   login: "Login",
@@ -102,6 +109,10 @@ export default {
   confirm_password_placeholder: "Confirm your password",
   nickname: "Nickname",
   input_nickname: "Enter your nickname",
+  real_name: "Real Name",
+  input_real_name: "Enter your real name",
+  accept_terms_and_conditions: "I accept the terms and conditions",
+  must_accept_terms: "You must accept the terms and conditions to register",
   recommender_code: "Recommender Code",
   input_recommender_code: "Enter recommender code",
   recommender_code_required: "Recommender code is required",
@@ -177,6 +188,7 @@ export default {
   answer_completed: "[Answer Completed]",
   answer_waiting: "[Answer waiting]",
   index: "Index",
+  no: "No",
   unknown: "Unknown",
   edit: "Edit",
   delete: "Delete",
@@ -279,7 +291,15 @@ export default {
   mo_100: "100 MO",
 
   // Bank Number
+  bank_id: "Bank",
+  bank_owner_name: "Bank Owner Name",
+  select_bank: "Select bank",
+  input_bank_number: "Enter bank number",
+  input_bank_owner_name: "Enter bank owner name",
+  bank_information_required: "Bank ID, bank number, and bank owner name are required",
   enter_bank_number: "Enter bank number",
+  bank_number_required: "Bank number is required",
+  bank_number_mismatch: "Bank number does not match",
 
   // Refund/Withdrawal
   withdraw_funds: "Withdraw Funds",

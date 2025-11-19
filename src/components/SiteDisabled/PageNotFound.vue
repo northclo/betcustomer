@@ -11,9 +11,9 @@
         {{ trlang.page_not_found_message }}
       </a-typography-paragraph>
       <a-button 
+        v-if="!isLoginPage"
         class="bg-primary text-white" 
         @click="goToLogin"
-        v-if="!isLoginPage"
       >
         {{ trlang.go_to_login }}
       </a-button>

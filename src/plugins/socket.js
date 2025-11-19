@@ -7,7 +7,7 @@ const socket = io(config.socketURL, {
 
 export default {
     install: (app) => {
-        app.config.globalProperties.$socket = socket; // make it globally available
+        app.config.globalProperties.$socket = socket;
     },
 };
 

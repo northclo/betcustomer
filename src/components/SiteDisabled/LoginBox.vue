@@ -20,9 +20,9 @@
       </a-typography-paragraph>
 
       <a-button 
+        v-if="!isLoginPage"
         class="w-100 bg-primary text-white" 
         @click="goToLogin"
-        v-if="!isLoginPage"
       >
         {{ trlang.go_to_login }}
       </a-button>

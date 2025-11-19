@@ -1,29 +1,34 @@
 <template>
-  <div class="bg-primary-light radius-1 p-5 mt-5">
+  <div class="bg-primary-light radius-2 p-3 mt-2">
     <a-card :title="trlang.recent_betting_history" class="game-result-card">
       <div class="table-container">
         <a-table
           :columns="columns"
           :data-source="bettingHistory"
           row-key="id"
-          class="w-100 mt-2"
-          :scroll="{ x: 'max-content' }"
+          class="betting-history-table"
+          size="middle"
+          :bordered="false"
           :pagination="false"
           :loading="loading"
         >
           <template #emptyText>
-            <a-spin v-if="loading" />
-            <span v-else>{{ trlang.no_data }}</span>
+            <div class="text-center text-white py-4">
+              <a-spin v-if="loading" />
+              <span v-else>{{ trlang.no_data }}</span>
+            </div>
           </template>
 
           <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'bet_amount'">
-              {{ record.bet_amount?.toLocaleString() || 0 }}
+              <span class="table-cell-content">{{ record.bet_amount?.toLocaleString() || 0 }}</span>
             </template>
             <template v-else-if="column.key === 'bet_info'">
               <a-tooltip :title="String(record.number_sort || '')" color="#0086e3">
-                {{ trlang[record.type] || record.type }}
-                <span class="ms-2">{{ record.benefit || record.betting_rate }}</span>
+                <span class="table-cell-content">
+                  {{ trlang[record.type] || record.type }}
+                  <span class="ms-2">{{ record.benefit || record.betting_rate }}</span>
+                </span>
               </a-tooltip>
             </template>
             <template v-else-if="column.key === 'win'">
@@ -32,12 +37,12 @@
               </a-tag>
             </template>
             <template v-else-if="column.key === 'earning_amount'">
-              <span :class="record.win ? 'text-success' : 'text-white'">
+              <span class="table-cell-content" :class="record.win ? 'text-success' : 'text-white'">
                 {{ record.earning_amount?.toLocaleString() || 0 }}
               </span>
             </template>
             <template v-else-if="column.key === 'createdAt'">
-              {{ formatDate(record.createdAt) }}
+              <span class="table-cell-content">{{ formatDate(record.createdAt) }}</span>
             </template>
           </template>
         </a-table>
@@ -75,14 +80,12 @@ import { ref, computed, inject, onMounted, reactive } from 'vue';
 import { getData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link.js';
 
-// ✅ i18n
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
 
 const getTranslation = (key) =>
   trlang.value?.[key] ?? key;
 
-// ✅ state
 const bettingHistory = ref([]);
 const loading = ref(false);
 const pagination = reactive({
@@ -99,41 +102,48 @@ const pageSizeOptions = computed(() => [
   { label: '100', value: 100 },
 ]);
 
-// ✅ columns
 const columns = computed(() => [
   { 
     key: 'bet_amount', 
     title: trlang.value.bet_amount, 
     dataIndex: 'bet_amount',
+    align: 'center',
     width: 120,
+    ellipsis: true,
   },
   { 
     key: 'bet_info', 
     title: trlang.value.bet_info, 
     dataIndex: 'bet_info',
+    align: 'center',
     width: 200,
+    ellipsis: true,
   },
   { 
     key: 'win', 
     title: getTranslation('result'), 
     dataIndex: 'win',
+    align: 'center',
     width: 100,
   },
   { 
     key: 'earning_amount', 
     title: trlang.value.total_earning, 
     dataIndex: 'earning_amount',
+    align: 'center',
     width: 120,
+    ellipsis: true,
   },
   { 
     key: 'createdAt', 
     title: getTranslation('date'), 
     dataIndex: 'createdAt',
+    align: 'center',
     width: 180,
+    ellipsis: true,
   },
 ]);
 
-// ✅ methods
 const fetchBettingHistory = async (page = 1, pageSize = 10) => {
   loading.value = true;
   try {
@@ -201,211 +211,18 @@ const formatDate = (date) => {
   });
 };
 
-// ✅ lifecycle
 onMounted(() => {
   fetchBettingHistory(pagination.page, pagination.limit);
 });
 </script>
 
 <style scoped>
-/* Card border radius override for Bet History page */
 .game-result-card {
-  border-radius: 10px !important;
+  border-radius: 20px !important;
 }
 
-/* Table Styling */
-:deep(.ant-table) {
-  background: transparent !important;
-}
-
-:deep(.ant-table-thead > tr > th) {
-  background: var(--glass-bg-light) !important;
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
-  border-color: var(--glass-border) !important;
-  color: var(--white-color) !important;
-}
-
-:deep(.ant-table-tbody > tr > td) {
-  background: transparent !important;
-  border-color: var(--glass-border) !important;
-  color: var(--white-color) !important;
-}
-
-:deep(.ant-table-tbody > tr:last-child > td) {
-  border-bottom: none !important;
-}
-
-:deep(.ant-table-tbody > tr:hover > td) {
-  background: var(--glass-bg-light) !important;
-}
-
-:deep(.ant-table-tbody > tr) {
-  background: transparent !important;
-}
-
-:deep(.ant-table-placeholder) {
-  background: transparent !important;
-}
-
-:deep(.ant-empty-description) {
-  color: var(--white-color) !important;
-}
-
-.table-container {
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-:deep(.ant-pagination) {
-  color: var(--white-color) !important;
-}
-
-:deep(.ant-pagination-item) {
-  background: var(--glass-bg-dark) !important;
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
-  border-color: var(--glass-border) !important;
-}
-
-:deep(.ant-pagination-item a) {
-  color: var(--white-color) !important;
-}
-
-:deep(.ant-pagination-item:hover) {
-  border-color: var(--glass-border-light) !important;
-}
-
-:deep(.ant-pagination-item-active) {
-  background: var(--glass-bg-light) !important;
-  border-color: var(--main-color) !important;
-}
-
-:deep(.ant-pagination-item-active a) {
-  color: var(--white-color) !important;
-}
-
-:deep(.ant-pagination-prev),
-:deep(.ant-pagination-next) {
-  background: var(--glass-bg-dark) !important;
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
-  border: 1px solid var(--glass-border) !important;
-  border-radius: 10px;
-}
-
-:deep(.ant-pagination-prev .ant-pagination-item-link),
-:deep(.ant-pagination-next .ant-pagination-item-link) {
-  background: transparent !important;
-  border: none !important;
-  color: var(--white-color) !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-:deep(.ant-pagination-prev:hover),
-:deep(.ant-pagination-next:hover) {
-  border-color: var(--glass-border-light) !important;
-  background: var(--glass-bg-light) !important;
-}
-
-:deep(.ant-pagination-prev:hover .ant-pagination-item-link),
-:deep(.ant-pagination-next:hover .ant-pagination-item-link) {
-  color: var(--white-color) !important;
-}
-
-:deep(.ant-pagination-disabled),
-:deep(.ant-pagination-disabled:hover) {
-  background: var(--glass-bg-dark) !important;
-  border-color: var(--glass-border) !important;
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-:deep(.ant-pagination-disabled .ant-pagination-item-link) {
-  color: rgba(255, 255, 255, 0.3) !important;
-}
-
-.pagination-footer {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 16px;
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid var(--glass-border);
-}
-
-.pagination-size-selector {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.page-size-select {
-  min-width: 80px;
-}
-
-.glass-select :deep(.ant-select-selector) {
-  background: var(--glass-bg-dark) !important;
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
-  border: 1px solid var(--glass-border) !important;
-  color: var(--white-color) !important;
-  border-radius: 10px !important;
-  height: 44px !important;
-  display: flex;
-  align-items: center;
-  transition: all 0.3s ease;
-}
-
-.glass-select :deep(.ant-select-selection-item),
-.glass-select :deep(.ant-select-selection-placeholder) {
-  color: var(--white-color) !important;
-}
-
-.glass-select :deep(.ant-select-selector:hover),
-.glass-select :deep(.ant-select-focused .ant-select-selector) {
-  background: var(--glass-bg-light) !important;
-  border-color: var(--glass-blue-border) !important;
-  box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
-}
-
-.glass-select__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--white-color);
-  font-size: 12px;
-  transition: color 0.2s ease;
-}
-
-:global(.glass-select-dropdown) {
-  background: var(--glass-bg) !important;
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
-  border: 1px solid var(--glass-border) !important;
-  box-shadow: var(--glass-shadow) !important;
-  color: var(--white-color) !important;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-:global(.glass-select-dropdown .ant-select-item-option) {
-  color: var(--white-color) !important;
-  background: transparent !important;
-}
-
-:global(.glass-select-dropdown .ant-select-item-option:hover) {
-  background: var(--glass-bg-light) !important;
-}
-
-:global(.glass-select-dropdown .ant-select-item-option-active),
-:global(.glass-select-dropdown .ant-select-item-option-selected) {
-  background: var(--glass-blue) !important;
-  color: var(--white-color) !important;
+.betting-history-table :deep(.ant-table-container) {
+  overflow-x: visible !important;
 }
 
 :deep(.ant-tag) {
@@ -414,12 +231,6 @@ onMounted(() => {
   -webkit-backdrop-filter: var(--blur-sm);
   border: 1px solid var(--glass-border) !important;
   color: var(--white-color) !important;
-}
-
-:deep(.ant-tag-success) {
-  background: rgba(16, 185, 129, 0.2) !important;
-  border-color: rgba(16, 185, 129, 0.3) !important;
-  color: #10b981 !important;
 }
 
 :deep(.ant-tooltip-inner) {

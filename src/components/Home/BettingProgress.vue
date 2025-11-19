@@ -73,13 +73,11 @@
 import { computed, inject } from 'vue';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons-vue';
 
-// ✅ i18n
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
 
 const emit = defineEmits(['cancelBetting', 'previousGame', 'nextGame']);
 
-// ✅ props
 const props = defineProps({
   previousGameId: { type: String, default: null },
   nextGameId: { type: String, default: null },
@@ -93,7 +91,6 @@ const props = defineProps({
   bettingHistory: { type: Array, default: () => [] },
 });
 
-// ✅ state
 const totalBettingAmount = computed(() =>
   (props.bettingHistory || []).reduce((sum, el) => sum + (el?.bet_amount || 0), 0)
 );

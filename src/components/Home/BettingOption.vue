@@ -1,5 +1,5 @@
 <template>
-  <a-space v-if="!loading" direction="vertical" size="small">
+  <a-space v-if="!fetchLoading" direction="vertical" size="small">
     <div v-for="item in bettingOptions" :key="item.key">
       <div class="glass-label radius-top-2 text-white w-fit mb-2 p-2">
         {{ item.label }}
@@ -110,13 +110,14 @@
         </a-col>
 
         <a-col :xs="24" :md="5">
-          <button
+          <a-button
             class="glass-action-btn glass-action-green text-white w-100 radius-1 cursor-pointer h-100 shadow-dark py-2"
-            :disabled="!props.gameActivated"
+            :disabled="!props.gameActivated || props.loading"
+            :loading="props.loading"
             @click="startBetting"
           >
             {{ trlang.start_bet }}
-          </button>
+          </a-button>
         </a-col>
       </a-row>
     </div>
@@ -129,7 +130,6 @@ import { message } from 'ant-design-vue';
 import { getData } from '@/helpers/Axios.js';
 import { apiLink } from '../../utils/api-link';
 
-// ✅ i18n
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
 
@@ -147,17 +147,15 @@ const formatTranslation = (key, params = {}) => {
   return template;
 };
 
-// ✅ constants
 const BET_AMOUNTS = [10000, 20000, 50000, 100000];
 
-// ✅ props
 const props = defineProps({
   bettingRemainTime: { type: Number, default: 0 },
   gameActivated: { type: Boolean, default: true },
   inactiveMessage: { type: String, default: '' },
+  loading: { type: Boolean, default: false },
 });
 
-// ✅ states
 const bettingOptions = ref([]);
 const bettingAmountOptions = ref(BET_AMOUNTS);
 const bettingAmount = ref(0);
@@ -165,7 +163,7 @@ const bettingType = ref('');
 const bettingRate = ref(0);
 const benefitAmount = computed(() => bettingAmount.value * bettingRate.value);
 const numberSort = ref([]);
-const loading = ref(false);
+const fetchLoading = ref(false);
 
 const emit = defineEmits(['startBetting']);
 
@@ -177,12 +175,11 @@ const normalizeRate = (value) => {
 };
 
 const fetchData = async () => {
-  loading.value = true;
+  fetchLoading.value = true;
   try {
     const result = await getData(apiLink.get_init_betting_option);
 
     if (result.status) {
-      // build betting options
       bettingOptions.value = [
         {
           key: 'normal',
@@ -283,7 +280,7 @@ const fetchData = async () => {
     console.error('Error fetching betting options:', error);
     message.error(getTranslation('error_loading_betting_options'));
   } finally {
-    loading.value = false;
+    fetchLoading.value = false;
   }
 };
 

@@ -35,6 +35,8 @@
           <a-button
             v-else-if="remainTime >= 90 && remainTime <= 180"
             class="w-100"
+            :loading="cancelLoading"
+            :disabled="cancelLoading"
             @click="emit('cancelBetting', { id: record.id })"
           >
             {{ trlang.cancel }}
@@ -51,11 +53,9 @@
 <script setup>
 import { computed, inject } from 'vue';
 
-// ✅ i18n
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
 
-// ✅ constants
 const DEFAULT_COLUMNS = (t) => [
   { key: 'id', title: t.id, dataIndex: 'id' },
   { key: 'bet_amount', title: t.bet_amount, dataIndex: 'bet_amount' },
@@ -65,15 +65,14 @@ const DEFAULT_COLUMNS = (t) => [
 
 const emit = defineEmits(['cancelBetting']);
 
-// ✅ props
 const props = defineProps({
   gameResult: { type: Object, default: null },
   remainTime: { type: Number, default: 0 },
   loading: { type: Boolean, default: true },
   bettingHistory: { type: Array, default: () => [] },
+  cancelLoading: { type: Boolean, default: false },
 });
 
-// ✅ state
 const columns = computed(() => DEFAULT_COLUMNS(trlang.value));
 const dataSource = computed(() => props.bettingHistory || []);
 const game = computed(() => props.gameResult);

@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-// AUTHENTICATION TOGGLE: Set to true to enable authentication, false to disable
 const ENABLE_AUTHENTICATION = true;
 
 const HomePage = () => import('./views/HomePage.vue');
@@ -112,7 +111,6 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  // Skip authentication checks if authentication is disabled
   if (!ENABLE_AUTHENTICATION) {
     return next();
   }

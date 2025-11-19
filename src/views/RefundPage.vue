@@ -11,13 +11,6 @@
             <div class="balance-amount">
               {{ availableBalance.toLocaleString() }} {{ trlang.currency }}
             </div>
-            <div
-              v-if="pendingRefundBalance > 0"
-              class="pending-amount"
-            >
-              {{ trlang.pending_approval }}:
-              {{ pendingRefundBalance.toLocaleString() }} {{ trlang.currency }}
-            </div>
           </div>
 
           <!-- Withdrawal Amount -->
@@ -72,7 +65,6 @@ import { message } from 'ant-design-vue';
 import { getData, postData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link.js';
 
-// ✅ i18n
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
 
@@ -90,13 +82,10 @@ const formatTranslation = (key, params = {}) => {
   return template;
 };
 
-// ✅ state
 const availableBalance = ref(0);
-const pendingRefundBalance = ref(0);
 const withdrawalAmount = ref(null);
 const loading = ref(false);
 
-// ✅ constants
 const MIN_WITHDRAW_AMOUNT = 1;
 
 const canWithdraw = computed(() => {
@@ -105,7 +94,6 @@ const canWithdraw = computed(() => {
          withdrawalAmount.value <= availableBalance.value;
 });
 
-// ✅ methods
 const validateAmount = (amount) => {
   if (!amount) {
     return { valid: false, error: formatTranslation('minimum_amount_is', { amount: MIN_WITHDRAW_AMOUNT }) };
@@ -184,7 +172,6 @@ const handleWithdraw = async () => {
       withdrawalAmount.value = null;
       if (result.data) {
         availableBalance.value = result.data.balance ?? availableBalance.value;
-        pendingRefundBalance.value = result.data.pending_refund_balance ?? pendingRefundBalance.value;
       } else {
         fetchBalance();
       }
@@ -208,29 +195,23 @@ const fetchBalance = async () => {
   try {
     const result = await getData(apiLink.get_betting_info);
     if (result.status && result.data) {
-      // Check if user data exists in response
       if (result.data.user) {
         const userData = result.data.user;
         availableBalance.value = userData.own_money || 0;
-        pendingRefundBalance.value = userData.pending_refund_balance ?? 0;
       } else {
         console.warn('User balance not found in API response:', result.data);
         availableBalance.value = 0;
-        pendingRefundBalance.value = 0;
       }
     } else {
       console.error('Failed to fetch balance:', result.message);
       availableBalance.value = 0;
-      pendingRefundBalance.value = 0;
     }
   } catch (error) {
     console.error('Error fetching balance:', error);
     availableBalance.value = 0;
-    pendingRefundBalance.value = 0;
   }
 };
 
-// ✅ lifecycle
 onMounted(() => {
   fetchBalance();
 });

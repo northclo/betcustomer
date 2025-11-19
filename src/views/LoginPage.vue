@@ -36,9 +36,9 @@
         <!-- eslint-disable vue/html-self-closing, vue/no-v-html -->
         <div
           class="text-center mb-4"
+          style="cursor: pointer;"
           @click="loadCaptcha"
           v-html="captcha"
-          style="cursor: pointer;"
         ></div>
         <!-- eslint-enable vue/html-self-closing, vue/no-v-html -->
         <a-input
@@ -78,7 +78,7 @@
       <div v-if="isRegistrationEnabled" class="text-center">
         <a-typography-text class="text-white">
           {{ trlang.dont_have_account }} 
-          <a @click="goToRegister" class="text-primary" style="cursor: pointer;">
+          <a class="text-primary" style="cursor: pointer;" @click="goToRegister">
             {{ trlang.sign_up }}
           </a>
         </a-typography-text>
