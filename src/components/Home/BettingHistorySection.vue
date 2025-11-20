@@ -1,52 +1,60 @@
 <template>
   <a-card :title="trlang.recent_betting_history" class="game-result-card betting-history-card">
-    <a-table
-      :columns="columns"
-      :data-source="dataSource"
-      row-key="key"
-      class="w-100 mt-2 betting-history-table"
-      :pagination="false"
-    >
-      <template #emptyText>
-        <a-spin v-if="loading" />
-        <span v-else>{{ trlang.no_data }}</span>
-      </template>
+    <div class="table-container">
+      <a-table
+        :columns="columns"
+        :data-source="dataSource"
+        row-key="id"
+        class="betting-history-table"
+        size="middle"
+        :bordered="false"
+        :pagination="false"
+        :loading="loading"
+      >
+        <template #emptyText>
+          <div class="text-center text-white py-4">
+            <a-spin v-if="loading" />
+            <span v-else>{{ trlang.no_data }}</span>
+          </div>
+        </template>
 
-      <template #bodyCell="{ column, record, index }">
-        <template v-if="column.key === 'id'">
-          {{ dataSource.length - index }}
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'bet_amount'">
+            <span class="table-cell-content">{{ record.bet_amount?.toLocaleString() || 0 }}</span>
+          </template>
+          <template v-else-if="column.key === 'bet_info'">
+            <a-tooltip :title="String(record.number_sort || '')" color="#0086e3">
+              <span class="table-cell-content">
+                {{ trlang[record.type] || record.type }}
+                <span class="ms-2">{{ record.benefit || record.betting_rate }}</span>
+              </span>
+            </a-tooltip>
+          </template>
+          <template v-else-if="column.key === 'result'">
+            <a-tag v-if="game?.list && game.list.length > 0" :color="record.win ? 'success' : 'default'">
+              {{ record.win ? trlang.win : trlang.lose }}
+            </a-tag>
+            <a-button
+              v-else-if="remainTime >= 90 && remainTime <= 180"
+              class="w-100"
+              :loading="cancelLoading"
+              :disabled="cancelLoading"
+              @click="emit('cancelBetting', { id: record.id })"
+            >
+              {{ trlang.cancel }}
+            </a-button>
+            <span v-else class="table-cell-content text-white">
+              {{ trlang.no_available_betting }}
+            </span>
+          </template>
+          <template v-else-if="column.key === 'earning_amount'">
+            <span class="table-cell-content" :class="record.win ? 'text-success' : 'text-white'">
+              {{ record.earning_amount?.toLocaleString() || 0 }}
+            </span>
+          </template>
         </template>
-        <template v-else-if="column.key === 'bet_amount'">
-          {{ record.bet_amount.toLocaleString() }}
-        </template>
-        <template v-else-if="column.key === 'bet_info'">
-          <a-tooltip :title="String(record.number_sort)" color="#0086e3">
-            {{ trlang[record.type] }}
-            <span class="ms-5">{{ record.benefit }}</span>
-          </a-tooltip>
-        </template>
-        <template v-else-if="column.key === 'result'">
-          <a-typography-text
-            v-if="game?.list && game.list.length > 0"
-            class="text-white"
-          >
-            {{ record?.earning_amount || 0 }}
-          </a-typography-text>
-          <a-button
-            v-else-if="remainTime >= 90 && remainTime <= 180"
-            class="w-100"
-            :loading="cancelLoading"
-            :disabled="cancelLoading"
-            @click="emit('cancelBetting', { id: record.id })"
-          >
-            {{ trlang.cancel }}
-          </a-button>
-          <a-typography-text v-else class="text-white">
-            {{ trlang.no_available_betting }}
-          </a-typography-text>
-        </template>
-      </template>
-    </a-table>
+      </a-table>
+    </div>
   </a-card>
 </template>
 
@@ -56,12 +64,42 @@ import { computed, inject } from 'vue';
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
 
-const DEFAULT_COLUMNS = (t) => [
-  { key: 'id', title: t.id, dataIndex: 'id' },
-  { key: 'bet_amount', title: t.bet_amount, dataIndex: 'bet_amount' },
-  { key: 'bet_info', title: t.bet_info, dataIndex: 'bet_info' },
-  { key: 'result', title: t.result, dataIndex: 'result' },
-];
+const getTranslation = (key) =>
+  trlang.value?.[key] ?? key;
+
+const columns = computed(() => [
+  { 
+    key: 'bet_amount', 
+    title: trlang.value.bet_amount, 
+    dataIndex: 'bet_amount',
+    align: 'center',
+    width: 120,
+    ellipsis: true,
+  },
+  { 
+    key: 'bet_info', 
+    title: trlang.value.bet_info, 
+    dataIndex: 'bet_info',
+    align: 'center',
+    width: 200,
+    ellipsis: true,
+  },
+  { 
+    key: 'result', 
+    title: getTranslation('result'), 
+    dataIndex: 'result',
+    align: 'center',
+    width: 100,
+  },
+  { 
+    key: 'earning_amount', 
+    title: trlang.value.total_earning, 
+    dataIndex: 'earning_amount',
+    align: 'center',
+    width: 120,
+    ellipsis: true,
+  },
+]);
 
 const emit = defineEmits(['cancelBetting']);
 
@@ -73,48 +111,15 @@ const props = defineProps({
   cancelLoading: { type: Boolean, default: false },
 });
 
-const columns = computed(() => DEFAULT_COLUMNS(trlang.value));
 const dataSource = computed(() => props.bettingHistory || []);
 const game = computed(() => props.gameResult);
 </script>
 
 <style scoped>
-/* Table Styling */
-:deep(.ant-table) {
-  background: transparent !important;
+.game-result-card {
+  border-radius: 20px !important;
 }
 
-:deep(.ant-table-thead > tr > th) {
-  background: var(--glass-bg-light) !important;
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
-  border-color: var(--glass-border) !important;
-  color: var(--white-color) !important;
-}
-
-:deep(.ant-table-tbody > tr > td) {
-  background: transparent !important;
-  border-color: var(--glass-border) !important;
-  color: var(--white-color) !important;
-}
-
-:deep(.ant-table-tbody > tr:hover > td) {
-  background: var(--glass-bg-light) !important;
-}
-
-:deep(.ant-table-tbody > tr) {
-  background: transparent !important;
-}
-
-:deep(.ant-table-placeholder) {
-  background: transparent !important;
-}
-
-:deep(.ant-empty-description) {
-  color: var(--white-color) !important;
-}
-
-/* Betting History Card - No scrollbar, full width table */
 .betting-history-card {
   width: 100%;
 }
@@ -123,42 +128,29 @@ const game = computed(() => props.gameResult);
   padding: 30px !important;
 }
 
-.betting-history-table :deep(.ant-table-wrapper) {
+.betting-history-table :deep(.ant-table-container) {
   overflow-x: visible !important;
 }
 
-.betting-history-table :deep(.ant-table) {
-  width: 100% !important;
-  font-size: 16px;
+:deep(.ant-tag) {
+  background: var(--glass-bg-light) !important;
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border: 1px solid var(--glass-border) !important;
+  color: var(--white-color) !important;
 }
 
-.betting-history-table :deep(.ant-table-thead > tr > th) {
-  padding: 18px !important;
-  font-size: 17px;
-  font-weight: 600;
-  white-space: nowrap;
-  text-align: center !important;
+:deep(.ant-tooltip-inner) {
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  border: 1px solid var(--glass-border) !important;
+  color: var(--white-color) !important;
+  box-shadow: var(--glass-shadow) !important;
 }
 
-.betting-history-table :deep(.ant-table-tbody > tr > td) {
-  padding: 18px !important;
-  font-size: 16px;
-  white-space: nowrap;
-  text-align: center !important;
-}
-
-@media (max-width: 767px) {
-  .betting-history-table :deep(.ant-table-thead > tr > th),
-  .betting-history-table :deep(.ant-table-tbody > tr > td) {
-    padding: 8px 4px !important;
-    font-size: 12px;
-    white-space: normal;
-    word-break: break-word;
-  }
-  
-  .betting-history-table :deep(.ant-table-thead > tr > th) {
-    font-size: 11px;
-  }
+.text-success {
+  color: #10b981 !important;
 }
 </style>
 
