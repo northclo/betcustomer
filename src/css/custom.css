@@ -174,7 +174,6 @@
 
 .sp-icon:hover {
   background: var(--glass-bg);
-  transform: translateY(-2px);
   box-shadow: var(--glass-shadow);
 }
 
@@ -248,11 +247,6 @@
   border: 2px solid var(--glass-border);
   box-shadow: var(--glass-shadow-soft);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.running-ball:hover {
-  transform: scale(1.1) translateY(-5px);
-  box-shadow: var(--glass-shadow), 0 0 20px rgba(99, 102, 241, 0.3);
 }
 
 /* Ball colors matching betting site standards */
@@ -539,6 +533,7 @@
 
 .ant-input,
 .ant-input-number,
+.ant-input-number input,
 .ant-input-number-input,
 .ant-input-password,
 .ant-input-password input,
@@ -547,7 +542,7 @@
   backdrop-filter: var(--blur-sm);
   -webkit-backdrop-filter: var(--blur-sm);
   border: 1px solid var(--glass-border);
-  color: var(--white-color);
+  color: var(--white-color) !important;
 }
 
 .ant-input-password svg {

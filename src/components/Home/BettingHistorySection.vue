@@ -30,27 +30,32 @@
               </span>
             </a-tooltip>
           </template>
-          <template v-else-if="column.key === 'result'">
+          <template v-else-if="column.key === 'win'">
             <a-tag v-if="game?.list && game.list.length > 0" :color="record.win ? 'success' : 'default'">
               {{ record.win ? trlang.win : trlang.lose }}
             </a-tag>
             <a-button
-              v-else-if="remainTime >= 90 && remainTime <= 180"
-              class="w-100"
+              v-else-if="record.betting_status === 'wait' && remainTime >= 90 && remainTime <= 180"
+              type="primary"
+              danger
+              size="small"
               :loading="cancelLoading"
               :disabled="cancelLoading"
               @click="emit('cancelBetting', { id: record.id })"
             >
               {{ trlang.cancel }}
             </a-button>
-            <span v-else class="table-cell-content text-white">
-              {{ trlang.no_available_betting }}
+            <span v-else-if="!game?.list || game.list.length === 0" class="table-cell-content text-white">
+              -
             </span>
           </template>
           <template v-else-if="column.key === 'earning_amount'">
             <span class="table-cell-content" :class="record.win ? 'text-success' : 'text-white'">
               {{ record.earning_amount?.toLocaleString() || 0 }}
             </span>
+          </template>
+          <template v-else-if="column.key === 'createdAt'">
+            <span class="table-cell-content">{{ formatDate(record.createdAt) }}</span>
           </template>
         </template>
       </a-table>
@@ -85,9 +90,9 @@ const columns = computed(() => [
     ellipsis: true,
   },
   { 
-    key: 'result', 
+    key: 'win', 
     title: getTranslation('result'), 
-    dataIndex: 'result',
+    dataIndex: 'win',
     align: 'center',
     width: 100,
   },
@@ -97,6 +102,14 @@ const columns = computed(() => [
     dataIndex: 'earning_amount',
     align: 'center',
     width: 120,
+    ellipsis: true,
+  },
+  { 
+    key: 'createdAt', 
+    title: getTranslation('date'), 
+    dataIndex: 'createdAt',
+    align: 'center',
+    width: 180,
     ellipsis: true,
   },
 ]);
@@ -113,6 +126,18 @@ const props = defineProps({
 
 const dataSource = computed(() => props.bettingHistory || []);
 const game = computed(() => props.gameResult);
+
+const formatDate = (date) => {
+  if (!date) return '-';
+  const d = new Date(date);
+  return d.toLocaleString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+};
 </script>
 
 <style scoped>

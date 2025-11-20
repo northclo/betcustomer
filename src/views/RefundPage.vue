@@ -288,7 +288,6 @@ onMounted(() => {
 .percent-btn:hover {
   background: var(--glass-blue-light);
   border-color: var(--glass-blue-border);
-  transform: translateY(-2px);
 }
 
 :deep(.ant-input),

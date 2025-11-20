@@ -41,13 +41,13 @@
           />
         </div>
       </a-layout>
-      <a-flex justify="center">
+      <a-flex class="mb-5" justify="center">
         <div class="mt-5 flex gap-5">
           <a-button
             v-for="item in (game?.list || [])"
             :key="item"
-            :class="'running-ball running-ball' + item"
-          >
+            :class="'flex items-center justify-center running-ball running-ball' + item"
+            >
             {{ item }}
           </a-button>
         </div>
@@ -111,10 +111,6 @@ const game = computed(() => props.gameResult);
 
 :deep(.ant-btn) {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-:deep(.ant-btn:hover) {
-  transform: translateY(-2px);
 }
 
 :deep(.ant-icon) {

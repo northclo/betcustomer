@@ -119,9 +119,12 @@ const fetchData = async (currentGameId) => {
           bet_amount: el.bet_amount,
           type: el.betting_type,
           benefit: el.betting_rate,
+          betting_rate: el.betting_rate,
           number_sort: el.number_sort,
           win: el.win || false,
           earning_amount: el.earning_amount || 0,
+          betting_status: el.betting_status || 'wait',
+          createdAt: el.createdAt || new Date(),
           result: 0,
         };
       });
@@ -155,10 +158,12 @@ const startBetting = async (bettingData) => {
         bet_amount: result.data.bet_amount,
         type: result.data.betting_type,
         benefit: result.data.betting_rate,
+        betting_rate: result.data.betting_rate,
         result: 0,
         number_sort: result.data.number_sort,
         win: false,
         earning_amount: 0,
+        createdAt: new Date(),
       });
       
       await fetchData(gameId.value);

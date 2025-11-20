@@ -21,11 +21,11 @@
           <span class="mobile-menu-toggle__bar" />
           <span class="mobile-menu-toggle__bar" />
         </button>
-        <div v-if="siteName" class="site-name">
+        <!-- <div v-if="siteName" class="site-name">
           <a-typography-text class="site-name-text">
             {{ siteName }}
           </a-typography-text>
-        </div>
+        </div> -->
         <!-- Desktop navigation -->
         <div
           v-if="!isMobileView"
