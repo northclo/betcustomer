@@ -15,9 +15,9 @@
               :bordered="false"
               class="question-table"
             >
-              <template #bodyCell="{ column, record }">
+              <template #bodyCell="{ column, record, index }">
                 <template v-if="column.key === 'index'">
-                  <span class="table-cell-content">{{ record.index }}</span>
+                  <span class="table-cell-content">{{ (pagination.page - 1) * pagination.limit + index + 1 }}</span>
                 </template>
                 <template v-else-if="column.key === 'title'">
                   <span class="table-cell-content">
@@ -36,7 +36,7 @@
                     <a-button
                       type="text"
                       size="small"
-                      :disabled="record.status !== 'pending'"
+                      :disabled="record.status !== 'PENDING'"
                       class="action-btn-edit"
                       :title="trlang.edit"
                       @click="handleEdit(record)"
@@ -262,15 +262,21 @@ const formatDate = (dateString) => {
 };
 
 const getStatusText = (status) => {
-  if (status === 'resolved') {
+  if (status === 'RESOLVED') {
     return getTranslation('answer_completed');
+  }
+  if (status === 'REJECTED') {
+    return getTranslation('question_rejected');
   }
   return getTranslation('answer_waiting');
 };
 
 const getStatusClass = (status) => {
-  if (status === 'resolved' || status === 'COMPLETE') {
+  if (status === 'RESOLVED' || status === 'COMPLETE') {
     return 'status-completed';
+  }
+  if (status === 'REJECTED') {
+    return 'status-rejected';
   }
   return 'status-waiting';
 };
@@ -290,24 +296,26 @@ const fetchQuestions = async (page = 1, pageSize = 10) => {
     
     if (result.status && result.data) {
       const { questions, page: pageNum, totalPages: pages, total } = result.data;
-      questionList.value = (questions || []).map((item, index) => ({
+      questionList.value = (questions || []).map((item) => ({
         _id: item._id || item.id,
-        index: item.index || (page - 1) * pageSize + index + 1,
         title: item.title || '',
         writer: item.writer || '',
         date: item.createdAt ? new Date(item.createdAt) : (item.date ? new Date(item.date) : new Date()),
-        status: item.status || 'pending',
+        status: item.status || 'PENDING',
         question: item.question || '',
       }));
-      if (pages !== undefined && pages !== null) {
-        pagination.totalPages = pages;
-      } else if (total !== undefined && total !== null) {
+      if (total !== undefined && total !== null) {
         pagination.total = total;
-        pagination.totalPages = Math.ceil(total / pageSize) || 1;
       } else {
         pagination.total = questionList.value.length;
-        pagination.totalPages = Math.ceil(pagination.total / pagination.limit) || 1;
       }
+      
+      if (pages !== undefined && pages !== null) {
+        pagination.totalPages = pages;
+      } else {
+        pagination.totalPages = Math.ceil(pagination.total / pageSize) || 1;
+      }
+      
       if (pageNum !== undefined && pageNum !== null) {
         pagination.page = pageNum;
       } else {
@@ -388,7 +396,7 @@ const fetchSiteSettings = async () => {
 const checkPendingInquiries = () => {
   if (siteSettings.value?.customer_center) {
     const hasPending = questionList.value.some(
-      (q) => q.status === 'pending' || q.status === 'PENDING'
+      (q) => q.status === 'PENDING'
     );
     
     return hasPending;
@@ -411,7 +419,7 @@ const handleNewQuestion = () => {
 };
 
 const handleEdit = (record) => {
-  if (record.status !== 'pending') {
+  if (record.status !== 'PENDING') {
     return message.warning(getTranslation('cannot_edit_resolved_question'));
   }
   isEditMode.value = true;
@@ -543,8 +551,9 @@ onMounted(() => {
   background: transparent;
 }
 
-:deep(.ant-checkbox-wrapper) {
-  color: var(--white-color);
+:deep(.ant-checkbox-wrapper::after) {
+  display: none !important;
+  content: none !important;
 }
 
 :deep(.ant-checkbox-inner) {
@@ -565,6 +574,12 @@ onMounted(() => {
 
 .status-completed {
   color: #10b981;
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.status-rejected {
+  color: #ef4444;
   font-weight: 600;
   margin-right: 8px;
 }

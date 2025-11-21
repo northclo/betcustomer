@@ -426,8 +426,8 @@
   background: transparent !important;
   border: none !important;
   color: var(--white-color) !important;
-  display: flex;
-  align-items: center;
+  display: flex !important;
+  align-items: center !important;
   justify-content: center;
 }
 

@@ -49,10 +49,10 @@
             </button>
             <button
               class="menu-btn white-space-nowrap"
-              :class="{ 'menu-btn-active': currentRoute === '/addfund' }"
-              @click="navigateTo('/addfund')"
+              :class="{ 'menu-btn-active': currentRoute === '/charge' }"
+              @click="navigateTo('/charge')"
             >
-              {{ trlang.addfund_menu }}
+              {{ trlang.charge_menu }}
             </button>
             <button
               class="menu-btn white-space-nowrap"
@@ -107,8 +107,8 @@
           <a-menu-item key="/bethistory">
             {{ trlang.bethistory_menu }}
           </a-menu-item>
-          <a-menu-item key="/addfund">
-            {{ trlang.addfund_menu }}
+          <a-menu-item key="/charge">
+            {{ trlang.charge_menu }}
           </a-menu-item>
           <a-menu-item key="/exchange">
             {{ trlang.exchange_menu }}

@@ -373,11 +373,7 @@ const register = async () => {
     const res = await postData(apiLink.register, payload);
 
     if (res.status) {
-      message.success(
-        membershipApproval.value
-          ? trlang.value.registration_success_pending_approval
-          : trlang.value.registration_success
-      );
+      message.success(trlang.value.registration_success_pending_approval);
       
       setTimeout(() => {
         router.push('/auth/login');

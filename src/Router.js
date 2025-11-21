@@ -30,10 +30,10 @@ const routes = [
     meta: { breadcrumb: 'Bet History', requiresAuth: true }
   },
   {
-    path: '/addfund',
-    name: 'addFund',
+    path: '/charge',
+    name: 'charge',
     component: AddFundPage,
-    meta: { breadcrumb: 'Add Funds', requiresAuth: true }
+    meta: { breadcrumb: 'Charge', requiresAuth: true }
   },
   {
     path: '/exchange',

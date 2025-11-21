@@ -9,13 +9,13 @@
             :loading="loading"
             :pagination="false"
             :bordered="false"
-            :scroll="{ x: 'max-content' }"
             size="middle"
             class="notice-table"
+            :custom-row="customRow"
           >
-            <template #bodyCell="{ column, record }">
+            <template #bodyCell="{ column, record, index }">
               <template v-if="column.key === 'index'">
-                <span class="table-cell-content">{{ record.index }}</span>
+                <span class="table-cell-content">{{ (pagination.page - 1) * pagination.limit + index + 1 }}</span>
               </template>
               <template v-else-if="column.key === 'title'">
                 <span class="table-cell-content">{{ record.title }}</span>
@@ -25,12 +25,6 @@
               </template>
               <template v-else-if="column.key === 'date'">
                 <span class="table-cell-content">{{ formatDate(record.date) }}</span>
-              </template>
-              <template v-else-if="column.key === 'start_date'">
-                <span class="table-cell-content">{{ record.start_date ? formatDate(record.start_date) : '-' }}</span>
-              </template>
-              <template v-else-if="column.key === 'end_date'">
-                <span class="table-cell-content">{{ record.end_date ? formatDate(record.end_date) : '-' }}</span>
               </template>
             </template>
             <template #emptyText>
@@ -64,6 +58,29 @@
           </div>
         </div>
       </a-card>
+
+      <a-modal
+        v-model:open="showNoticeModal"
+        :title="selectedNotice?.title || ''"
+        :width="600"
+        :mask-closable="false"
+        class="question-modal"
+        @cancel="handleModalClose"
+      >
+        <template #footer>
+          <a-button @click="handleModalClose">
+            {{ trlang.close }}
+          </a-button>
+        </template>
+
+        <div class="question-form-modal">
+          <div class="form-group">
+            <div class="notice-content">
+              {{ selectedNotice?.content || '' }}
+            </div>
+          </div>
+        </div>
+      </a-modal>
     </div>
   </div>
 </template>
@@ -78,6 +95,8 @@ const trlang = computed(() => langState?.translations || {});
 
 const loading = ref(false);
 const noticeList = ref([]);
+const showNoticeModal = ref(false);
+const selectedNotice = ref(null);
 const pagination = reactive({
   page: 1,
   limit: 10,
@@ -109,24 +128,11 @@ const noticeColumns = computed(() => [
     title: trlang.value.writer,
     key: 'writer',
     align: 'center',
-    width: 150,
     ellipsis: true,
   },
   {
     title: trlang.value.date,
     key: 'date',
-    align: 'center',
-    width: 200,
-  },
-  {
-    title: trlang.value.start_date,
-    key: 'start_date',
-    align: 'center',
-    width: 200,
-  },
-  {
-    title: trlang.value.end_date,
-    key: 'end_date',
     align: 'center',
     width: 200,
   },
@@ -161,24 +167,23 @@ const fetchNotices = async (page = 1, pageSize = 10) => {
       const { notices, page: pageNum, totalPages: pages, total } = result.data;
       noticeList.value = (notices || []).map((item) => ({
         _id: item._id || item.id,
-        index: item.index || 0,
         title: item.title || '',
         writer: item.writer || '',
         date: item.createdAt ? new Date(item.createdAt) : new Date(),
         content: item.content || '',
         message: item.content || '',
-        start_date: item.start_date || null,
-        end_date: item.end_date || null,
       }));
+      
+      if (total !== undefined && total !== null) {
+        pagination.total = total;
+      } else {
+        pagination.total = noticeList.value.length;
+      }
       
       if (pages !== undefined && pages !== null) {
         pagination.totalPages = pages;
-      } else if (total !== undefined && total !== null) {
-        pagination.total = total;
-        pagination.totalPages = Math.ceil(total / pageSize) || 1;
       } else {
-        pagination.total = noticeList.value.length;
-        pagination.totalPages = Math.ceil(pagination.total / pagination.limit) || 1;
+        pagination.totalPages = Math.ceil(pagination.total / pageSize) || 1;
       }
       
       if (pageNum !== undefined && pageNum !== null) {
@@ -214,6 +219,20 @@ const handlePageSizeChange = (pageSize) => {
   fetchNotices(1, pageSize);
 };
 
+const customRow = (record) => {
+  return {
+    onClick: () => {
+      selectedNotice.value = record;
+      showNoticeModal.value = true;
+    },
+  };
+};
+
+const handleModalClose = () => {
+  showNoticeModal.value = false;
+  selectedNotice.value = null;
+};
+
 onMounted(() => {
   fetchNotices(pagination.page, pagination.limit);
 });
@@ -224,8 +243,67 @@ onMounted(() => {
   min-height: 80vh;
 }
 
-.notice-table {
+.notice-list-page .notice-table {
   background: transparent;
+}
+
+.notice-list-page .notice-table :deep(.ant-table-tbody > tr) {
+  cursor: pointer;
+}
+
+
+.notice-content {
+  color: var(--white-color);
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+:deep(.question-modal .ant-modal-content) {
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  border: 1px solid var(--glass-border) !important;
+}
+
+:deep(.question-modal .ant-modal-header) {
+  background: var(--glass-bg-light) !important;
+  border-bottom: 1px solid var(--glass-border) !important;
+}
+
+:deep(.question-modal .ant-modal-title) {
+  color: var(--white-color) !important;
+  font-weight: 600;
+}
+
+:deep(.question-modal .ant-modal-close) {
+  color: var(--white-color) !important;
+}
+
+:deep(.question-modal .ant-modal-close:hover) {
+  color: var(--main-color) !important;
+}
+
+:deep(.question-modal .ant-modal-body) {
+  color: var(--white-color) !important;
+}
+
+:deep(.question-modal .ant-modal-footer) {
+  background: var(--glass-bg-light) !important;
+  border-top: 1px solid var(--glass-border) !important;
+}
+
+:deep(.question-modal .ant-modal-footer .ant-btn:not(.ant-btn-primary)) {
+  color: var(--white-color) !important;
+  background: transparent !important;
+  border-color: var(--glass-border) !important;
+}
+
+:deep(.question-modal .ant-modal-footer .ant-btn:not(.ant-btn-primary):hover) {
+  color: var(--white-color) !important;
+  background: var(--glass-bg-light) !important;
+  border-color: var(--glass-blue-border) !important;
 }
 </style>
 

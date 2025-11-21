@@ -13,9 +13,9 @@
                 size="middle"
                 :bordered="false"
               >
-                <template #bodyCell="{ column, record }">
+                <template #bodyCell="{ column, record, index }">
                   <template v-if="column.key === 'index'">
-                    <span class="table-cell-content">{{ record.index }}</span>
+                    <span class="table-cell-content">{{ (pagination.page - 1) * pagination.limit + index + 1 }}</span>
                   </template>
                   <template v-else-if="column.key === 'exchangeAmount'">
                     <span class="table-cell-content">{{ record.exchangeAmount.toLocaleString() }} {{ trlang.currency }}</span>
@@ -29,14 +29,14 @@
                   <template v-else-if="column.key === 'status'">
                     <a-tag 
                       :color="getStatusColor(record.status)"
-                      :class="record.status === 'APPROVED' || record.status === 'COMPLETE' ? 'status-complete' : ''"
+                      :class="record.status === 'COMPLETE' ? 'status-complete' : ''"
                     >
                       {{ getStatusText(record.status) }}
                     </a-tag>
                   </template>
                   <template v-else-if="column.key === 'action'">
                     <a-button
-                      v-if="record.status === 'PENDING'"
+                      v-if="record.status === 'WAIT'"
                       type="primary"
                       danger
                       size="small"
@@ -349,20 +349,18 @@ const formatDate = (dateString) => {
 
 const getStatusText = (status) => {
   const statusMap = {
-    PENDING: getTranslation('in_request'),
-    APPROVED: getTranslation('complete'),
-    REJECTED: getTranslation('rejected'),
+    WAIT: getTranslation('in_request'),
     COMPLETE: getTranslation('complete'),
+    CANCEL: getTranslation('rejected'),
   };
   return statusMap[status] || status;
 };
 
 const getStatusColor = (status) => {
   const colorMap = {
-    PENDING: 'orange',
-    APPROVED: 'complete',
-    REJECTED: 'red',
+    WAIT: 'orange',
     COMPLETE: 'complete',
+    CANCEL: 'red',
   };
   return colorMap[status] || 'default';
 };
@@ -460,7 +458,7 @@ const handleRequestExchange = async () => {
 };
 
 const handleCancelExchange = async (record) => {
-  if (record.status !== 'PENDING') {
+  if (record.status !== 'WAIT') {
     return message.warning(getTranslation('only_pending_exchanges_can_be_cancelled'));
   }
 
@@ -494,25 +492,33 @@ const fetchExchangeHistory = async (page = 1, pageSize = 10) => {
       const data = Array.isArray(result.data) ? result.data : (result.data.data || []);
       const paginationData = result.data.pagination || {};
       
-      exchangeList.value = data.map((item, index) => ({
+      exchangeList.value = data.map((item) => ({
         _id: item._id,
-        index: (page - 1) * pageSize + index + 1,
-        exchangeAmount: item.original_amount || item.amount || 0,
-        exchangerName: item.payment_method || '*',
+        exchangeAmount: item.amount || 0,
+        exchangerName: item.user_nickname || '*',
         requestDate: item.createdAt,
-        status: item.status || 'PENDING',
+        status: item.status || 'WAIT',
         cancelling: false,
       }));
 
-      if (paginationData.totalPages !== undefined) {
-        pagination.totalPages = paginationData.totalPages || 1;
-        pagination.page = paginationData.page || page;
-        pagination.limit = paginationData.pageSize || pageSize;
-        pagination.total = paginationData.total || 0;
+      if (paginationData.total !== undefined && paginationData.total !== null) {
+        pagination.total = paginationData.total;
       } else {
         pagination.total = exchangeList.value.length;
-        pagination.totalPages = Math.ceil(pagination.total / pagination.limit) || 1;
       }
+      
+      if (paginationData.totalPages !== undefined && paginationData.totalPages !== null) {
+        pagination.totalPages = paginationData.totalPages;
+      } else {
+        pagination.totalPages = Math.ceil(pagination.total / pageSize) || 1;
+      }
+      
+      if (paginationData.page !== undefined && paginationData.page !== null) {
+        pagination.page = paginationData.page;
+      } else {
+        pagination.page = page;
+      }
+      pagination.limit = paginationData.pageSize || pageSize;
     } else {
       exchangeList.value = [];
       pagination.total = 0;
