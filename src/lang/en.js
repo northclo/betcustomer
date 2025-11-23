@@ -1,15 +1,11 @@
 export default {
   running_ball: "Running Ball",
-
-  // Menu items
   game_menu: "Game Start",
   bethistory_menu: "Bet History",
   charge_menu: "Charge",
   exchange_menu: "Exchange",
   notice_menu: "Notice List",
   customer_center_menu: "CustomerCenter",
-
-  // Game banner names
   game_index: "GameIndex",
   time_intro: "TimeIntro",
   store_amount: "StoreAmount",
@@ -21,8 +17,8 @@ export default {
   logout: "LogOut",
   menu: "Menu",
   toggle_navigation: "Toggle navigation",
-
-  //Game Betting Types
+  failed_to_fetch_data: "Failed to fetch data",
+  operation_failed: "Operation failed",
   odd: "Odd",
   even: "Even",
   under: "Under",
@@ -73,8 +69,6 @@ export default {
   lose: "Lose",
   game_id: "Game ID",
   date: "Date",
-  failed_to_load_betting_options: "Failed to load betting options",
-  error_loading_betting_options: "Error loading betting options",
   no_active_game: "No active game. Please wait for the next game to start.",
   betting_not_available_yet: "Betting is not available yet. Please wait {minutes} minute(s).",
   betting_window_closed: "Betting window has closed. {minutes} minute(s) have passed.",
@@ -82,16 +76,13 @@ export default {
   started_new_game: "Started new game: {gameId}",
   game_ended: "Game ended: {gameId}",
   game_is_currently_disabled: "Game is currently disabled",
-  failed_to_load_game_info: "Failed to load game information. Please try again.",
-  error_loading_game_data: "Failed to load game data",
   bet_placed_successfully: "Bet placed successfully",
-  failed_to_place_bet: "Failed to place bet",
-  error_placing_bet: "Error placing bet. Please try again.",
   bet_cancelled_successfully: "Bet cancelled successfully",
-  failed_to_cancel_bet: "Failed to cancel bet",
-  error_cancelling_bet: "Error cancelling bet. Please try again.",
-
-  // Auth names
+  bet_amount_must_be_multiple_of_unit: "Bet amount must be a multiple of {unit}",
+  bet_amount_below_minimum: "Bet amount is below the minimum of {min}",
+  bet_amount_exceeds_maximum: "Bet amount exceeds the maximum of {max}",
+  potential_earning_exceeds_maximum: "Potential earning exceeds the maximum of {max}",
+  bet_amount_adjusted_to_unit: "Bet amount adjusted to {amount} (multiple of {unit})",
   login: "Login",
   login_to_your_account: "Log in to your account",
   remember_me: "Remember me",
@@ -127,24 +118,17 @@ export default {
   passwords_do_not_match: "Passwords do not match",
   password_min_length: "Password must be at least 6 characters",
   registration_success_pending_approval: "Registration submitted! Your account is pending approval. You will be notified once approved.",
-  registration_failed: "Registration failed. Please try again.",
-
-  // Funds
-  
   pending_approval: "Pending Approval",
   processing: "Processing...",
   enter_amount: "Enter amount",
   please_enter_valid_charge_amount: "Please enter a valid charge amount",
   fund_request_submitted: "Fund request submitted and awaiting approval.",
-  failed_to_add_funds: "Failed to add funds",
   fund_request_cancelled: "Fund request cancelled successfully",
-  failed_to_cancel_fund_request: "Failed to cancel fund request",
   only_pending_charges_can_be_cancelled: "Only pending charges can be cancelled",
   charging_not_available_at_this_time: "Charging is not available at this time",
   minimum_charge_amount: "Minimum charge amount is {amount}",
   maximum_charge_amount: "Maximum charge amount is {amount}",
   exchange_request_submitted: "Exchange request submitted and awaiting approval.",
-  failed_to_process_exchange: "Failed to process exchange",
   enter_secure_code: "Enter exchange secure code",
   exchange_not_available_at_this_time: "Exchange is not available at this time",
   minimum_exchange_amount: "Minimum exchange amount is {amount}",
@@ -153,13 +137,9 @@ export default {
   please_enter_exchange_secure_code: "Please enter exchange secure code",
   only_pending_exchanges_can_be_cancelled: "Only pending exchanges can be cancelled",
   exchange_request_cancelled: "Exchange request cancelled successfully",
-  failed_to_cancel_exchange_request: "Failed to cancel exchange request",
   please_fill_required_fields: "Please fill all required fields",
-  unexpected_error_try_again: "An error occurred. Please try again.",
   no_response_from_server: "No response from server. Please check your network.",
   insufficient_balance: "Insufficient balance",
-
-  // Contact
   customer_center: "Customer Center",
   sending: "Sending...",
   send_question: "Send Question",
@@ -169,11 +149,9 @@ export default {
   enter_title: "Enter title",
   enter_question_content: "Enter question content",
   questions_deleted_successfully: "Questions deleted successfully",
-  failed_to_delete_questions: "Failed to delete questions",
   please_select_questions_to_delete: "Please select questions to delete",
   successfully_deleted_questions_count: "Successfully deleted {count} question(s)",
   questions_sent_successfully: "Questions sent successfully to admin",
-  failed_to_send_questions: "Failed to send questions",
   please_fill_in_all_fields: "Please fill in all fields",
   answer_completed: "[Answer Completed]",
   answer_waiting: "[Answer waiting]",
@@ -188,9 +166,7 @@ export default {
   cannot_edit_resolved_question: "Cannot edit questions that have been resolved or rejected",
   invalid_question_id: "Invalid question ID",
   question_deleted_successfully: "Question deleted successfully",
-  failed_to_delete_question: "Failed to delete question",
   question_updated_successfully: "Question updated successfully",
-  failed_to_update_question: "Failed to update question",
   confirm_delete_question: "Delete Question",
   confirm_delete_question_message: "Are you sure you want to delete this question? This action cannot be undone.",
   confirm_delete_questions: "Delete Questions",
@@ -198,15 +174,11 @@ export default {
   confirm_delete_questions_message: "Are you sure you want to delete the selected questions? This action cannot be undone.",
   confirm: "Confirm",
   cannot_submit_new_inquiry_with_pending: "You cannot submit a new inquiry while you have a pending inquiry. Please wait for a response to your existing inquiry before submitting a new one.",
-
-  // Notice List
   no_notice_messages: "There are not notice messages now",
   writer: "Writer",
   message: "Message",
   notice_list: "Notice List",
   close: "Close",
-
-  // Add Fund Page
   money_charged_list: "Money Charged List",
   request_money_charging: "Request Money Charging",
   charge_instruction_text: "Hope to charge money first and request charging. If you send request first and charge money next, then it will take lots of time to process payment. The charge processor name, charge amount and requested amount should be same so that can process the charging and it will take 1~5 minutes. You can just one time charging amount at once when you click request.",
@@ -227,8 +199,6 @@ export default {
   in_request: "In Request",
   complete: "Complete",
   rejected: "Rejected",
-
-  // Exchange Page
   money_exchanged_list: "Money Exchanged List",
   request_money_exchange: "Request Money Exchange",
   exchange_instruction_text: "The function is working only Exchange. Here you can understand exchange money to refund to get money again.",
@@ -239,18 +209,12 @@ export default {
   exchange_amount: "Exchange Amount",
   exchanger_name: "Exchanger name",
   exchange_request_date: "Exchange Request Date",
-
-  // Site Activation
   site_temporarily_unavailable: "Site Temporarily Unavailable",
   site_is_currently_disabled: "The site is currently disabled. Please try again later.",
   page_not_found: "Page Not Found",
   page_not_found_message: "The page you are looking for does not exist.",
   go_to_login: "Go to Login",
-
-  // Site Text Settings
   deposit_account_information: "Deposit Account Information",
-
-  // Membership Settings
   membership_registration: "Membership Registration",
   membership_approval: "Membership Approval",
   membership_signup_message: "Membership Signup Message",
@@ -258,16 +222,12 @@ export default {
   pending: "Pending",
   registration_pending_approval: "Your registration is pending approval. Please wait for admin approval.",
   membership_registration_disabled: "Membership registration is currently disabled.",
-
-  // MO Amount Labels
   mo_1: "1 MO",
   mo_3: "3 MO",
   mo_5: "5 MO",
   mo_10: "10 MO",
   mo_50: "50 MO",
   mo_100: "100 MO",
-
-  // Bank Number
   bank_id: "Bank",
   bank_owner_name: "Bank Owner Name",
   select_bank: "Select bank",
@@ -276,8 +236,6 @@ export default {
   bank_information_required: "Bank ID, bank number, and bank owner name are required",
   enter_bank_number: "Enter bank number",
   bank_number_required: "Bank number is required",
-
-  // Refund/Withdrawal
   withdraw_funds: "Withdraw Funds",
   available_balance: "Available Balance",
   withdrawal_amount: "Withdrawal Amount",
@@ -286,6 +244,4 @@ export default {
   minimum_amount_is: "Minimum amount is {amount}",
   invalid_amount: "Invalid amount",
   withdrawal_request_submitted: "Withdrawal request submitted successfully",
-  failed_to_process_withdrawal: "Failed to process withdrawal",
-
 };

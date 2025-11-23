@@ -98,6 +98,10 @@
             <a-input-number
               v-model:value="bettingAmount"
               class="fs-4 benefit-amount"
+              :step="betUnitStep"
+              :min="0"
+              :precision="0"
+              @change="handleBetAmountChange"
             />
           </a-flex>
 
@@ -164,6 +168,44 @@ const bettingRate = ref(0);
 const benefitAmount = computed(() => bettingAmount.value * bettingRate.value);
 const numberSort = ref([]);
 const fetchLoading = ref(false);
+const bettingLimits = ref(null);
+
+const betUnitStep = computed(() => {
+  if (bettingLimits.value && bettingLimits.value.bet_money_unit) {
+    return Number(bettingLimits.value.bet_money_unit) || 1;
+  }
+  return 1;
+});
+
+const roundToBetUnit = (value) => {
+  if (!value || value <= 0) return 0;
+  if (!bettingLimits.value || !bettingLimits.value.bet_money_unit) return value;
+  
+  const betUnit = Number(bettingLimits.value.bet_money_unit);
+  if (betUnit <= 0) return value;
+  
+  return Math.round(value / betUnit) * betUnit;
+};
+
+const handleBetAmountChange = (value) => {
+  if (value === null || value === undefined) {
+    bettingAmount.value = 0;
+    return;
+  }
+  
+  const rounded = roundToBetUnit(value);
+  if (rounded !== value) {
+    bettingAmount.value = rounded;
+    if (rounded > 0) {
+      message.info(
+        formatTranslation('bet_amount_adjusted_to_unit', { 
+          amount: rounded.toLocaleString(),
+          unit: betUnitStep.value 
+        })
+      );
+    }
+  }
+};
 
 const emit = defineEmits(['startBetting']);
 
@@ -180,6 +222,21 @@ const fetchData = async () => {
     const result = await getData(apiLink.get_init_betting_option);
 
     if (result.status) {
+      bettingLimits.value = result.data.bettingLimits || null;
+
+      if (bettingLimits.value && bettingLimits.value.bet_money_unit) {
+        const betUnit = Number(bettingLimits.value.bet_money_unit);
+        if (betUnit > 0) {
+          bettingAmountOptions.value = BET_AMOUNTS.map(amount => 
+            Math.round(amount / betUnit) * betUnit
+          ).filter((amount, index, self) => 
+            amount > 0 && self.indexOf(amount) === index
+          );
+        }
+      } else {
+        bettingAmountOptions.value = BET_AMOUNTS;
+      }
+
       bettingOptions.value = [
         {
           key: 'normal',
@@ -272,13 +329,10 @@ const fetchData = async () => {
           ],
         },
       ];
-    } else {
-      console.error('Failed to fetch betting options:', result);
-      message.error(getTranslation('failed_to_load_betting_options'));
     }
   } catch (error) {
     console.error('Error fetching betting options:', error);
-    message.error(getTranslation('error_loading_betting_options'));
+    message.error(error.message || getTranslation('failed_to_fetch_data'));
   } finally {
     fetchLoading.value = false;
   }
@@ -296,7 +350,8 @@ const setBettingOption = (item) => {
 };
 
 const setBetAmount = (amount) => {
-  bettingAmount.value += amount;
+  const newAmount = bettingAmount.value + amount;
+  bettingAmount.value = roundToBetUnit(newAmount);
 };
 
 const resetBettingAmount = () => {
@@ -332,6 +387,45 @@ const startBetting = async () => {
 
   if (!bettingAmount.value || !bettingRate.value)
     return message.error(trlang.value.you_should_set_betting_amount_and_type);
+
+  if (bettingLimits.value) {
+    const amount = Number(bettingAmount.value);
+    const rate = Number(bettingRate.value);
+    const potentialEarning = amount * rate;
+
+    if (bettingLimits.value.bet_money_unit) {
+      const betUnit = Number(bettingLimits.value.bet_money_unit);
+      if (betUnit > 0 && amount % betUnit !== 0) {
+        return message.error(
+          formatTranslation('bet_amount_must_be_multiple_of_unit', { unit: betUnit })
+        );
+      }
+    }
+
+    if (bettingLimits.value.onetime_bet_min !== null && bettingLimits.value.onetime_bet_min > 0) {
+      if (amount < bettingLimits.value.onetime_bet_min) {
+        return message.error(
+          formatTranslation('bet_amount_below_minimum', { min: bettingLimits.value.onetime_bet_min })
+        );
+      }
+    }
+
+    if (bettingLimits.value.onetime_bet_max !== null && bettingLimits.value.onetime_bet_max > 0) {
+      if (amount > bettingLimits.value.onetime_bet_max) {
+        return message.error(
+          formatTranslation('bet_amount_exceeds_maximum', { max: bettingLimits.value.onetime_bet_max })
+        );
+      }
+    }
+
+    if (bettingLimits.value.onetime_earning_max !== null && bettingLimits.value.onetime_earning_max > 0) {
+      if (potentialEarning > bettingLimits.value.onetime_earning_max) {
+        return message.error(
+          formatTranslation('potential_earning_exceeds_maximum', { max: bettingLimits.value.onetime_earning_max })
+        );
+      }
+    }
+  }
 
   if (numberSort.value.length !== 0) {
     const noDuplicates =

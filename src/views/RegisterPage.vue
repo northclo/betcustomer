@@ -297,6 +297,7 @@ const fetchSecuritySetting = async () => {
     }
   } catch (error) {
     console.error('Error fetching security setting:', error);
+    message.error(error.message || trlang.value.failed_to_fetch_data);
     securityEnabled.value = true;
     await getCaptcha();
   }
@@ -379,14 +380,13 @@ const register = async () => {
         router.push('/auth/login');
       }, 2000);
     } else {
-      message.error(res.message || trlang.value.registration_failed);
       if (securityEnabled.value) {
         await getCaptcha();
       }
     }
   } catch (error) {
     console.error('Registration error:', error);
-    message.error(trlang.value.registration_failed);
+    message.error(error.message || trlang.value.operation_failed);
     if (securityEnabled.value) {
       await getCaptcha();
     }

@@ -209,7 +209,7 @@ const getTranslation = (key) =>
   trlang.value?.[key] ?? key;
 
 const depositAccount = computed(() => {
-  return siteText.value?.deposit_account || '';
+  return siteText.value?.deposit_account_information || '';
 });
 
 const MO_VALUE = 10000;
@@ -420,14 +420,10 @@ const handleRequestCharging = async () => {
       resetChargeAmount();
       bankNumber.value = '';
       fetchChargeHistory(pagination.page, pagination.limit);
-    } else {
-      message.error(
-        result.message || getTranslation('failed_to_add_funds')
-      );
     }
   } catch (error) {
     console.error('Error requesting charging:', error);
-    message.error(getTranslation('unexpected_error_try_again'));
+    message.error(error.message || getTranslation('operation_failed'));
   } finally {
     loading.value = false;
   }
@@ -447,12 +443,10 @@ const handleCancelCharge = async (record) => {
     if (result.status) {
       message.success(result.message || getTranslation('fund_request_cancelled'));
       fetchChargeHistory(pagination.page, pagination.limit);
-    } else {
-      message.error(result.message || getTranslation('failed_to_cancel_fund_request'));
     }
   } catch (error) {
     console.error('Error cancelling charge:', error);
-    message.error(getTranslation('unexpected_error_try_again'));
+    message.error(error.message || getTranslation('operation_failed'));
   } finally {
     record.cancelling = false;
   }
@@ -501,6 +495,7 @@ const fetchChargeHistory = async (page = 1, pageSize = 10) => {
     }
   } catch (error) {
     console.error('Error fetching charge history:', error);
+    message.error(error.message || getTranslation('failed_to_fetch_data'));
     chargeList.value = [];
     pagination.total = 0;
     pagination.totalPages = 1;
@@ -517,6 +512,7 @@ const fetchBankNumber = async () => {
     }
   } catch (error) {
     console.error('Error fetching bank number:', error);
+    message.error(error.message || getTranslation('failed_to_fetch_data'));
   }
 };
 
@@ -536,6 +532,7 @@ const fetchChargeSettings = async () => {
     }
   } catch (error) {
     console.error('Error fetching charge settings:', error);
+    message.error(error.message || getTranslation('failed_to_fetch_data'));
   }
 };
 

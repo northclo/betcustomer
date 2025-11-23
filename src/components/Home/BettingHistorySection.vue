@@ -22,15 +22,6 @@
           <template v-if="column.key === 'index'">
             <span class="table-cell-content">{{ record.index }}</span>
           </template>
-          <template v-else-if="column.key === 'bet_time'">
-            <span class="table-cell-content">{{ formatDate(record.bet_time) }}</span>
-          </template>
-          <template v-else-if="column.key === 'game_time'">
-            <span class="table-cell-content">{{ formatGameTime(record.game_time) }}</span>
-          </template>
-          <template v-else-if="column.key === 'game_index'">
-            <span class="table-cell-content">{{ formatGameIndex(record.total_no, record.today_no) }}</span>
-          </template>
           <template v-else-if="column.key === 'bet_info'">
             <a-tooltip :title="String(record.number_sort || '')" color="#0086e3">
               <a-tag class="table-cell-content">
@@ -57,6 +48,19 @@
               </a-tag>
             </template>
           </template>
+          <template v-else-if="column.key === 'action'">
+            <a-button
+              v-if="canCancelBet(record)"
+              type="primary"
+              danger
+              size="small"
+              :loading="cancelLoading"
+              @click="handleCancelBet(record.id)"
+            >
+              {{ trlang.cancel }}
+            </a-button>
+            <span v-else class="table-cell-content">-</span>
+          </template>
         </template>
       </a-table>
     </div>
@@ -69,6 +73,8 @@ import { computed, inject } from 'vue';
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
 
+const emit = defineEmits(['cancelBetting']);
+
 const columns = computed(() => [
   { 
     key: 'index', 
@@ -76,30 +82,6 @@ const columns = computed(() => [
     dataIndex: 'index',
     align: 'center',
     width: 80,
-    ellipsis: true,
-  },
-  { 
-    key: 'bet_time', 
-    title: trlang.value.bet_time, 
-    dataIndex: 'bet_time',
-    align: 'center',
-    width: 160,
-    ellipsis: true,
-  },
-  { 
-    key: 'game_time', 
-    title: trlang.value.game_time, 
-    dataIndex: 'game_time',
-    align: 'center',
-    width: 160,
-    ellipsis: true,
-  },
-  { 
-    key: 'game_index', 
-    title: trlang.value.game_index, 
-    dataIndex: 'game_index',
-    align: 'center',
-    width: 120,
     ellipsis: true,
   },
   { 
@@ -132,6 +114,14 @@ const columns = computed(() => [
     dataIndex: 'betting_result',
     align: 'center',
     width: 130,
+    ellipsis: true,
+  },
+  { 
+    key: 'action', 
+    title: trlang.value.actions || 'Action', 
+    dataIndex: 'action',
+    align: 'center',
+    width: 100,
     ellipsis: true,
   },
 ]);
@@ -168,40 +158,6 @@ const dataSource = computed(() => {
   });
 });
 
-const formatDate = (date) => {
-  if (!date) return '-';
-  const d = new Date(date);
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  const hours = String(d.getHours()).padStart(2, '0');
-  const minutes = String(d.getMinutes()).padStart(2, '0');
-  const seconds = String(d.getSeconds()).padStart(2, '0');
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-};
-
-const formatGameTime = (timestamp) => {
-  if (!timestamp) return '-';
-  const d = new Date(timestamp);
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  const hours = String(d.getHours()).padStart(2, '0');
-  const minutes = String(d.getMinutes()).padStart(2, '0');
-  const seconds = String(d.getSeconds()).padStart(2, '0');
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-};
-
-const formatGameIndex = (totalNo, todayNo) => {
-  if (totalNo === null && todayNo === null) return '-';
-  if (totalNo !== null && todayNo !== null) {
-    return `${totalNo} / ${todayNo}${trlang.value.per_day || 'D'}`;
-  }
-  if (totalNo !== null) return `${totalNo}`;
-  if (todayNo !== null) return `${todayNo}${trlang.value.per_day || 'D'}`;
-  return '-';
-};
-
 const getBettingStatusText = (status) => {
   if (!status) return '-';
   const statusKey = `betting_status_${status.toLowerCase()}`;
@@ -221,6 +177,17 @@ const getBettingResultColor = (status) => {
     default:
       return 'default';
   }
+};
+
+const canCancelBet = (record) => {
+  const isWaitStatus = record.betting_status === 'WAIT';
+  const isWithinCancelWindow = props.remainTime >= 90 && props.remainTime <= 180;
+  return isWaitStatus && isWithinCancelWindow;
+};
+
+// Handle cancel bet action
+const handleCancelBet = (id) => {
+  emit('cancelBetting', { id });
 };
 </script>
 

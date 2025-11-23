@@ -175,17 +175,10 @@ const handleWithdraw = async () => {
       } else {
         fetchBalance();
       }
-    } else {
-      message.error(
-        result.message ||
-          getTranslation('failed_to_process_withdrawal')
-      );
     }
   } catch (error) {
     console.error('Error processing withdrawal:', error);
-    message.error(
-      getTranslation('unexpected_error_try_again')
-    );
+    message.error(error.message || getTranslation('operation_failed'));
   } finally {
     loading.value = false;
   }
@@ -202,12 +195,10 @@ const fetchBalance = async () => {
         console.warn('User balance not found in API response:', result.data);
         availableBalance.value = 0;
       }
-    } else {
-      console.error('Failed to fetch balance:', result.message);
-      availableBalance.value = 0;
     }
   } catch (error) {
     console.error('Error fetching balance:', error);
+    message.error(error.message || getTranslation('failed_to_fetch_data'));
     availableBalance.value = 0;
   }
 };

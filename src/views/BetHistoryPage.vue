@@ -93,9 +93,13 @@
 import { ref, computed, inject, onMounted, reactive } from 'vue';
 import { getData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link.js';
+import { message } from 'ant-design-vue';
 
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
+
+const getTranslation = (key) =>
+  trlang.value?.[key] ?? key;
 
 const bettingHistory = ref([]);
 const loading = ref(false);
@@ -219,6 +223,7 @@ const fetchBettingHistory = async (page = 1, pageSize = 10) => {
     }
   } catch (error) {
     console.error('Error fetching betting history:', error);
+    message.error(error.message || getTranslation('failed_to_fetch_data'));
     bettingHistory.value = [];
     pagination.total = 0;
     pagination.totalPages = 1;
@@ -265,10 +270,10 @@ const formatGameTime = (timestamp) => {
 const formatGameIndex = (totalNo, todayNo) => {
   if (totalNo === null && todayNo === null) return '-';
   if (totalNo !== null && todayNo !== null) {
-    return `${totalNo} / ${todayNo}${trlang.value.per_day || 'D'}`;
+    return `${totalNo} / ${todayNo}${trlang.value.per_day}`;
   }
   if (totalNo !== null) return `${totalNo}`;
-  if (todayNo !== null) return `${todayNo}${trlang.value.per_day || 'D'}`;
+  if (todayNo !== null) return `${todayNo}${trlang.value.per_day}`;
   return '-';
 };
 

@@ -75,7 +75,7 @@ export default {
       title_bar: '',
       copywriter: '',
       top_notify_message: '',
-      deposit_account: '',
+      deposit_account_information: '',
     });
     const membershipSettings = ref({
       membership_registration: 'recommender',
@@ -104,7 +104,7 @@ export default {
             title_bar: result.data.title_bar,
             copywriter: result.data.copywriter,
             top_notify_message: result.data.top_notify_message,
-            deposit_account: result.data.deposit_account,
+            deposit_account_information: result.data.deposit_account_information,
           };
           
           membershipSettings.value = {

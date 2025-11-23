@@ -131,7 +131,7 @@ const fetchData = async (currentGameId) => {
     }
   } catch (error) {
     console.error('Error fetching game data:', error);
-    message.error(getTranslation('error_loading_game_data'));
+    message.error(error.message || getTranslation('failed_to_fetch_data'));
   } finally {
     loading.value = false;
   }
@@ -170,12 +170,11 @@ const startBetting = async (bettingData) => {
       message.success(getTranslation('bet_placed_successfully'));
     } else {
       ownMoney.value = originalBalance;
-      message.error(result.message || getTranslation('failed_to_place_bet'));
     }
   } catch (error) {
     console.error('Error placing bet:', error);
     ownMoney.value = originalBalance;
-    message.error(getTranslation('error_placing_bet'));
+    message.error(error.message || getTranslation('operation_failed'));
   } finally {
     startBettingLoading.value = false;
   }
@@ -198,12 +197,11 @@ const cancelBetting = async ({ id }) => {
       ownMoney.value = ownMoney.value + result.data.bettingAmount;
       message.success(getTranslation('bet_cancelled_successfully'));
     } else {
-      message.error(result.message || getTranslation('failed_to_cancel_bet'));
       await fetchData(gameId.value);
     }
   } catch (error) {
     console.error('Error cancelling bet:', error);
-    message.error(getTranslation('error_cancelling_bet'));
+    message.error(error.message || getTranslation('operation_failed'));
     await fetchData(gameId.value);
   } finally {
     cancelLoading.value = false;

@@ -14,17 +14,17 @@ const handleError =
                 return await fn(...params);
             } catch (error) {
                 if (error.response) {
+                    const errorMessage = error.response.data?.message || translations.error_occurred;
                     if (ENABLE_AUTHENTICATION && error.response.status == httpStatusCodes.UNAUTHORIZED) {
                         router.push('/auth/login')
                     }
-                    message.error(`${error.response.data.message}`);
+                    message.error(errorMessage);
                     return {
                         status: false,
                     };
                 } else {
-                    console.error('Network error:', error.message);
-                    console.error('Request URL:', error.config?.url);
-                    message.error(translations.no_response_from_server);
+                    const networkErrorMessage = error.message || translations.no_response_from_server;
+                    message.error(networkErrorMessage);
                     return {
                         status: false,
                     };

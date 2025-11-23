@@ -89,6 +89,7 @@
 import { ref, computed, onMounted, inject, reactive } from 'vue';
 import { getData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link.js';
+import { message } from 'ant-design-vue';
 
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
@@ -199,7 +200,8 @@ const fetchNotices = async (page = 1, pageSize = 10) => {
       pagination.total = 0;
     }
   } catch (error) {
-    console.warn('Notices API not available yet:', error);
+    console.error('Error fetching notices:', error);
+    message.error(error.message || trlang.value.failed_to_fetch_data);
     noticeList.value = [];
     pagination.totalPages = 1;
     pagination.total = 0;

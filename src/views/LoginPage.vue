@@ -147,6 +147,7 @@ const fetchSecuritySetting = async () => {
     }
   } catch (error) {
     console.error('Error fetching security setting:', error);
+    message.error(error.message || trlang.value.failed_to_fetch_data);
     securityEnabled.value = true;
     await getCaptcha();
   }

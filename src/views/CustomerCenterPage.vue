@@ -329,7 +329,8 @@ const fetchQuestions = async (page = 1, pageSize = 10) => {
       pagination.total = 0;
     }
   } catch (error) {
-    console.warn('Questions API not available yet:', error);
+    console.error('Error fetching questions:', error);
+    message.error(error.message || getTranslation('failed_to_fetch_data'));
     questionList.value = [];
     pagination.totalPages = 1;
     pagination.total = 0;
@@ -368,12 +369,10 @@ const handleDeleteList = () => {
           message.success(successMessage);
           selectedRowKeys.value = [];
           fetchQuestions(pagination.page, pagination.limit);
-        } else {
-          message.error(getTranslation('failed_to_delete_questions'));
         }
       } catch (error) {
         console.error('Error deleting questions:', error);
-        message.error(getTranslation('failed_to_delete_questions'));
+        message.error(error.message || getTranslation('operation_failed'));
       } finally {
         deleting.value = false;
       }
@@ -388,7 +387,8 @@ const fetchSiteSettings = async () => {
       siteSettings.value = result.data;
     }
   } catch (error) {
-    console.warn('Failed to fetch site settings:', error);
+    console.error('Error fetching site settings:', error);
+    message.error(error.message || getTranslation('failed_to_fetch_data'));
     siteSettings.value = { customer_center: true };
   }
 };
@@ -450,12 +450,10 @@ const handleDelete = (record) => {
           message.success(result.message || getTranslation('question_deleted_successfully'));
           fetchQuestions(pagination.page, pagination.limit);
           selectedRowKeys.value = selectedRowKeys.value.filter(id => id !== questionId);
-        } else {
-          message.error(result.message || getTranslation('failed_to_delete_question'));
         }
       } catch (error) {
         console.error('Error deleting question:', error);
-        message.error(getTranslation('failed_to_delete_question'));
+        message.error(error.message || getTranslation('operation_failed'));
       }
     },
   });
@@ -484,7 +482,6 @@ const handleSendQuestion = async () => {
       if (result.status) {
         message.success(result.message || getTranslation('question_updated_successfully'));
       } else {
-        message.error(result.message || getTranslation('failed_to_update_question'));
         sending.value = false;
         return;
       }
@@ -497,7 +494,6 @@ const handleSendQuestion = async () => {
       if (result.status) {
         message.success(result.message || getTranslation('questions_sent_successfully'));
       } else {
-        message.error(result.message || getTranslation('failed_to_send_questions'));
         sending.value = false;
         return;
       }
@@ -511,7 +507,7 @@ const handleSendQuestion = async () => {
     fetchQuestions();
   } catch (error) {
     console.error('Error saving question:', error);
-    message.error(getTranslation('unexpected_error_try_again'));
+    message.error(error.message || getTranslation('operation_failed'));
   } finally {
     sending.value = false;
   }

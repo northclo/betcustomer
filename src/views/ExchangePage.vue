@@ -444,14 +444,10 @@ const handleRequestExchange = async () => {
       resetExchangeAmount();
       fetchExchangeHistory(pagination.page, pagination.limit);
       fetchBalance();
-    } else {
-      message.error(
-        result.message || getTranslation('failed_to_process_exchange')
-      );
     }
   } catch (error) {
     console.error('Error requesting exchange:', error);
-    message.error(getTranslation('unexpected_error_try_again'));
+    message.error(error.message || getTranslation('operation_failed'));
   } finally {
     loading.value = false;
   }
@@ -472,12 +468,10 @@ const handleCancelExchange = async (record) => {
       message.success(result.message || getTranslation('exchange_request_cancelled'));
       fetchExchangeHistory(pagination.page, pagination.limit);
       fetchBalance();
-    } else {
-      message.error(result.message || getTranslation('failed_to_cancel_exchange_request'));
     }
   } catch (error) {
     console.error('Error cancelling exchange:', error);
-    message.error(getTranslation('failed_to_cancel_exchange_request'));
+    message.error(error.message || getTranslation('operation_failed'));
   } finally {
     record.cancelling = false;
   }
@@ -526,6 +520,7 @@ const fetchExchangeHistory = async (page = 1, pageSize = 10) => {
     }
   } catch (error) {
     console.error('Error fetching exchange history:', error);
+    message.error(error.message || getTranslation('failed_to_fetch_data'));
     exchangeList.value = [];
     pagination.total = 0;
     pagination.totalPages = 1;
@@ -542,6 +537,7 @@ const fetchBalance = async () => {
     }
   } catch (error) {
     console.error('Error fetching balance:', error);
+    message.error(error.message || getTranslation('failed_to_fetch_data'));
   }
 };
 
@@ -553,6 +549,7 @@ const fetchBankNumber = async () => {
     }
   } catch (error) {
     console.error('Error fetching bank number:', error);
+    message.error(error.message || getTranslation('failed_to_fetch_data'));
   }
 };
 
@@ -577,6 +574,7 @@ const fetchExchangeSettings = async () => {
     }
   } catch (error) {
     console.error('Error fetching exchange settings:', error);
+    message.error(error.message || getTranslation('failed_to_fetch_data'));
   }
 };
 
