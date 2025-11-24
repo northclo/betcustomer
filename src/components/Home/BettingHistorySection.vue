@@ -189,7 +189,7 @@ const handleCancelBet = (id) => {
 
 <style scoped>
 .game-result-card {
-  border-radius: 4px !important;
+  border-radius: 8px !important;
 }
 
 .betting-history-card {

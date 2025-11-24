@@ -73,6 +73,7 @@
 import { ref, computed, inject, onMounted, onBeforeUnmount, watch } from 'vue';
 import { getData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link.js';
+import { getCurrentTime } from '@/helpers/Common.js';
 
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
@@ -106,7 +107,7 @@ function updateCounter() {
     return;
   }
 
-  const now = Date.now();
+  const now = getCurrentTime();
   const remaining = Math.max(0, Math.floor((props.targetTimestamp - now) / 1000));
 
   const minutes = String(Math.floor(remaining / 60)).padStart(2, '0');

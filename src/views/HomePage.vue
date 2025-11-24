@@ -35,13 +35,14 @@
 </template>
 
 <script setup>
-import { computed, inject, onMounted, onBeforeUnmount, ref } from 'vue';
+import { computed, inject, onMounted, onBeforeUnmount, ref, watch } from 'vue';
 import BettingOption from '@/components/Home/BettingOption.vue';
 import BettingProgress from '@/components/Home/BettingProgress.vue';
 import { getData, postData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link';
 import { socket } from '@/plugins/socket.js';
 import { message } from 'ant-design-vue';
+import { getCurrentTime } from '@/helpers/Common.js';
 
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
@@ -65,6 +66,7 @@ const gameResult = ref(null);
 const numberList = ref([]);
 const loading = ref(false);
 const remainTime = ref(0);
+const targetTimestamp = ref(0);
 const todayNo = ref(0);
 const totalNo = ref(0);
 const ownMoney = ref(0);
@@ -75,6 +77,7 @@ const gameActivated = ref(true);
 const inactiveMessage = ref('');
 const cancelLoading = ref(false);
 const startBettingLoading = ref(false);
+let remainTimeInterval = null;
 
 const fetchData = async (currentGameId) => {
   loading.value = true;
@@ -90,10 +93,12 @@ const fetchData = async (currentGameId) => {
       gameId.value = game?.id || '';
       gameResult.value = game || null;
       numberList.value = game?.list || [];
-      remainTime.value = game?.remain_time || 0;
+      targetTimestamp.value = game?.target_timestamp || 0;
       todayNo.value = game?.today_no || 0;
       totalNo.value = game?.total_no || 0;
       ownMoney.value = user?.own_money || 0;
+      
+      updateRemainTime();
       
       gameActivated.value = gameSetting?.activate !== false;
       inactiveMessage.value = gameSetting?.inactive_message || '';
@@ -200,6 +205,32 @@ const cancelBetting = async ({ id }) => {
 const previousGame = () => fetchData(previousGameId.value);
 const nextGame = () => fetchData(nextGameId.value);
 
+const updateRemainTime = () => {
+  if (!targetTimestamp.value || targetTimestamp.value <= 0) {
+    remainTime.value = 0;
+    return;
+  }
+  
+  const currentTime = getCurrentTime();
+  const remaining = Math.floor((targetTimestamp.value - currentTime) / 1000);
+  remainTime.value = Math.max(0, remaining);
+};
+
+const startRemainTimeInterval = () => {
+  stopRemainTimeInterval();
+  updateRemainTime();
+  remainTimeInterval = setInterval(() => {
+    updateRemainTime();
+  }, 1000);
+};
+
+const stopRemainTimeInterval = () => {
+  if (remainTimeInterval) {
+    clearInterval(remainTimeInterval);
+    remainTimeInterval = null;
+  }
+};
+
 const handleStartGame = ({ game_id }) => {
   message.success(
     formatTranslation('started_new_game', { gameId: game_id })
@@ -214,14 +245,23 @@ const handleEndGame = ({ game_id }) => {
   fetchData(game_id);
 };
 
+watch(
+  () => targetTimestamp.value,
+  () => {
+    startRemainTimeInterval();
+  }
+);
+
 onMounted(() => {
   fetchData('');
+  startRemainTimeInterval();
 
   socket.on('start_game', handleStartGame);
   socket.on('end_game', handleEndGame);
 });
 
 onBeforeUnmount(() => {
+  stopRemainTimeInterval();
   socket.off('start_game', handleStartGame);
   socket.off('end_game', handleEndGame);
 });
