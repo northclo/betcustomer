@@ -89,10 +89,15 @@ function updateTokyoTime() {
 }
 
 function updateCounter() {
-  if (remain.value > 0) {
+  const propTime = Math.max(0, props.remainTime || 0);
+  const timeDiff = Math.abs(remain.value - propTime);
+  
+  if (timeDiff > 2) {
+    remain.value = propTime;
+  } else if (remain.value > 0) {
     remain.value = Math.max(0, remain.value - 1);
   } else {
-    remain.value = Math.max(0, props.remainTime || 0);
+    remain.value = propTime;
   }
 
   const minutes = String(Math.floor(remain.value / 60)).padStart(2, '0');

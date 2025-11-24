@@ -3,7 +3,7 @@ button {
 }
 
 .question-modal .ant-modal-content {
-  background: var(--glass-bg) !important;
+  background: rgb(35 33 48) !important;
   border: 1px solid var(--glass-border) !important;
 }
 
@@ -67,7 +67,7 @@ button {
 
 /* Confirm Modal Glassmorphism Styles */
 .confirm-modal-glass .ant-modal-content {
-  background: var(--glass-bg) !important;
+  background: rgb(35 33 48) !important;
   border: 1px solid var(--glass-border) !important;
   box-shadow: var(--glass-shadow);
 }

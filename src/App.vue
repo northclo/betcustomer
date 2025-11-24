@@ -204,10 +204,17 @@ export default {
     );
 
     let siteCheckInterval = null;
+    let bannerSyncInterval = null;
     onMounted(() => {
       siteCheckInterval = setInterval(() => {
         checkSiteActivation();
       }, 30000);
+      
+      if (!isAuthPage.value && !siteDisabled.value) {
+        bannerSyncInterval = setInterval(() => {
+          fetchBannerData();
+        }, 30000);
+      }
     });
 
     onBeforeUnmount(() => {
@@ -215,6 +222,9 @@ export default {
       socket.off('end_game', handleEndGame);
       if (siteCheckInterval) {
         clearInterval(siteCheckInterval);
+      }
+      if (bannerSyncInterval) {
+        clearInterval(bannerSyncInterval);
       }
     });
 

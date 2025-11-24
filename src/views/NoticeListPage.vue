@@ -263,7 +263,7 @@ onMounted(() => {
 }
 
 :deep(.question-modal .ant-modal-content) {
-  background: var(--glass-bg) !important;
+  background: rgb(35 33 48) !important;
   border: 1px solid var(--glass-border) !important;
 }
 
