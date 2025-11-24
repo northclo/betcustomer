@@ -212,6 +212,10 @@ const updateRemainTime = () => {
   }
   
   const currentTime = getCurrentTime();
+  console.log('currentTime', currentTime)
+  console.log('currentTime date', new Date(currentTime))
+  console.log('targetTimestamp date', new Date(targetTimestamp.value))
+  console.log('targetTimestamp', targetTimestamp.value)
   const remaining = Math.floor((targetTimestamp.value - currentTime) / 1000);
   remainTime.value = Math.max(0, remaining);
 };
