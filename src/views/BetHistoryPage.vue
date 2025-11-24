@@ -13,7 +13,7 @@
           :loading="loading"
         >
           <template #emptyText>
-            <div class="text-center text-white py-4">
+            <div class="text-center text-white py-1">
               <a-spin v-if="loading" />
               <span v-else>{{ trlang.no_data }}</span>
             </div>

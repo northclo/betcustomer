@@ -145,7 +145,7 @@
 .game-result-card table tbody tr td {
   border-bottom: 1px solid var(--glass-border) !important;
   cursor: pointer;
-  padding: 12px !important;
+  padding: 4px 2px !important;
   background: transparent !important;
 }
 
@@ -153,7 +153,7 @@
   background: var(--glass-bg-light) !important;
   border-bottom: 1px solid var(--glass-border-light) !important;
   text-align: center !important;
-  padding: 12px !important;
+  padding: 4px 2px !important;
   font-weight: 600;
   color: var(--white-color) !important;
 }

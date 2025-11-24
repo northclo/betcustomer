@@ -41,18 +41,26 @@
             target="_blank"
             class="flex items-center"
           >
-            <a-image src="/icons/sp.png" />
+            <img src="/icons/sp.png" />
             <a-typography-text class="text-white fs-4 ms-2">
               {{ trlang.store_name }}
             </a-typography-text>
           </a>
         </a-flex>
 
-        <a-flex class="p-2" align="center" gap="small" wrap="nowrap">
-          <a-image src="/icons/msg-icon.png" />
-          <a-typography-text class="text-white fs-3">
-            0
-          </a-typography-text>
+        <a-flex 
+          class="p-2 notice-badge" 
+          align="center" 
+        >
+          <a
+            href="/notice"
+            class="flex items-center gap-2"
+          >
+            <img src="/icons/msg-icon.png" />
+            <a-typography-text class="text-white fs-3">
+              {{ noticeCount }}
+            </a-typography-text>
+          </a>
         </a-flex>
       </a-flex>
     </div>
@@ -61,6 +69,8 @@
 
 <script setup>
 import { ref, computed, inject, onMounted, onBeforeUnmount, watch } from 'vue';
+import { getData } from '@/helpers/Axios.js';
+import { apiLink } from '@/utils/api-link.js';
 
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
@@ -77,6 +87,7 @@ const formattedTime = ref('');
 const counterText = ref('00:00');
 let clockInterval = null;
 const remain = ref(0);
+const noticeCount = ref(0);
 
 function updateTokyoTime() {
   formattedTime.value = new Intl.DateTimeFormat('en-US', {
@@ -126,7 +137,30 @@ function stopClock() {
   }
 }
 
-onMounted(startClock);
+const fetchNoticeCount = async () => {
+  try {
+    if (!apiLink.get_notices) {
+      noticeCount.value = 0;
+      return;
+    }
+
+    const result = await getData(`${apiLink.get_notices}?page=1&limit=1`);
+    
+    if (result.status && result.data) {
+      noticeCount.value = result.data.total || 0;
+    } else {
+      noticeCount.value = 0;
+    }
+  } catch (error) {
+    console.error('Error fetching notice count:', error);
+    noticeCount.value = 0;
+  }
+};
+
+onMounted(() => {
+  startClock();
+  fetchNoticeCount();
+});
 onBeforeUnmount(stopClock);
 
 watch(
@@ -143,5 +177,14 @@ watch(
   background: var(--glass-bg);
   border: 1px solid var(--glass-border-light);
   border-radius: 4px;
+}
+
+.notice-badge {
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.notice-badge:hover {
+  opacity: 0.8;
 }
 </style>

@@ -28,7 +28,7 @@
               </template>
             </template>
             <template #emptyText>
-              <div class="text-center text-white py-4">
+              <div class="text-center text-white py-1">
                 {{ trlang.no_notice_messages }}
               </div>
             </template>

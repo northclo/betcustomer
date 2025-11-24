@@ -48,7 +48,7 @@
                 </template>
               </template>
               <template #emptyText>
-                <div class="text-center text-white py-4">
+                <div class="text-center text-white py-1">
                   {{ getTranslation('no_data') }}
                 </div>
               </template>

@@ -12,7 +12,7 @@
         :loading="loading"
       >
         <template #emptyText>
-          <div class="text-center text-white py-4">
+          <div class="text-center text-white py-1">
             <a-spin v-if="loading" />
             <span v-else>{{ trlang.no_data }}</span>
           </div>
@@ -250,7 +250,6 @@ const handleCancelBet = (id) => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
 }
 
 .betting-result-complete .win-lose-tag {

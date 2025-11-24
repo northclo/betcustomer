@@ -36,6 +36,9 @@
           v-model:value="numberSort[index - 1]"
           class="text-center"
           style="width: 40px"
+          maxlength="1"
+          @input="handleNumberSortInput(index - 1, $event)"
+          @keypress="handleNumberSortKeypress"
         />
       </a-flex>
     </div>
@@ -347,6 +350,48 @@ const setBettingOption = (item) => {
   } else {
     numberSort.value = [];
   }
+};
+
+const getMaxAllowedNumber = () => {
+  const maxMap = { number_13: 3, number_14: 4, number_16: 6 };
+  return maxMap[bettingType.value] || 6;
+};
+
+const handleNumberSortKeypress = (event) => {
+  const charCode = event.which ? event.which : event.keyCode;
+  const char = String.fromCharCode(charCode);
+  
+  if (charCode <= 31 || (charCode >= 37 && charCode <= 40)) {
+    return;
+  }
+  
+  if (charCode < 48 || charCode > 57) {
+    event.preventDefault();
+    return;
+  }
+  
+  const maxAllowed = getMaxAllowedNumber();
+  const numValue = parseInt(char, 10);
+  if (numValue < 1 || numValue > maxAllowed) {
+    event.preventDefault();
+  }
+};
+
+const handleNumberSortInput = (index, event) => {
+  const inputValue = event.target.value;
+  const numericValue = inputValue.replace(/[^0-9]/g, '');
+  const singleDigit = numericValue.slice(-1);
+  
+  const maxAllowed = getMaxAllowedNumber();
+  const numValue = parseInt(singleDigit, 10);
+  
+  let validValue = singleDigit;
+  if (singleDigit && (!numValue || numValue < 1 || numValue > maxAllowed)) {
+    validValue = '';
+  }
+  
+  numberSort.value[index] = validValue;
+  event.target.value = validValue;
 };
 
 const setBetAmount = (amount) => {
