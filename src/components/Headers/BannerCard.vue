@@ -41,7 +41,8 @@
             target="_blank"
             class="flex items-center"
           >
-            <img src="/icons/sp.png" />
+            <!-- eslint-disable-next-line vue/html-self-closing -->
+            <img src="/icons/sp.png" alt="" />
             <a-typography-text class="text-white fs-4 ms-2">
               {{ trlang.store_name }}
             </a-typography-text>
@@ -56,7 +57,8 @@
             href="/notice"
             class="flex items-center gap-2"
           >
-            <img src="/icons/msg-icon.png" />
+            <!-- eslint-disable-next-line vue/html-self-closing -->
+            <img src="/icons/msg-icon.png" alt="" />
             <a-typography-text class="text-white fs-3">
               {{ noticeCount }}
             </a-typography-text>

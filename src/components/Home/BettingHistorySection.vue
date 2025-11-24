@@ -64,8 +64,8 @@
                 danger
                 size="small"
                 :loading="cancelLoading"
-                @click="handleCancelBet(record.id)"
                 class="cancel-button"
+                @click="handleCancelBet(record.id)"
               >
                 {{ trlang.cancel }}
               </a-button>
