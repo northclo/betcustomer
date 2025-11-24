@@ -36,7 +36,12 @@
             <div class="betting-result-cell">
               <template v-if="record.betting_status === 'COMPLETE'">
                 <div class="betting-result-complete">
-                  <span class="table-cell-content">{{ record.bet_amount?.toLocaleString() || 0 }}</span>
+                  <span class="table-cell-content" :class="record.win ? 'text-success' : 'text-error'">
+                    {{ record.win 
+                      ? (record.earning_amount?.toLocaleString() || 0) 
+                      : `-${(record.bet_amount?.toLocaleString() || 0)}` 
+                    }}
+                  </span>
                   <a-tag 
                     :color="record.win ? 'success' : 'error'"
                     class="table-cell-content win-lose-tag"
@@ -141,6 +146,7 @@ const dataSource = computed(() => {
       betting_type: item.betting_type || item.type || '',
       betting_rate: item.betting_rate || item.benefit || 0,
       bet_amount: item.bet_amount || 0,
+      earning_amount: item.earning_amount || 0,
       betting_status: normalizedStatus,
       win: item.win || false,
       number_sort: item.number_sort || [],
@@ -224,6 +230,10 @@ const handleCancelBet = (id) => {
 
 .text-success {
   color: #10b981 !important;
+}
+
+.text-error {
+  color: #ef4444 !important;
 }
 
 .betting-result-cell {

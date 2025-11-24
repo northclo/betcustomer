@@ -366,8 +366,8 @@ const getStatusColor = (status) => {
 };
 
 const selectMoAmount = (amount) => {
-  selectedMoAmount.value = amount;
-  exchangeAmount.value = amount;
+  const currentAmount = exchangeAmount.value || 0;
+  exchangeAmount.value = currentAmount + amount;
 };
 
 const resetExchangeAmount = () => {
