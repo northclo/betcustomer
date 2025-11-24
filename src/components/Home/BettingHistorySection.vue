@@ -29,37 +29,34 @@
               </a-tag>
             </a-tooltip>
           </template>
-          <template v-else-if="column.key === 'bet_rate'">
-            <span class="table-cell-content">{{ record.betting_rate || 0 }}</span>
-          </template>
           <template v-else-if="column.key === 'bet_amount'">
             <span class="table-cell-content">{{ record.bet_amount?.toLocaleString() || 0 }}</span>
           </template>
           <template v-else-if="column.key === 'betting_result'">
-            <template v-if="record.betting_status === 'COMPLETE'">
-              <span class="table-cell-content">{{ record.bet_amount?.toLocaleString() || 0 }}</span>
-            </template>
-            <template v-else>
-              <a-tag 
-                :color="getBettingResultColor(record.betting_status)"
-                class="table-cell-content"
+            <div class="betting-result-cell">
+              <template v-if="record.betting_status === 'COMPLETE'">
+                <span class="table-cell-content">{{ record.bet_amount?.toLocaleString() || 0 }}</span>
+              </template>
+              <template v-else>
+                <a-tag 
+                  :color="getBettingResultColor(record.betting_status)"
+                  class="table-cell-content"
+                >
+                  {{ getBettingStatusText(record.betting_status) }}
+                </a-tag>
+              </template>
+              <a-button
+                v-if="canCancelBet(record)"
+                type="primary"
+                danger
+                size="small"
+                :loading="cancelLoading"
+                @click="handleCancelBet(record.id)"
+                class="cancel-button"
               >
-                {{ getBettingStatusText(record.betting_status) }}
-              </a-tag>
-            </template>
-          </template>
-          <template v-else-if="column.key === 'action'">
-            <a-button
-              v-if="canCancelBet(record)"
-              type="primary"
-              danger
-              size="small"
-              :loading="cancelLoading"
-              @click="handleCancelBet(record.id)"
-            >
-              {{ trlang.cancel }}
-            </a-button>
-            <span v-else class="table-cell-content">-</span>
+                {{ trlang.cancel }}
+              </a-button>
+            </div>
           </template>
         </template>
       </a-table>
@@ -81,23 +78,7 @@ const columns = computed(() => [
     title: trlang.value.no, 
     dataIndex: 'index',
     align: 'center',
-    width: 80,
-    ellipsis: true,
-  },
-  { 
-    key: 'bet_info', 
-    title: trlang.value.bet_info, 
-    dataIndex: 'bet_info',
-    align: 'center',
-    width: 150,
-    ellipsis: true,
-  },
-  { 
-    key: 'bet_rate', 
-    title: trlang.value.bet_rate, 
-    dataIndex: 'bet_rate',
-    align: 'center',
-    width: 100,
+    width: 50,
     ellipsis: true,
   },
   { 
@@ -109,19 +90,19 @@ const columns = computed(() => [
     ellipsis: true,
   },
   { 
+    key: 'bet_info', 
+    title: trlang.value.bet_info, 
+    dataIndex: 'bet_info',
+    align: 'center',
+    width: 150,
+    ellipsis: true,
+  },
+  { 
     key: 'betting_result', 
     title: trlang.value.betting_result, 
     dataIndex: 'betting_result',
     align: 'center',
-    width: 130,
-    ellipsis: true,
-  },
-  { 
-    key: 'action', 
-    title: trlang.value.actions || 'Action', 
-    dataIndex: 'action',
-    align: 'center',
-    width: 100,
+    width: 180,
     ellipsis: true,
   },
 ]);
@@ -193,7 +174,7 @@ const handleCancelBet = (id) => {
 
 <style scoped>
 .game-result-card {
-  border-radius: 20px !important;
+  border-radius: 4px !important;
 }
 
 .betting-history-card {
@@ -201,25 +182,32 @@ const handleCancelBet = (id) => {
 }
 
 .betting-history-card :deep(.ant-card-body) {
-  padding: 30px !important;
+  padding: 16px 8px !important;
+}
+
+.table-container {
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
 }
 
 .betting-history-table :deep(.ant-table-container) {
-  overflow-x: visible !important;
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
+}
+
+.betting-history-table :deep(.ant-table-body) {
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
 }
 
 :deep(.ant-tag) {
   background: var(--glass-bg-light) !important;
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border: 1px solid var(--glass-border) !important;
   color: var(--white-color) !important;
 }
 
 :deep(.ant-tooltip-inner) {
   background: var(--glass-bg) !important;
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
   border: 1px solid var(--glass-border) !important;
   color: var(--white-color) !important;
   box-shadow: var(--glass-shadow) !important;
@@ -227,6 +215,17 @@ const handleCancelBet = (id) => {
 
 .text-success {
   color: #10b981 !important;
+}
+
+.betting-result-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.betting-result-cell .cancel-button {
+  margin-top: 4px;
 }
 </style>
 

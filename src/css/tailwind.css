@@ -9929,26 +9929,6 @@ video {
   }
 }
 
-.animate-none {
-  animation: none;
-}
-
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
-
-.animate-ping {
-  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
-}
-
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-.animate-bounce {
-  animation: bounce 1s infinite;
-}
-
 .cursor-auto {
   cursor: auto;
 }
@@ -39175,26 +39155,6 @@ video {
     --tw-scale-y: 1.5;
   }
 
-  .sm\:animate-none {
-    animation: none;
-  }
-
-  .sm\:animate-spin {
-    animation: spin 1s linear infinite;
-  }
-
-  .sm\:animate-ping {
-    animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
-  }
-
-  .sm\:animate-pulse {
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-
-  .sm\:animate-bounce {
-    animation: bounce 1s infinite;
-  }
-
   .sm\:cursor-auto {
     cursor: auto;
   }
@@ -68407,26 +68367,6 @@ video {
 
   .md\:focus\:scale-y-150:focus {
     --tw-scale-y: 1.5;
-  }
-
-  .md\:animate-none {
-    animation: none;
-  }
-
-  .md\:animate-spin {
-    animation: spin 1s linear infinite;
-  }
-
-  .md\:animate-ping {
-    animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
-  }
-
-  .md\:animate-pulse {
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-
-  .md\:animate-bounce {
-    animation: bounce 1s infinite;
   }
 
   .md\:cursor-auto {
@@ -97643,26 +97583,6 @@ video {
     --tw-scale-y: 1.5;
   }
 
-  .lg\:animate-none {
-    animation: none;
-  }
-
-  .lg\:animate-spin {
-    animation: spin 1s linear infinite;
-  }
-
-  .lg\:animate-ping {
-    animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
-  }
-
-  .lg\:animate-pulse {
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-
-  .lg\:animate-bounce {
-    animation: bounce 1s infinite;
-  }
-
   .lg\:cursor-auto {
     cursor: auto;
   }
@@ -126877,26 +126797,6 @@ video {
     --tw-scale-y: 1.5;
   }
 
-  .xl\:animate-none {
-    animation: none;
-  }
-
-  .xl\:animate-spin {
-    animation: spin 1s linear infinite;
-  }
-
-  .xl\:animate-ping {
-    animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
-  }
-
-  .xl\:animate-pulse {
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-
-  .xl\:animate-bounce {
-    animation: bounce 1s infinite;
-  }
-
   .xl\:cursor-auto {
     cursor: auto;
   }
@@ -156109,26 +156009,6 @@ video {
 
   .\32xl\:focus\:scale-y-150:focus {
     --tw-scale-y: 1.5;
-  }
-
-  .\32xl\:animate-none {
-    animation: none;
-  }
-
-  .\32xl\:animate-spin {
-    animation: spin 1s linear infinite;
-  }
-
-  .\32xl\:animate-ping {
-    animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
-  }
-
-  .\32xl\:animate-pulse {
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-
-  .\32xl\:animate-bounce {
-    animation: bounce 1s infinite;
   }
 
   .\32xl\:cursor-auto {

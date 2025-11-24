@@ -462,16 +462,12 @@ onMounted(() => {
 <style scoped>
 .glass-label {
   background: var(--glass-bg-light);
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow-soft);
 }
 
 .glass-card {
   background: var(--glass-bg);
-  backdrop-filter: var(--blur-lg);
-  -webkit-backdrop-filter: var(--blur-lg);
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
   transition: box-shadow 0.2s ease;
@@ -483,11 +479,9 @@ onMounted(() => {
 
 .glass-btn {
   background: var(--glass-bg-dark);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border: 1px solid var(--glass-border);
   color: var(--white-color);
-  border-radius: 10px;
+  border-radius: 4px;
   transition: background-color 0.2s ease, box-shadow 0.2s ease;
   box-shadow: var(--glass-shadow-soft);
 }
@@ -500,10 +494,8 @@ onMounted(() => {
 :deep(.ant-input-number),
 :deep(.ant-input) {
   background: var(--glass-bg-dark);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border: 1px solid var(--glass-border);
-  border-radius: 10px;
+  border-radius: 4px;
   color: var(--white-color);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -522,10 +514,8 @@ onMounted(() => {
 
 /* Glassmorphism Betting Option Buttons */
 .glass-option-btn {
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border: 2px solid !important;
-  border-radius: 12px;
+  border-radius: 4px;
   transition: border-color 0.2s ease, background-color 0.2s ease;
   box-shadow: var(--glass-shadow-soft);
   position: relative;
@@ -597,8 +587,6 @@ onMounted(() => {
 
 /* Active State - Enhanced Selected Effect */
 .glass-option-active {
-  transform: scale(1.02);
-  border-width: 3px !important;
   position: relative;
   font-weight: 700;
 }
@@ -637,8 +625,6 @@ onMounted(() => {
 
 /* Action Buttons */
 .glass-action-btn {
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border: 2px solid;
   transition: box-shadow 0.2s ease, background-color 0.2s ease;
   box-shadow: var(--glass-shadow-soft);
@@ -682,21 +668,17 @@ onMounted(() => {
 /* Info Display */
 .glass-info-label {
   background: var(--glass-bg-light);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border: 1px solid var(--glass-border);
   border-right: none;
-  border-radius: 10px 0 0 10px;
+  border-radius: 4px 0 0 4px;
   box-shadow: var(--glass-shadow-soft);
 }
 
 .glass-info-value {
   background: var(--glass-bg);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border: 1px solid var(--glass-border);
   border-left: none;
-  border-radius: 0 10px 10px 0;
+  border-radius: 0 4px 4px 0;
   box-shadow: var(--glass-shadow-soft);
 }
 

@@ -1,20 +1,28 @@
 .a-layout-header {
   position: relative;
   overflow: visible;
+  padding: 0 !important;
+  height: auto !important;
+  line-height: normal !important;
+}
+
+.a-layout-header.main-container {
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+  margin-bottom: 0 !important;
 }
 
 .header-wrapper {
   background: var(--glass-bg);
-  backdrop-filter: var(--blur-lg);
-  -webkit-backdrop-filter: var(--blur-lg);
   border-bottom: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
+  padding-top: 16px;
 }
 
 .AppBarBtns {
-  padding: 12px 0px;
+  padding: 4px 0px;
   align-items: center;
-  gap: 12px;
+  gap: 6px;
   position: relative;
   width: 100%;
 }
@@ -24,7 +32,7 @@
   align-items: center;
   justify-content: space-between;
   flex: 1 1 auto;
-  gap: 24px;
+  gap: 8px;
 }
 
 .drawer-footer {
@@ -101,20 +109,20 @@
 .AppBarBtnsSub {
   display: flex;
   justify-content: left;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .menu-btn {
   background: transparent;
   border: none;
-  padding: 8px 16px;
+  padding: 4px 10px;
   color: var(--white-color);
   outline: none;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
-  border-radius: 8px;
+  border-radius: 6px;
   transition: opacity 0.2s ease, background-color 0.2s ease;
   position: relative;
   opacity: 0.7;
@@ -128,9 +136,7 @@
   right: 0;
   bottom: 0;
   background: var(--glass-bg-light);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
-  border-radius: 10px;
+  border-radius: 4px;
   opacity: 0;
   transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: -1;
@@ -150,10 +156,6 @@
   color: var(--white-color) !important;
   font-weight: 700 !important;
   background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(139, 92, 246, 0.3)) !important;
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
-  border: 2px solid rgba(99, 102, 241, 0.5) !important;
-  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3) !important;
 }
 
 .menu-btn-active::before {
@@ -168,11 +170,10 @@
 
 .log-out-btn {
   background: var(--glass-bg-light);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
+ 
   border: 1px solid var(--glass-border);
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 4px 10px;
+  border-radius: 6px;
   box-shadow: var(--glass-shadow-soft);
   transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -201,8 +202,8 @@
   border: none;
   color: var(--white-color);
   cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
+  padding: 4px;
+  border-radius: 6px;
   transition: background 0.2s ease;
   position: relative;
   z-index: 3;
@@ -254,8 +255,8 @@
 
 @media (max-width: 992px) {
   .AppBarBtns {
-    padding: 12px 0;
-    gap: 8px;
+    padding: 4px 0;
+    gap: 6px;
   }
 
   .mobile-menu-toggle {

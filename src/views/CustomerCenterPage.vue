@@ -547,19 +547,117 @@ onMounted(() => {
   background: transparent;
 }
 
+:deep(.ant-checkbox-wrapper),
+:deep(.ant-checkbox),
+:deep(.ant-checkbox-inner),
+:deep(.ant-checkbox-inner::after),
+:deep(.ant-checkbox-inner::before),
+:deep(.ant-checkbox-input) {
+  transition: none !important;
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -o-transition: none !important;
+}
+
+:deep(.ant-checkbox-wrapper) {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
 :deep(.ant-checkbox-wrapper::after) {
   display: none !important;
   content: none !important;
 }
 
+:deep(.ant-checkbox-checked::after),
+:deep(:where(.css-dev-only-do-not-override-1p3hq3p).ant-checkbox-checked::after),
+:deep(:where([class*="css-dev-only-do-not-override"]).ant-checkbox-checked::after) {
+  display: none !important;
+  content: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+:deep(.ant-checkbox) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 :deep(.ant-checkbox-inner) {
-  background: var(--glass-bg-dark);
-  border-color: var(--glass-border);
+  width: 20px !important;
+  height: 20px !important;
+  background: var(--glass-bg-dark) !important;
+  border: 2px solid var(--glass-border) !important;
+  border-radius: 6px !important;
+  position: relative;
+  overflow: hidden;
+}
+
+:deep(.ant-checkbox-inner::before) {
+  display: none !important;
+}
+
+:deep(.ant-checkbox-inner::after) {
+  width: 6px !important;
+  height: 10px !important;
+  left: 6px !important;
+  top: 2px !important;
+  border: 2px solid #ffffff !important;
+  border-top: none !important;
+  border-left: none !important;
+  opacity: 1 !important;
 }
 
 :deep(.ant-checkbox-checked .ant-checkbox-inner) {
-  background: var(--glass-blue);
-  border-color: var(--glass-blue-border);
+  background: var(--glass-blue) !important;
+  border-color: var(--glass-blue-border) !important;
+}
+
+:deep(.ant-checkbox-checked .ant-checkbox-inner::after) {
+  transform: rotate(45deg) scale(1) !important;
+  border-color: #ffffff !important;
+}
+
+
+:deep(.ant-checkbox-disabled .ant-checkbox-inner) {
+  background: var(--glass-bg-dark) !important;
+  border-color: var(--glass-border) !important;
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+:deep(.ant-checkbox-disabled .ant-checkbox-inner::after) {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+
+:deep(.ant-table-thead .ant-checkbox-wrapper) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:deep(.ant-table-thead .ant-checkbox-inner) {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+:deep(.ant-checkbox-indeterminate .ant-checkbox-inner::after) {
+  width: 10px !important;
+  height: 2px !important;
+  left: 4px !important;
+  top: 8px !important;
+  border: none !important;
+  background: #ffffff !important;
+  transform: scale(1) !important;
+  border-radius: 1px !important;
+}
+
+:deep(.ant-checkbox-indeterminate .ant-checkbox-inner) {
+  background: var(--glass-blue) !important;
+  border-color: var(--glass-blue-border) !important;
 }
 
 .status-waiting {
@@ -689,8 +787,6 @@ onMounted(() => {
 /* Question Modal Styles */
 :deep(.question-modal .ant-modal-content) {
   background: var(--glass-bg) !important;
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
   border: 1px solid var(--glass-border) !important;
 }
 

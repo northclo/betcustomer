@@ -83,7 +83,7 @@
 
       <a-col :xs="24" :lg="6">
         <a-card :title="getTranslation('request_money_charging')" class="game-result-card matching-height-card">
-          <a-space direction="vertical" size="middle" class="w-100">
+          <a-space direction="vertical" size="small" class="w-100">
             <div class="instruction-text">
               <p>
                 {{ getTranslation('charge_instruction_text') }}
@@ -98,7 +98,7 @@
               <div class="section-title">
                 {{ getTranslation('charge_amount_selection') }}
               </div>
-              <div class="mo-buttons-container mt-2">
+              <div class="mo-buttons-container mt-1">
                 <button
                   v-for="moAmount in moAmounts"
                   :key="moAmount.value"
@@ -120,7 +120,7 @@
               <div class="section-title">
                 {{ getTranslation('charge_money') }}
               </div>
-              <a-row :gutter="[8, 8]" class="mt-2">
+              <a-row :gutter="[8, 8]" class="mt-1">
                 <a-col :xs="16" :sm="18">
                   <a-input-number
                     v-model:value="chargeAmount"
@@ -157,13 +157,13 @@
               <a-input
                 v-model:value="bankNumber"
                 type="text"
-                class="mt-2"
+                class="mt-1"
                 size="large"
                 :placeholder="getTranslation('enter_bank_number')"
               />
             </div>
 
-            <div v-if="depositAccount" class="mt-4">
+            <div v-if="depositAccount" class="mt-2">
               <div class="section-title">
                 {{ getTranslation('deposit_account_information') }}
               </div>
@@ -355,8 +355,8 @@ const getStatusColor = (status) => {
 };
 
 const selectMoAmount = (amount) => {
-  selectedMoAmount.value = amount;
-  chargeAmount.value = amount;
+  const currentAmount = chargeAmount.value || 0;
+  chargeAmount.value = currentAmount + amount;
 };
 
 const resetChargeAmount = () => {
@@ -576,12 +576,10 @@ onMounted(() => {
 
 .deposit-account-content {
   background: var(--glass-bg-light);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border: 1px solid var(--glass-border);
-  border-radius: 8px;
-  padding: 12px;
-  margin-top: 8px;
+  border-radius: 4px;
+  padding: 6px 8px;
+  margin-top: 4px;
 }
 
 .deposit-account-text {

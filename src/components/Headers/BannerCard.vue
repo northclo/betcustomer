@@ -1,5 +1,5 @@
 <template>
-  <div class="main-container mt-4 mb-6">
+  <div class="main-container mt-2 mb-2">
     <div class="glass-banner">
       <a-flex justify="space-between" align="center" wrap="wrap">
         <a-flex class="p-2" gap="small" align="center" wrap="nowrap">
@@ -169,10 +169,8 @@ watch(
 <style scoped>
 .glass-banner {
   background: var(--glass-bg);
-  backdrop-filter: var(--blur-lg);
-  -webkit-backdrop-filter: var(--blur-lg);
   border: 1px solid var(--glass-border-light);
-  border-radius: 10px;
+  border-radius: 4px;
   box-shadow: var(--glass-shadow-strong);
 }
 </style>

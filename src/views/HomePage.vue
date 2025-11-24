@@ -23,23 +23,13 @@
             :total-no="totalNo"
             :betting-history="bettingHistory"
             :loading="loading"
+            :cancel-loading="cancelLoading"
             @cancel-betting="cancelBetting"
             @previous-game="previousGame"
             @next-game="nextGame"
           />
         </a-col>
       </a-row>
-    </div>
-    
-    <div class="bg-primary-light radius-1 p-3 mt-2">
-      <BettingHistorySection
-        :betting-history="bettingHistory"
-        :game-result="gameResult"
-        :remain-time="remainTime"
-        :loading="loading"
-        :cancel-loading="cancelLoading"
-        @cancel-betting="cancelBetting"
-      />
     </div>
   </div>
 </template>
@@ -48,7 +38,6 @@
 import { computed, inject, onMounted, onBeforeUnmount, ref } from 'vue';
 import BettingOption from '@/components/Home/BettingOption.vue';
 import BettingProgress from '@/components/Home/BettingProgress.vue';
-import BettingHistorySection from '@/components/Home/BettingHistorySection.vue';
 import { getData, postData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link';
 import { socket } from '@/plugins/socket.js';

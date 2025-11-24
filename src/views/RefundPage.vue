@@ -217,10 +217,8 @@ onMounted(() => {
   text-align: center;
   padding: 30px;
   background: var(--glass-bg-light);
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
   border: 1px solid var(--glass-border);
-  border-radius: 16px;
+  border-radius: 4px;
   box-shadow: var(--glass-shadow);
 }
 
@@ -266,11 +264,9 @@ onMounted(() => {
 
 .percent-btn {
   background: var(--glass-bg);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border: 2px solid var(--glass-border);
   color: var(--white-color);
-  border-radius: 10px;
+  border-radius: 4px;
   padding: 8px 20px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 600;
@@ -285,8 +281,6 @@ onMounted(() => {
 :deep(.ant-input-number),
 :deep(.ant-input-number-input) {
   background: var(--glass-bg-dark);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border: 1px solid var(--glass-border);
   color: var(--white-color);
   font-size: 16px;
@@ -319,8 +313,6 @@ onMounted(() => {
 
 :deep(.ant-tag) {
   background: var(--glass-bg-light);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border: 1px solid var(--glass-border);
   padding: 4px 12px;
 }

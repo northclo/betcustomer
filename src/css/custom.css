@@ -5,17 +5,13 @@
 
 ::-webkit-scrollbar-track {
   background: var(--glass-bg-dark);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
-  border-radius: 10px;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--glass-bg-light);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border: 1px solid var(--glass-border);
-  border-radius: 10px;
+  border-radius: 4px;
   box-shadow: var(--glass-shadow-soft);
 }
 
@@ -26,11 +22,9 @@
 
 .game-result-card {
   background: var(--glass-bg) !important;
-  backdrop-filter: var(--blur-lg);
-  -webkit-backdrop-filter: var(--blur-lg);
   border: 1px solid var(--glass-border-light) !important;
   box-shadow: var(--glass-shadow-strong) !important;
-  border-radius: 20px !important;
+  border-radius: 4px !important;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -41,8 +35,6 @@
 
 .game-result-card .ant-card-head {
   background: var(--glass-bg-light) !important;
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
   border-bottom: 1px solid var(--glass-border) !important;
   color: var(--white-color) !important;
 }
@@ -55,15 +47,13 @@
 .game-result-card .ant-card-body {
   background: transparent !important;
   text-align: center;
-  padding: 12px 16px !important;
+  padding: 8px 12px !important;
   min-height: auto;
 }
 
 .game-btn {
   border: 2px solid var(--glass-border-light) !important;
   background: var(--glass-bg) !important;
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   color: var(--white-color) !important;
   width: 90px;
   height: 90px;
@@ -107,6 +97,29 @@
   background: var(--glass-green-active) !important;
   border-color: var(--glass-green-active-border) !important;
   box-shadow: var(--glass-shadow), 0 0 30px rgba(16, 185, 129, 0.6) !important;
+}
+
+/* Navigation icons for game results (Previous/Next) */
+.nav-game-icon {
+  font-size: 24px;
+  color: var(--white-color);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-game-icon:hover {
+  color: var(--main-color);
+  transform: scale(1.2);
+}
+
+.nav-game-icon-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.nav-game-icon-disabled:hover {
+  color: var(--white-color);
+  transform: none;
 }
 
 .game-result-card table,
@@ -159,10 +172,8 @@
 .sp-icon {
   padding: 6px 12px;
   background: var(--glass-bg-light);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border: 1px solid var(--glass-border);
-  border-radius: 8px;
+  border-radius: 4px;
   color: white;
   margin-bottom: 8px;
   position: relative;
@@ -180,8 +191,6 @@
 .sp-icon::after {
   content: '';
   background: var(--glass-bg-light);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   clip-path: polygon(100% 100%, 0 0, 75% 0);
   width: 14px;
   height: 14px;
@@ -204,8 +213,6 @@
 
 .ant-table-wrapper :deep(.ant-table-thead > tr > th) {
   background: var(--glass-bg-light) !important;
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border-color: var(--glass-border) !important;
   color: var(--white-color) !important;
 }
@@ -242,8 +249,6 @@
   border-radius: 50%;
   line-height: 50px;
   background: var(--glass-bg);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border: 2px solid var(--glass-border);
   box-shadow: var(--glass-shadow-soft);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -287,10 +292,10 @@
 }
 
 .mo-btn {
-  background: var(--glass-bg-dark);
-  border: 2px solid var(--glass-border);
-  color: var(--white-color);
-  border-radius: 8px;
+  background: var(--glass-bg-light) !important;
+  border: 2px solid var(--glass-border) !important;
+  color: var(--white-color) !important;
+  border-radius: 4px;
   transition: background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   font-weight: 600;
   font-size: 12px;
@@ -303,18 +308,12 @@
   flex: 1;
 }
 
-.mo-btn:hover {
-  background: var(--glass-bg-light);
-  border-color: var(--glass-blue-border);
-  box-shadow: var(--glass-shadow);
-}
-
 .table-container {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   border-bottom: 1px solid var(--glass-border);
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 
 .ant-table-wrapper,
@@ -325,8 +324,6 @@
 
 .ant-table-thead > tr > th {
   background: var(--glass-bg-light) !important;
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border-color: var(--glass-border) !important;
   color: var(--white-color) !important;
   font-weight: 600;
@@ -334,7 +331,7 @@
   word-wrap: normal;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding: 12px 16px !important;
+  padding: 8px 10px !important;
 }
 
 .ant-table-tbody > tr > td {
@@ -345,7 +342,7 @@
   word-wrap: normal;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding: 12px 16px !important;
+  padding: 8px 10px !important;
 }
 
 .ant-table-tbody > tr:last-child > td {
@@ -390,8 +387,6 @@
 
 .ant-pagination-item {
   background: var(--glass-bg-dark) !important;
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border-color: var(--glass-border) !important;
 }
 
@@ -415,10 +410,8 @@
 .ant-pagination-prev,
 .ant-pagination-next {
   background: var(--glass-bg-dark) !important;
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border: 1px solid var(--glass-border) !important;
-  border-radius: 10px;
+  border-radius: 4px;
 }
 
 .ant-pagination-prev .ant-pagination-item-link,
@@ -473,11 +466,9 @@
 
 .glass-select .ant-select-selector {
   background: var(--glass-bg-dark) !important;
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border: 1px solid var(--glass-border) !important;
   color: var(--white-color) !important;
-  border-radius: 10px !important;
+  border-radius: 4px !important;
   height: 44px !important;
   display: flex;
   align-items: center;
@@ -507,12 +498,10 @@
 
 .glass-select-dropdown {
   background: var(--glass-bg) !important;
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
   border: 1px solid var(--glass-border) !important;
   box-shadow: var(--glass-shadow) !important;
   color: var(--white-color) !important;
-  border-radius: 10px;
+  border-radius: 4px;
   overflow: hidden;
 }
 
@@ -539,8 +528,6 @@
 .ant-input-password input,
 .ant-textarea {
   background: transparent !important;
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border: 1px solid var(--glass-border);
   color: var(--white-color) !important;
 }
@@ -620,14 +607,12 @@
 /* Instruction text box */
 .instruction-text {
   background: var(--glass-bg-light);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border: 1px solid var(--glass-border);
-  border-radius: 8px;
-  padding: 12px;
+  border-radius: 4px;
+  padding: 6px 8px;
   color: var(--white-color);
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 13px;
+  line-height: 1.4;
   opacity: 0.9;
 }
 
@@ -638,12 +623,10 @@
 .warning-text {
   color: var(--white-color);
   font-size: 14px;
-  padding: 8px 12px;
+  padding: 4px 8px;
   background: var(--glass-bg-light);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border: 1px solid var(--glass-border);
-  border-radius: 8px;
+  border-radius: 4px;
 }
 
 .warning-text.text-danger {
@@ -652,9 +635,9 @@
 
 .section-title {
   color: var(--white-color);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .text-gray {
@@ -698,4 +681,33 @@
   background: rgba(16, 185, 129, 0.2) !important;
   border-color: rgba(16, 185, 129, 0.3) !important;
   color: #10b981 !important;
+}
+
+.ant-card,
+.ant-card-body,
+.ant-card-head,
+.game-result-card,
+.glass-banner,
+.glass-footer,
+.ant-btn:not(.ant-btn-circle),
+.ant-input,
+.ant-select-selector,
+.ant-modal-content,
+.ant-table,
+.ant-pagination-item {
+  border-radius: 4px !important;
+}
+
+.ant-card-head {
+  min-height: 40px !important;
+}
+
+/* Keep circular elements circular */
+.ant-avatar,
+.ant-avatar-circle,
+.running-ball,
+.game-btn,
+.nav-button,
+.ant-btn-circle {
+  border-radius: 50% !important;
 }

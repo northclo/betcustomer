@@ -264,8 +264,6 @@ onMounted(() => {
 
 :deep(.question-modal .ant-modal-content) {
   background: var(--glass-bg) !important;
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
   border: 1px solid var(--glass-border) !important;
 }
 

@@ -305,7 +305,7 @@ onMounted(() => {
 
 <style scoped>
 .game-result-card {
-  border-radius: 20px !important;
+  border-radius: 4px !important;
 }
 
 .betting-history-table :deep(.ant-table-container) {
@@ -314,16 +314,12 @@ onMounted(() => {
 
 :deep(.ant-tag) {
   background: var(--glass-bg-light) !important;
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border: 1px solid var(--glass-border) !important;
   color: var(--white-color) !important;
 }
 
 :deep(.ant-tooltip-inner) {
   background: var(--glass-bg) !important;
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
   border: 1px solid var(--glass-border) !important;
   color: var(--white-color) !important;
   box-shadow: var(--glass-shadow) !important;

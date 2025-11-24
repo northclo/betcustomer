@@ -35,11 +35,6 @@
   --gradient-bg-4: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
   --gradient-bg-5: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
   
-  /* Blur Values */
-  --blur-sm: blur(10px);
-  --blur-md: blur(20px);
-  --blur-lg: blur(30px);
-  
   /* Transparent Color Accents for Glassmorphism - Brighter Colors */
   --glass-green: rgba(16, 185, 129, 0.35);
   --glass-green-border: rgba(16, 185, 129, 0.6);

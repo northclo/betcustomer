@@ -11,9 +11,9 @@
       >
         <div>
           <LeftOutlined
-            v-if="previousGameId"
-            class="text-white cursor-pointer"
-            @click="emit('previousGame')"
+            class="nav-game-icon"
+            :class="{ 'nav-game-icon-disabled': !previousGameId }"
+            @click="previousGameId && emit('previousGame')"
           />
         </div>
         <a-typography-text v-if="!game?.list?.length" class="text-white text-xl md:text-3xl">
@@ -35,9 +35,9 @@
         </div>
         <div>
           <RightOutlined
-            v-if="nextGameId"
-            class="text-white cursor-pointer"
-            @click="emit('nextGame')"
+            class="nav-game-icon"
+            :class="{ 'nav-game-icon-disabled': !nextGameId }"
+            @click="nextGameId && emit('nextGame')"
           />
         </div>
       </a-layout>
@@ -66,17 +66,31 @@
         </a-typography-text>
       </a-layout>
     </a-card>
+
+     <BettingHistorySection
+      :betting-history="bettingHistory"
+      :game-result="gameResult"
+      :remain-time="remainTime"
+      :loading="loading"
+      :cancel-loading="cancelLoading"
+      @cancel-betting="handleCancelBetting"
+    />
   </a-space>
 </template>
 
 <script setup>
 import { computed, inject } from 'vue';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons-vue';
+import BettingHistorySection from '@/components/Home/BettingHistorySection.vue';
 
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
 
 const emit = defineEmits(['cancelBetting', 'previousGame', 'nextGame']);
+
+const handleCancelBetting = (data) => {
+  emit('cancelBetting', data);
+};
 
 const props = defineProps({
   previousGameId: { type: String, default: null },
@@ -103,8 +117,6 @@ const game = computed(() => props.gameResult);
 <style scoped>
 .glass-footer {
   background: var(--glass-bg-dark);
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
   border-top: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow-soft);
 }
@@ -129,8 +141,6 @@ const game = computed(() => props.gameResult);
 
 :deep(.ant-table-thead > tr > th) {
   background: var(--glass-bg-light) !important;
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border-color: var(--glass-border) !important;
   color: var(--white-color) !important;
 }

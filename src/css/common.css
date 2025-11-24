@@ -62,8 +62,6 @@ button {
 
 .bg-primary-light {
   background: var(--glass-bg) !important;
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
   border: 1px solid var(--glass-border) !important;
   box-shadow: var(--glass-shadow) !important;
 }
@@ -114,8 +112,6 @@ button {
 
 .bg-black {
   background: var(--glass-bg-dark) !important;
-  backdrop-filter: var(--blur-lg);
-  -webkit-backdrop-filter: var(--blur-lg);
   border: 1px solid var(--glass-border) !important;
   box-shadow: var(--glass-shadow-strong) !important;
 }

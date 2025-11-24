@@ -25,8 +25,6 @@ const copywriter = computed(() => {
 <style scoped>
 .site-footer {
   background: var(--glass-bg);
-  backdrop-filter: var(--blur-lg);
-  -webkit-backdrop-filter: var(--blur-lg);
   border-top: 1px solid var(--glass-border);
   padding: 16px 0;
   margin-top: auto;

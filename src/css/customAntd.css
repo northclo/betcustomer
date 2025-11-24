@@ -4,8 +4,6 @@ button {
 
 .question-modal .ant-modal-content {
   background: var(--glass-bg) !important;
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
   border: 1px solid var(--glass-border) !important;
 }
 
@@ -70,16 +68,12 @@ button {
 /* Confirm Modal Glassmorphism Styles */
 .confirm-modal-glass .ant-modal-content {
   background: var(--glass-bg) !important;
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
   border: 1px solid var(--glass-border) !important;
   box-shadow: var(--glass-shadow);
 }
 
 .confirm-modal-glass .ant-modal-header {
   background: var(--glass-bg-light) !important;
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border-bottom: 1px solid var(--glass-border) !important;
 }
 
@@ -119,8 +113,6 @@ button {
 
 .confirm-modal-glass .ant-modal-footer {
   background: var(--glass-bg-light) !important;
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border-top: 1px solid var(--glass-border) !important;
 }
 
@@ -131,8 +123,6 @@ button {
 .confirm-modal-glass .ant-modal-confirm-btns .ant-btn,
 .confirm-modal-glass .ant-modal-footer .ant-btn {
   background: var(--glass-bg-dark) !important;
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
   border: 1px solid var(--glass-border) !important;
   color: var(--white-color) !important;
   font-weight: 600;
