@@ -360,6 +360,7 @@ const resetBettingAmount = () => {
 
 const resetBetting = () => {
   bettingAmount.value = 0;
+  bettingType.value = '';
   bettingRate.value = 0;
   numberSort.value = [];
 };

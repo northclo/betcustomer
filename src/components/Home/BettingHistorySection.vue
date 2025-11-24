@@ -35,7 +35,15 @@
           <template v-else-if="column.key === 'betting_result'">
             <div class="betting-result-cell">
               <template v-if="record.betting_status === 'COMPLETE'">
-                <span class="table-cell-content">{{ record.bet_amount?.toLocaleString() || 0 }}</span>
+                <div class="betting-result-complete">
+                  <span class="table-cell-content">{{ record.bet_amount?.toLocaleString() || 0 }}</span>
+                  <a-tag 
+                    :color="record.win ? 'success' : 'error'"
+                    class="table-cell-content win-lose-tag"
+                  >
+                    {{ record.win ? trlang.win : trlang.lose }}
+                  </a-tag>
+                </div>
               </template>
               <template v-else>
                 <a-tag 
@@ -134,6 +142,7 @@ const dataSource = computed(() => {
       betting_rate: item.betting_rate || item.benefit || 0,
       bet_amount: item.bet_amount || 0,
       betting_status: normalizedStatus,
+      win: item.win || false,
       number_sort: item.number_sort || [],
     };
   });
@@ -226,6 +235,17 @@ const handleCancelBet = (id) => {
 
 .betting-result-cell .cancel-button {
   margin-top: 4px;
+}
+
+.betting-result-complete {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.betting-result-complete .win-lose-tag {
+  margin-top: 2px;
 }
 </style>
 

@@ -47,7 +47,15 @@
             </template>
             <template v-else-if="column.key === 'betting_result'">
               <template v-if="record.betting_status === 'COMPLETE'">
-                <span class="table-cell-content">{{ record.bet_amount?.toLocaleString() || 0 }}</span>
+                <div class="betting-result-complete">
+                  <span class="table-cell-content">{{ record.bet_amount?.toLocaleString() || 0 }}</span>
+                  <a-tag 
+                    :color="record.win ? 'success' : 'error'"
+                    class="table-cell-content win-lose-tag"
+                  >
+                    {{ record.win ? trlang.win : trlang.lose }}
+                  </a-tag>
+                </div>
               </template>
               <template v-else>
                 <a-tag 
@@ -204,6 +212,7 @@ const fetchBettingHistory = async (page = 1, pageSize = 10) => {
         betting_rate: item.betting_rate || 0,
         bet_amount: item.bet_amount || 0,
         betting_status: item.betting_status,
+        win: item.win || false,
         number_sort: item.number_sort || [],
       }));
 
@@ -327,6 +336,17 @@ onMounted(() => {
 
 .text-success {
   color: #10b981 !important;
+}
+
+.betting-result-complete {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.betting-result-complete .win-lose-tag {
+  margin-top: 2px;
 }
 </style>
 
