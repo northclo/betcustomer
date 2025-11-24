@@ -352,11 +352,6 @@ const setBettingOption = (item) => {
   }
 };
 
-const getMaxAllowedNumber = () => {
-  const maxMap = { number_13: 3, number_14: 4, number_16: 6 };
-  return maxMap[bettingType.value] || 6;
-};
-
 const handleNumberSortKeypress = (event) => {
   const charCode = event.which ? event.which : event.keyCode;
   const char = String.fromCharCode(charCode);
@@ -370,9 +365,8 @@ const handleNumberSortKeypress = (event) => {
     return;
   }
   
-  const maxAllowed = getMaxAllowedNumber();
   const numValue = parseInt(char, 10);
-  if (numValue < 1 || numValue > maxAllowed) {
+  if (numValue < 1 || numValue > 6) {
     event.preventDefault();
   }
 };
@@ -382,11 +376,10 @@ const handleNumberSortInput = (index, event) => {
   const numericValue = inputValue.replace(/[^0-9]/g, '');
   const singleDigit = numericValue.slice(-1);
   
-  const maxAllowed = getMaxAllowedNumber();
   const numValue = parseInt(singleDigit, 10);
   
   let validValue = singleDigit;
-  if (singleDigit && (!numValue || numValue < 1 || numValue > maxAllowed)) {
+  if (singleDigit && (!numValue || numValue < 1 || numValue > 6)) {
     validValue = '';
   }
   

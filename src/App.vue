@@ -21,8 +21,7 @@
           :today-no="todayNo"
           :total-no="totalNo"
           :own-money="ownMoney"
-          :remain-time="remainTime"
-          @update:remain-time="(val) => (remainTime = val)"
+          :target-timestamp="targetTimestamp"
         />
       </div>
       <a-layout-content style="min-height: 80vh" class="main-container">
@@ -84,7 +83,7 @@ export default {
     });
 
     const bannerLoading = ref(false);
-    const remainTime = ref(0);
+    const targetTimestamp = ref(0);
     const todayNo = ref(0);
     const totalNo = ref(0);
     const ownMoney = ref(0);
@@ -145,7 +144,7 @@ export default {
         if (result.status && result.data) {
           const { game, user } = result.data;
           if (game) {
-            remainTime.value = game.remain_time || 0;
+            targetTimestamp.value = game.target_timestamp || 0;
             todayNo.value = game.today_no || 0;
             totalNo.value = game.total_no || 0;
           }
@@ -233,7 +232,7 @@ export default {
     });
 
     provide('updateBannerGameData', (gameData) => {
-      if (gameData.remainTime !== undefined) remainTime.value = gameData.remainTime;
+      if (gameData.targetTimestamp !== undefined) targetTimestamp.value = gameData.targetTimestamp;
       if (gameData.todayNo !== undefined) todayNo.value = gameData.todayNo;
       if (gameData.totalNo !== undefined) totalNo.value = gameData.totalNo;
       if (gameData.ownMoney !== undefined) ownMoney.value = gameData.ownMoney;
@@ -251,7 +250,7 @@ export default {
       siteText,
       membershipSettings,
       bannerLoading,
-      remainTime,
+      targetTimestamp,
       todayNo,
       totalNo,
       ownMoney,

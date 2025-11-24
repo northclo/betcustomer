@@ -82,13 +82,12 @@ const props = defineProps({
   todayNo: { type: Number, default: 0 },
   totalNo: { type: Number, default: 0 },
   ownMoney: { type: Number, default: 0 },
-  remainTime: { type: Number, default: 0 },
+  targetTimestamp: { type: Number, default: 0 },
 });
 
 const formattedTime = ref('');
 const counterText = ref('00:00');
 let clockInterval = null;
-const remain = ref(0);
 const noticeCount = ref(0);
 
 function updateTokyoTime() {
@@ -102,26 +101,21 @@ function updateTokyoTime() {
 }
 
 function updateCounter() {
-  const propTime = Math.max(0, props.remainTime || 0);
-  const timeDiff = Math.abs(remain.value - propTime);
-  
-  if (timeDiff > 2) {
-    remain.value = propTime;
-  } else if (remain.value > 0) {
-    remain.value = Math.max(0, remain.value - 1);
-  } else {
-    remain.value = propTime;
+  if (!props.targetTimestamp || props.targetTimestamp <= 0) {
+    counterText.value = '00:00';
+    return;
   }
 
-  const minutes = String(Math.floor(remain.value / 60)).padStart(2, '0');
-  const seconds = String(remain.value % 60).padStart(2, '0');
+  const now = Date.now();
+  const remaining = Math.max(0, Math.floor((props.targetTimestamp - now) / 1000));
+
+  const minutes = String(Math.floor(remaining / 60)).padStart(2, '0');
+  const seconds = String(remaining % 60).padStart(2, '0');
   counterText.value = `${minutes}:${seconds}`;
 }
 
 function startClock() {
   stopClock();
-  
-  remain.value = Math.max(0, props.remainTime || 0);
   
   updateCounter();
   updateTokyoTime();
@@ -166,9 +160,8 @@ onMounted(() => {
 onBeforeUnmount(stopClock);
 
 watch(
-  () => [props.remainTime, props.loading],
+  () => [props.targetTimestamp, props.loading],
   () => {
-    remain.value = Math.max(0, props.remainTime || 0);
     startClock();
   }
 );
