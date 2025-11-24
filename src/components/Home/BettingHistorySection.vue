@@ -225,7 +225,6 @@ const handleCancelBet = (id) => {
   background: var(--glass-bg) !important;
   border: 1px solid var(--glass-border) !important;
   color: var(--white-color) !important;
-  box-shadow: var(--glass-shadow) !important;
 }
 
 .text-success {

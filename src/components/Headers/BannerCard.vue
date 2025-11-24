@@ -138,6 +138,5 @@ watch(
   background: var(--glass-bg);
   border: 1px solid var(--glass-border-light);
   border-radius: 4px;
-  box-shadow: var(--glass-shadow-strong);
 }
 </style>

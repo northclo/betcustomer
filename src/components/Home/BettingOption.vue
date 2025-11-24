@@ -451,18 +451,11 @@ onMounted(() => {
 .glass-label {
   background: var(--glass-bg-light);
   border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow-soft);
 }
 
 .glass-card {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
-  transition: box-shadow 0.2s ease;
-}
-
-.glass-card:hover {
-  box-shadow: var(--glass-shadow-strong);
 }
 
 .glass-btn {
@@ -471,12 +464,10 @@ onMounted(() => {
   color: var(--white-color);
   border-radius: 4px;
   transition: background-color 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: var(--glass-shadow-soft);
 }
 
 .glass-btn:hover {
   background: var(--glass-bg-light);
-  box-shadow: var(--glass-shadow);
 }
 
 :deep(.ant-input-number),
@@ -492,7 +483,6 @@ onMounted(() => {
 :deep(.ant-input:focus) {
   background: var(--glass-bg-light);
   border-color: var(--glass-border-light);
-  box-shadow: var(--glass-shadow-soft);
 }
 
 :deep(.ant-input-number-input) {
@@ -505,16 +495,11 @@ onMounted(() => {
   border: 2px solid !important;
   border-radius: 4px;
   transition: border-color 0.2s ease, background-color 0.2s ease;
-  box-shadow: var(--glass-shadow-soft);
   position: relative;
   overflow: hidden;
   display: flex;
   min-height: 48px;
   white-space: nowrap;
-}
-
-.glass-option-btn:hover {
-  box-shadow: var(--glass-shadow);
 }
 
 .glass-option-btn > span {
@@ -537,7 +522,6 @@ onMounted(() => {
 .glass-option-success:hover {
   background: var(--glass-green-light) !important;
   border-color: var(--glass-green-border) !important;
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
 }
 
 .glass-option-danger {
@@ -548,7 +532,6 @@ onMounted(() => {
 .glass-option-danger:hover {
   background: var(--glass-red-light) !important;
   border-color: var(--glass-red-border) !important;
-  box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
 }
 
 .glass-option-primary {
@@ -559,7 +542,6 @@ onMounted(() => {
 .glass-option-primary:hover {
   background: var(--glass-blue-light) !important;
   border-color: var(--glass-blue-border) !important;
-  box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
 }
 
 .glass-option-pink {

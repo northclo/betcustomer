@@ -131,7 +131,6 @@ const game = computed(() => props.gameResult);
 
 :deep(.ant-icon:hover) {
   color: var(--main-color);
-  transform: scale(1.1);
 }
 
 /* Table Styling */
