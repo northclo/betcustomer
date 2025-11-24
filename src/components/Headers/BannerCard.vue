@@ -72,48 +72,11 @@ const props = defineProps({
   ownMoney: { type: Number, default: 0 },
   remainTime: { type: Number, default: 0 },
 });
-const emit = defineEmits(['update:remainTime']);
 
 const formattedTime = ref('');
 const counterText = ref('00:00');
 let clockInterval = null;
 const remain = ref(0);
-
-function calculateTimeToNextInterval() {
-  const now = new Date();
-  
-  const formatter = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'Asia/Tokyo',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-  });
-  
-  const parts = formatter.formatToParts(now);
-  const minute = parseInt(parts.find(p => p.type === 'minute').value);
-  const second = parseInt(parts.find(p => p.type === 'second').value);
-  
-  const totalSecondsInHour = minute * 60 + second;
-  
-  const currentInterval = Math.floor(minute / 3) * 3;
-  const nextIntervalMinute = currentInterval + 3;
-  
-  let secondsUntilNext;
-  if (nextIntervalMinute >= 60) {
-    const secondsInCurrentHour = 3600 - totalSecondsInHour;
-    secondsUntilNext = secondsInCurrentHour;
-  } else {
-    const nextIntervalSeconds = nextIntervalMinute * 60;
-    secondsUntilNext = nextIntervalSeconds - totalSecondsInHour;
-  }
-  
-  if (secondsUntilNext <= 0) {
-    return 180;
-  }
-  
-  return Math.min(secondsUntilNext, 180);
-}
 
 function updateTokyoTime() {
   formattedTime.value = new Intl.DateTimeFormat('en-US', {
@@ -126,8 +89,11 @@ function updateTokyoTime() {
 }
 
 function updateCounter() {
-  remain.value = calculateTimeToNextInterval();
-  emit('update:remainTime', remain.value);
+  if (remain.value > 0) {
+    remain.value = Math.max(0, remain.value - 1);
+  } else {
+    remain.value = Math.max(0, props.remainTime || 0);
+  }
 
   const minutes = String(Math.floor(remain.value / 60)).padStart(2, '0');
   const seconds = String(remain.value % 60).padStart(2, '0');
@@ -137,7 +103,7 @@ function updateCounter() {
 function startClock() {
   stopClock();
   
-  remain.value = calculateTimeToNextInterval();
+  remain.value = Math.max(0, props.remainTime || 0);
   
   updateCounter();
   updateTokyoTime();
@@ -161,6 +127,7 @@ onBeforeUnmount(stopClock);
 watch(
   () => [props.remainTime, props.loading],
   () => {
+    remain.value = Math.max(0, props.remainTime || 0);
     startClock();
   }
 );

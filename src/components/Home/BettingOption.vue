@@ -370,21 +370,6 @@ const startBetting = async () => {
     return message.error(messageText);
   }
 
-  const remainTime = props.bettingRemainTime || 0;
-  if (remainTime < 90 || remainTime > 180) {
-    const timeMsg =
-      remainTime === 0
-        ? getTranslation('no_active_game')
-        : remainTime > 180
-          ? formatTranslation('betting_not_available_yet', {
-              minutes: Math.ceil((remainTime - 180) / 60),
-            })
-          : formatTranslation('betting_window_closed', {
-              minutes: Math.ceil((90 - remainTime) / 60),
-            });
-    return message.error(timeMsg);
-  }
-
   if (!bettingAmount.value || !bettingRate.value)
     return message.error(trlang.value.you_should_set_betting_amount_and_type);
 
@@ -427,6 +412,7 @@ const startBetting = async () => {
     }
   }
 
+  let processedNumberSort = [];
   if (numberSort.value.length !== 0) {
     const noDuplicates =
       new Set(numberSort.value).size === numberSort.value.length;
@@ -439,7 +425,8 @@ const startBetting = async () => {
     if (notNumber.length > 0)
       return message.error(trlang.value.number_should_be_number);
 
-    const notMatch = numberSort.value.filter((item) => item < 1 || item > 6);
+    processedNumberSort = numberSort.value.map((item) => Number(item));
+    const notMatch = processedNumberSort.filter((item) => !Number.isInteger(item) || item < 1 || item > 6);
     if (notMatch.length > 0)
       return message.error(trlang.value.number_should_be_from_1_to_6);
   }
@@ -448,7 +435,7 @@ const startBetting = async () => {
     bettingAmount: bettingAmount.value,
     bettingType: bettingType.value,
     bettingRate: bettingRate.value,
-    numberSort: numberSort.value,
+    numberSort: processedNumberSort,
   });
 
   resetBetting();
