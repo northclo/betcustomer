@@ -70,10 +70,9 @@
 </template>
 
 <script setup>
-import { ref, computed, inject, onMounted, onBeforeUnmount, watch } from 'vue';
+import { ref, computed, inject, onMounted, onBeforeUnmount } from 'vue';
 import { getData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link.js';
-import { getCurrentTime } from '@/helpers/Common.js';
 
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
@@ -88,7 +87,7 @@ const props = defineProps({
 });
 
 const formattedTime = ref('');
-const counterText = ref('00:00');
+const counterText = ref('');
 let clockInterval = null;
 const noticeCount = ref(0);
 
@@ -102,36 +101,15 @@ function updateTokyoTime() {
   }).format(new Date());
 }
 
+// ⏱️ Rolling 3-minute counter (from betgaming project)
 function updateCounter() {
-  console.log('updateCounter called:', {
-    targetTimestamp: props.targetTimestamp,
-    serverTimeOffset: props.serverTimeOffset,
-    loading: props.loading
-  });
-  
-  if (!props.targetTimestamp || props.targetTimestamp <= 0) {
-    counterText.value = '00:00';
-    console.log('Counter set to 00:00 - targetTimestamp is invalid:', props.targetTimestamp);
-    return;
-  }
+  const now = new Date()
+  const secondsSince3min = (now.getMinutes() % 3) * 60 + now.getSeconds()
+  const remainingSeconds = (3 * 60) - secondsSince3min
 
-  const serverTime = getCurrentTime() + (props.serverTimeOffset || 0);
-  const remaining = Math.max(0, Math.floor((props.targetTimestamp - serverTime) / 1000));
-
-  const minutes = String(Math.floor(remaining / 60)).padStart(2, '0');
-  const seconds = String(remaining % 60).padStart(2, '0');
-  counterText.value = `${minutes}:${seconds}`;
-  
-  console.log('Counter updated:', {
-    counterText: counterText.value,
-    targetTimestamp: props.targetTimestamp,
-    targetTimestampDate: new Date(props.targetTimestamp).toISOString(),
-    serverTime: serverTime,
-    serverTimeDate: new Date(serverTime).toISOString(),
-    serverTimeOffset: props.serverTimeOffset,
-    remaining: remaining,
-    diff: props.targetTimestamp - serverTime
-  });
+  const minutes = String(Math.floor(remainingSeconds / 60)).padStart(2, '0')
+  const seconds = String(remainingSeconds % 60).padStart(2, '0')
+  counterText.value = `${minutes}:${seconds}`
 }
 
 function startClock() {
@@ -179,33 +157,6 @@ onMounted(() => {
 });
 onBeforeUnmount(stopClock);
 
-watch(
-  () => [props.targetTimestamp, props.serverTimeOffset, props.loading],
-  () => {
-    startClock();
-  },
-  { immediate: false }
-);
-
-watch(
-  () => props.targetTimestamp,
-  (newVal, oldVal) => {
-    console.log('BannerCard: targetTimestamp changed', { newVal, oldVal });
-    if (newVal > 0) {
-      updateCounter();
-    }
-  }
-);
-
-watch(
-  () => props.serverTimeOffset,
-  (newVal, oldVal) => {
-    console.log('BannerCard: serverTimeOffset changed', { newVal, oldVal });
-    if (props.targetTimestamp > 0) {
-      updateCounter();
-    }
-  }
-);
 </script>
 
 <style scoped>
