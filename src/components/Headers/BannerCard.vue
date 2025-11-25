@@ -109,6 +109,10 @@ function updateCounter() {
   }
 
   const serverTime = getCurrentTime() + (props.serverTimeOffset || 0);
+  console.log('serverTime', serverTime)
+  console.log('serverTime date', new Date(serverTime).toISOString())
+  console.log('props.targetTimestamp', props.targetTimestamp)
+  console.log('props.targetTimestamp date', new Date(props.targetTimestamp).toISOString())
   const remaining = Math.max(0, Math.floor((props.targetTimestamp - serverTime) / 1000));
 
   const minutes = String(Math.floor(remaining / 60)).padStart(2, '0');

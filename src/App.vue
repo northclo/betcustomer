@@ -183,6 +183,10 @@ export default {
       if (start_time_stamp) {
         targetTimestamp.value = start_time_stamp;
       }
+      console.log('start_time_stamp', start_time_stamp)
+      console.log('server_current_time', server_current_time)
+      console.log('start_time_stamp date', new Date(start_time_stamp).toISOString())
+      console.log('server_current_time date', new Date(server_current_time).toISOString())
       fetchBannerData();
     };
 
