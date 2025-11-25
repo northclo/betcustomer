@@ -73,6 +73,7 @@
 import { ref, computed, inject, onMounted, onBeforeUnmount } from 'vue';
 import { getData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link.js';
+import moment from 'moment-timezone';
 
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
@@ -101,10 +102,9 @@ function updateTokyoTime() {
   }).format(new Date());
 }
 
-// ⏱️ Rolling 3-minute counter (from betgaming project)
 function updateCounter() {
-  const now = new Date()
-  const secondsSince3min = (now.getMinutes() % 3) * 60 + now.getSeconds()
+  const now = moment().tz('Asia/Tokyo')
+  const secondsSince3min = (now.minutes() % 3) * 60 + now.seconds()
   const remainingSeconds = (3 * 60) - secondsSince3min
 
   const minutes = String(Math.floor(remainingSeconds / 60)).padStart(2, '0')
