@@ -42,9 +42,12 @@ import { getData, postData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link';
 import { socket } from '@/plugins/socket.js';
 import { message } from 'ant-design-vue';
+import moment from 'moment-timezone';
 
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
+const updateBannerMoney = inject('updateBannerMoney', null);
+const updateBannerGameData = inject('updateBannerGameData', null);
 
 const getTranslation = (key) =>
   trlang.value?.[key] ?? key;
@@ -65,6 +68,7 @@ const gameResult = ref(null);
 const numberList = ref([]);
 const loading = ref(false);
 const remainTime = ref(0);
+const targetTimestamp = ref(0);
 const todayNo = ref(0);
 const totalNo = ref(0);
 const ownMoney = ref(0);
@@ -90,10 +94,26 @@ const fetchData = async (currentGameId) => {
       gameId.value = game?.id || '';
       gameResult.value = game || null;
       numberList.value = game?.list || [];
-      remainTime.value = game?.remain_time || 0;
+      targetTimestamp.value = game?.target_timestamp || 0;
       todayNo.value = game?.today_no || 0;
       totalNo.value = game?.total_no || 0;
+      
+      updateRemainTime();
+      
+      startRemainTimeTimer();
       ownMoney.value = user?.own_money || 0;
+      
+      if (updateBannerMoney) {
+        updateBannerMoney(ownMoney.value);
+      }
+      if (updateBannerGameData) {
+        updateBannerGameData({
+          todayNo: todayNo.value,
+          totalNo: totalNo.value,
+          ownMoney: ownMoney.value,
+          targetTimestamp: game?.target_timestamp || 0,
+        });
+      }
       
       gameActivated.value = gameSetting?.activate !== false;
       inactiveMessage.value = gameSetting?.inactive_message || '';
@@ -127,12 +147,9 @@ const fetchData = async (currentGameId) => {
 };
 
 const startBetting = async (bettingData) => {
-  const originalBalance = ownMoney.value;
   startBettingLoading.value = true;
   
   try {
-    ownMoney.value = ownMoney.value - bettingData.bettingAmount;
-    
     const result = await postData(apiLink.start_bet, {
       game_id: gameId.value,
       bettingAmount: bettingData.bettingAmount,
@@ -157,13 +174,11 @@ const startBetting = async (bettingData) => {
       
       await fetchData(gameId.value);
       message.success(getTranslation('bet_placed_successfully'));
-    } else {
-      ownMoney.value = originalBalance;
     }
   } catch (error) {
     console.error('Error placing bet:', error);
-    ownMoney.value = originalBalance;
     message.error(error.message || getTranslation('operation_failed'));
+    await fetchData(gameId.value);
   } finally {
     startBettingLoading.value = false;
   }
@@ -184,6 +199,11 @@ const cancelBetting = async ({ id }) => {
       );
 
       ownMoney.value = ownMoney.value + result.data.bettingAmount;
+      
+      if (updateBannerMoney) {
+        updateBannerMoney(ownMoney.value);
+      }
+      
       message.success(getTranslation('bet_cancelled_successfully'));
     } else {
       await fetchData(gameId.value);
@@ -214,16 +234,54 @@ const handleEndGame = ({ game_id, total_no, today_no }) => {
   fetchData(game_id);
 };
 
+let remainTimeTimer = null;
+
+const updateRemainTime = () => {
+  if (!targetTimestamp.value || targetTimestamp.value <= 0) {
+    remainTime.value = 0;
+    return;
+  }
+  
+  const nowTokyo = moment().tz('Asia/Tokyo');
+  const targetTokyo = moment.tz(targetTimestamp.value, 'Asia/Tokyo');
+  
+  const remainingSeconds = Math.floor((targetTokyo.valueOf() - nowTokyo.valueOf()) / 1000);
+  remainTime.value = Math.max(0, remainingSeconds);
+};
+
+const startRemainTimeTimer = () => {
+  if (remainTimeTimer) {
+    clearInterval(remainTimeTimer);
+  }
+  
+  updateRemainTime();
+  
+  remainTimeTimer = setInterval(() => {
+    updateRemainTime();
+    
+    if (remainTime.value <= 0 && gameId.value) {
+      fetchData(gameId.value);
+    }
+  }, 1000);
+};
+
 onMounted(() => {
   fetchData('');
 
   socket.on('start_game', handleStartGame);
   socket.on('end_game', handleEndGame);
+  
+  startRemainTimeTimer();
 });
 
 onBeforeUnmount(() => {
   socket.off('start_game', handleStartGame);
   socket.off('end_game', handleEndGame);
+  
+  if (remainTimeTimer) {
+    clearInterval(remainTimeTimer);
+    remainTimeTimer = null;
+  }
 });
 </script>
 

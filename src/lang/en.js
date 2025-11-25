@@ -70,6 +70,7 @@ export default {
   game_id: "Game ID",
   date: "Date",
   cannot_cancel_betting_outside_window: "Cannot cancel betting outside the betting window",
+  betting_window_closed: "Betting window is closed",
   started_new_game: "Started new game: {gameId}",
   game_ended: "Game ended: {gameId}",
   game_is_currently_disabled: "Game is currently disabled",

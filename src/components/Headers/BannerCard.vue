@@ -8,10 +8,10 @@
           </a-typography-text>
           <a-flex align="center" gap="small" wrap="nowrap">
             <a-typography-text class="fs-2 font-bold text-pink">
-              {{ totalNo }} {{ trlang.index_unit }}
+              {{ props.totalNo }} {{ trlang.index_unit }}
             </a-typography-text>
             <a-typography-text class="fs-3 font-bold text-white">
-              ({{ trlang.per_day }} {{ todayNo }} {{ trlang.index_unit }})
+              ({{ trlang.per_day }} {{ props.todayNo }} {{ trlang.index_unit }})
             </a-typography-text>
           </a-flex>
         </a-flex>
@@ -31,7 +31,7 @@
             {{ trlang.store_amount }}
           </a-typography-text>
           <a-flex class="fs-2 text-light-green" align="center" wrap="nowrap">
-            {{ ownMoney.toLocaleString() }} {{ trlang.currency }}
+            {{ props.ownMoney?.toLocaleString() }} {{ trlang.currency }}
           </a-flex>
         </a-flex>
 
@@ -74,6 +74,14 @@ import { ref, computed, inject, onMounted, onBeforeUnmount } from 'vue';
 import { getData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link.js';
 import moment from 'moment-timezone';
+
+const props = defineProps({
+  todayNo: { type: Number, default: 0 },
+  totalNo: { type: Number, default: 0 },
+  ownMoney: { type: Number, default: 0 },
+  loading: { type: Boolean, default: false },
+  targetTimestamp: { type: Number, default: 0 },
+});
 
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});

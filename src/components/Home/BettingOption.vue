@@ -119,7 +119,7 @@
         <a-col :xs="24" :md="5">
           <a-button
             class="glass-action-btn glass-action-green text-white w-100 radius-1 cursor-pointer h-100 shadow-dark py-2"
-            :disabled="!props.gameActivated || props.loading"
+            :disabled="isBettingDisabled"
             :loading="props.loading"
             @click="startBetting"
           >
@@ -172,6 +172,13 @@ const benefitAmount = computed(() => bettingAmount.value * bettingRate.value);
 const numberSort = ref([]);
 const fetchLoading = ref(false);
 const bettingLimits = ref(null);
+
+const isBettingDisabled = computed(() => {
+  if (props.loading) return true;
+  if (props.bettingRemainTime < 90 || props.bettingRemainTime > 180) return true;
+  if (!bettingAmount.value || !bettingRate.value) return true;
+  return false;
+});
 
 const betUnitStep = computed(() => {
   if (bettingLimits.value && bettingLimits.value.bet_money_unit) {
