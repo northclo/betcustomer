@@ -78,47 +78,50 @@
 </template>
 
 <script setup>
-import { computed, inject } from 'vue';
+import { computed, inject, ref, watch } from 'vue';
 
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
 
 const emit = defineEmits(['cancelBetting']);
 
-const columns = computed(() => [
-  { 
-    key: 'index', 
-    title: trlang.value.no, 
-    dataIndex: 'index',
-    align: 'center',
-    width: 50,
-    ellipsis: true,
-  },
-  { 
-    key: 'bet_amount', 
-    title: trlang.value.bet_amount, 
-    dataIndex: 'bet_amount',
-    align: 'center',
-    width: 120,
-    ellipsis: true,
-  },
-  { 
-    key: 'bet_info', 
-    title: trlang.value.bet_info, 
-    dataIndex: 'bet_info',
-    align: 'center',
-    width: 150,
-    ellipsis: true,
-  },
-  { 
-    key: 'betting_result', 
-    title: trlang.value.betting_result, 
-    dataIndex: 'betting_result',
-    align: 'center',
-    width: 180,
-    ellipsis: true,
-  },
-]);
+const columns = computed(() => {
+  const t = trlang.value;
+  return [
+    { 
+      key: 'index', 
+      title: t.no, 
+      dataIndex: 'index',
+      align: 'center',
+      width: 50,
+      ellipsis: true,
+    },
+    { 
+      key: 'bet_amount', 
+      title: t.bet_amount, 
+      dataIndex: 'bet_amount',
+      align: 'center',
+      width: 120,
+      ellipsis: true,
+    },
+    { 
+      key: 'bet_info', 
+      title: t.bet_info, 
+      dataIndex: 'bet_info',
+      align: 'center',
+      width: 150,
+      ellipsis: true,
+    },
+    { 
+      key: 'betting_result', 
+      title: t.betting_result, 
+      dataIndex: 'betting_result',
+      align: 'center',
+      width: 180,
+      ellipsis: true,
+    },
+  ];
+});
 
 const props = defineProps({
   gameResult: { type: Object, default: null },
@@ -175,10 +178,31 @@ const getBettingResultColor = (status) => {
   }
 };
 
+const isWithinCancelWindow = ref(false);
+
+let lastWindowState = false;
+watch(() => props.remainTime, (newTime) => {
+  const nowInWindow = newTime >= 90 && newTime <= 180;
+  
+  if (lastWindowState !== nowInWindow) {
+    lastWindowState = nowInWindow;
+    isWithinCancelWindow.value = nowInWindow;
+  }
+}, { immediate: true });
+
+const cancellableRecordIds = computed(() => {
+  if (!isWithinCancelWindow.value) {
+    return new Set();
+  }
+  return new Set(
+    dataSource.value
+      .filter(record => record.betting_status === 'WAIT')
+      .map(record => record.id)
+  );
+});
+
 const canCancelBet = (record) => {
-  const isWaitStatus = record.betting_status === 'WAIT';
-  const isWithinCancelWindow = props.remainTime >= 90 && props.remainTime <= 180;
-  return isWaitStatus && isWithinCancelWindow;
+  return cancellableRecordIds.value.has(record.id);
 };
 
 // Handle cancel bet action

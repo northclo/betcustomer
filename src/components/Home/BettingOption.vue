@@ -680,6 +680,21 @@ onMounted(() => {
   box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
 }
 
+.glass-action-green:disabled,
+.glass-action-green.ant-btn-disabled {
+  background: var(--glass-bg-dark) !important;
+  border-color: var(--glass-border) !important;
+  opacity: 0.5;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+}
+
+.glass-action-green:disabled:hover,
+.glass-action-green.ant-btn-disabled:hover {
+  background: var(--glass-bg-dark) !important;
+  box-shadow: none !important;
+}
+
 /* Info Display */
 .glass-info-label {
   background: var(--glass-bg-light);
