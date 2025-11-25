@@ -103,21 +103,35 @@ function updateTokyoTime() {
 }
 
 function updateCounter() {
+  console.log('updateCounter called:', {
+    targetTimestamp: props.targetTimestamp,
+    serverTimeOffset: props.serverTimeOffset,
+    loading: props.loading
+  });
+  
   if (!props.targetTimestamp || props.targetTimestamp <= 0) {
     counterText.value = '00:00';
+    console.log('Counter set to 00:00 - targetTimestamp is invalid:', props.targetTimestamp);
     return;
   }
 
   const serverTime = getCurrentTime() + (props.serverTimeOffset || 0);
-  console.log('serverTime', serverTime)
-  console.log('serverTime date', new Date(serverTime).toISOString())
-  console.log('props.targetTimestamp', props.targetTimestamp)
-  console.log('props.targetTimestamp date', new Date(props.targetTimestamp).toISOString())
   const remaining = Math.max(0, Math.floor((props.targetTimestamp - serverTime) / 1000));
 
   const minutes = String(Math.floor(remaining / 60)).padStart(2, '0');
   const seconds = String(remaining % 60).padStart(2, '0');
   counterText.value = `${minutes}:${seconds}`;
+  
+  console.log('Counter updated:', {
+    counterText: counterText.value,
+    targetTimestamp: props.targetTimestamp,
+    targetTimestampDate: new Date(props.targetTimestamp).toISOString(),
+    serverTime: serverTime,
+    serverTimeDate: new Date(serverTime).toISOString(),
+    serverTimeOffset: props.serverTimeOffset,
+    remaining: remaining,
+    diff: props.targetTimestamp - serverTime
+  });
 }
 
 function startClock() {
@@ -166,9 +180,30 @@ onMounted(() => {
 onBeforeUnmount(stopClock);
 
 watch(
-  () => [props.targetTimestamp, props.loading],
+  () => [props.targetTimestamp, props.serverTimeOffset, props.loading],
   () => {
     startClock();
+  },
+  { immediate: false }
+);
+
+watch(
+  () => props.targetTimestamp,
+  (newVal, oldVal) => {
+    console.log('BannerCard: targetTimestamp changed', { newVal, oldVal });
+    if (newVal > 0) {
+      updateCounter();
+    }
+  }
+);
+
+watch(
+  () => props.serverTimeOffset,
+  (newVal, oldVal) => {
+    console.log('BannerCard: serverTimeOffset changed', { newVal, oldVal });
+    if (props.targetTimestamp > 0) {
+      updateCounter();
+    }
   }
 );
 </script>
