@@ -1,6 +1,6 @@
 export default {
   running_ball: "Running Ball",
-  game_menu: "Game Start",
+  game_menu: "Game Start!",
   bethistory_menu: "Bet History",
   charge_menu: "Charge",
   exchange_menu: "Exchange",
