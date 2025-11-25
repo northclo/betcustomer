@@ -77,14 +77,14 @@ import { apiLink } from '@/utils/api-link.js';
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
 
-const props = defineProps({
-  loading: { type: Boolean, default: false },
-  todayNo: { type: Number, default: 0 },
-  totalNo: { type: Number, default: 0 },
-  ownMoney: { type: Number, default: 0 },
-  targetTimestamp: { type: Number, default: 0 },
-  serverTimeOffset: { type: Number, default: 0 },
-});
+// const props = defineProps({
+//   loading: { type: Boolean, default: false },
+//   todayNo: { type: Number, default: 0 },
+//   totalNo: { type: Number, default: 0 },
+//   ownMoney: { type: Number, default: 0 },
+//   targetTimestamp: { type: Number, default: 0 },
+//   serverTimeOffset: { type: Number, default: 0 },
+// });
 
 const formattedTime = ref('');
 const counterText = ref('');
