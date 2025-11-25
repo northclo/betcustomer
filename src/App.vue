@@ -91,10 +91,6 @@ export default {
     const ownMoney = ref(0);
     const serverTimeOffset = ref(0);
     
-    const getServerTime = () => {
-      return getCurrentTime() + serverTimeOffset.value;
-    };
-    
     const syncServerTime = (serverCurrentTime) => {
       if (serverCurrentTime) {
         const clientTime = getCurrentTime();
