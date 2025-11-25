@@ -84,6 +84,7 @@ const props = defineProps({
   totalNo: { type: Number, default: 0 },
   ownMoney: { type: Number, default: 0 },
   targetTimestamp: { type: Number, default: 0 },
+  serverTimeOffset: { type: Number, default: 0 },
 });
 
 const formattedTime = ref('');
@@ -107,8 +108,8 @@ function updateCounter() {
     return;
   }
 
-  const now = getCurrentTime();
-  const remaining = Math.max(0, Math.floor((props.targetTimestamp - now) / 1000));
+  const serverTime = getCurrentTime() + (props.serverTimeOffset || 0);
+  const remaining = Math.max(0, Math.floor((props.targetTimestamp - serverTime) / 1000));
 
   const minutes = String(Math.floor(remaining / 60)).padStart(2, '0');
   const seconds = String(remaining % 60).padStart(2, '0');

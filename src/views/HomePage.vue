@@ -78,6 +78,7 @@ const inactiveMessage = ref('');
 const cancelLoading = ref(false);
 const startBettingLoading = ref(false);
 let remainTimeInterval = null;
+const serverTimeOffset = ref(0);
 
 const fetchData = async (currentGameId) => {
   loading.value = true;
@@ -87,7 +88,12 @@ const fetchData = async (currentGameId) => {
     );
 
     if (result.status) {
-      const { game, pendingBet, user, aroundGameId, gameSetting } = result.data;
+      const { game, pendingBet, user, aroundGameId, gameSetting, server_current_time } = result.data;
+      
+      if (server_current_time) {
+        syncServerTime(server_current_time);
+      }
+      
       previousGameId.value = aroundGameId?.previousGameId || null;
       nextGameId.value = aroundGameId?.nextGameId || null;
       gameId.value = game?.id || '';
@@ -205,18 +211,25 @@ const cancelBetting = async ({ id }) => {
 const previousGame = () => fetchData(previousGameId.value);
 const nextGame = () => fetchData(nextGameId.value);
 
+const getServerTime = () => {
+  return getCurrentTime() + serverTimeOffset.value;
+};
+
+const syncServerTime = (serverCurrentTime) => {
+  if (serverCurrentTime) {
+    const clientTime = getCurrentTime();
+    serverTimeOffset.value = serverCurrentTime - clientTime;
+  }
+};
+
 const updateRemainTime = () => {
   if (!targetTimestamp.value || targetTimestamp.value <= 0) {
     remainTime.value = 0;
     return;
   }
   
-  const currentTime = getCurrentTime();
-  console.log('currentTime', currentTime)
-  console.log('currentTime date', new Date(currentTime))
-  console.log('targetTimestamp date', new Date(targetTimestamp.value))
-  console.log('targetTimestamp', targetTimestamp.value)
-  const remaining = Math.floor((targetTimestamp.value - currentTime) / 1000);
+  const serverTime = getServerTime();
+  const remaining = Math.floor((targetTimestamp.value - serverTime) / 1000);
   remainTime.value = Math.max(0, remaining);
 };
 
@@ -235,18 +248,36 @@ const stopRemainTimeInterval = () => {
   }
 };
 
-const handleStartGame = ({ game_id }) => {
+const handleStartGame = ({ game_id, start_time_stamp, server_current_time }) => {
+  if (server_current_time) {
+    syncServerTime(server_current_time);
+  }
+  
+  if (start_time_stamp) {
+    targetTimestamp.value = start_time_stamp;
+    updateRemainTime();
+  }
+  
   message.success(
     formatTranslation('started_new_game', { gameId: game_id })
   );
-  fetchData(game_id);
+  fetchData(game_id || '');
 };
 
-const handleEndGame = ({ game_id }) => {
+const handleEndGame = ({ game_id, next_start_time_stamp, server_current_time }) => {
+  if (server_current_time) {
+    syncServerTime(server_current_time);
+  }
+  
+  if (next_start_time_stamp) {
+    targetTimestamp.value = next_start_time_stamp;
+    updateRemainTime();
+  }
+  
   message.success(
     formatTranslation('game_ended', { gameId: game_id })
   );
-  fetchData(game_id);
+  fetchData(game_id || '');
 };
 
 watch(

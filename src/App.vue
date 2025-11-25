@@ -22,6 +22,7 @@
           :total-no="totalNo"
           :own-money="ownMoney"
           :target-timestamp="targetTimestamp"
+          :server-time-offset="serverTimeOffset"
         />
       </div>
       <a-layout-content style="min-height: 80vh" class="main-container">
@@ -45,6 +46,7 @@ import { message } from 'ant-design-vue';
 import { getData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link';
 import { socket } from '@/plugins/socket.js';
+import { getCurrentTime } from '@/helpers/Common.js';
 
 export default {
   name: 'App',
@@ -87,6 +89,18 @@ export default {
     const todayNo = ref(0);
     const totalNo = ref(0);
     const ownMoney = ref(0);
+    const serverTimeOffset = ref(0);
+    
+    const getServerTime = () => {
+      return getCurrentTime() + serverTimeOffset.value;
+    };
+    
+    const syncServerTime = (serverCurrentTime) => {
+      if (serverCurrentTime) {
+        const clientTime = getCurrentTime();
+        serverTimeOffset.value = serverCurrentTime - clientTime;
+      }
+    };
 
     const isAuthPage = computed(() => route.path.startsWith('/auth'));
 
@@ -142,7 +156,12 @@ export default {
       try {
         const result = await getData(`${apiLink.get_betting_info}?gameId=`);
         if (result.status && result.data) {
-          const { game, user } = result.data;
+          const { game, user, server_current_time } = result.data;
+          
+          if (server_current_time) {
+            syncServerTime(server_current_time);
+          }
+          
           if (game) {
             targetTimestamp.value = game.target_timestamp || 0;
             todayNo.value = game.today_no || 0;
@@ -160,11 +179,25 @@ export default {
     };
 
     // Socket event handlers
-    const handleStartGame = () => {
+    const handleStartGame = ({ start_time_stamp, server_current_time }) => {
+      if (server_current_time) {
+        syncServerTime(server_current_time);
+      }
+      
+      if (start_time_stamp) {
+        targetTimestamp.value = start_time_stamp;
+      }
       fetchBannerData();
     };
 
-    const handleEndGame = () => {
+    const handleEndGame = ({ next_start_time_stamp, server_current_time }) => {
+      if (server_current_time) {
+        syncServerTime(server_current_time);
+      }
+      
+      if (next_start_time_stamp) {
+        targetTimestamp.value = next_start_time_stamp;
+      }
       fetchBannerData();
     };
 
@@ -254,6 +287,7 @@ export default {
       todayNo,
       totalNo,
       ownMoney,
+      serverTimeOffset,
     };
   },
   data() {
