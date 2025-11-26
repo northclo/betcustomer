@@ -16,7 +16,6 @@
             :previous-game-id="previousGameId"
             :next-game-id="nextGameId"
             :game-result="gameResult"
-            :remain-time="remainTime"
             :game-id="gameId"
             :number-list="numberList"
             :today-no="todayNo"

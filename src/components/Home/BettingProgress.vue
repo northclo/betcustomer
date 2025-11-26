@@ -16,14 +16,7 @@
             @click="previousGameId && emit('previousGame')"
           />
         </div>
-        <a-typography-text v-if="!game?.list?.length" class="text-white text-xl md:text-3xl">
-          {{
-            remainTime >= 90 && remainTime <= 180
-              ? trlang.betting_available
-              : trlang.no_available_betting
-          }}
-        </a-typography-text>
-        <div v-else>
+        <div v-if="game?.list?.length">
           <a-layout-content class="flex-1 flex justify-center flex-wrap gap-2">
             <a-button :class="game?.odd ? 'active game-btn game-btn-odd' : 'game-btn game-btn-odd'">
               {{ trlang.odd }}
@@ -96,7 +89,6 @@ const props = defineProps({
   previousGameId: { type: String, default: null },
   nextGameId: { type: String, default: null },
   gameResult: { type: Object, default: null },
-  remainTime: { type: Number, default: 0 },
   gameId: { type: String, default: null },
   numberList: { type: Array, default: () => [] },
   todayNo: { type: Number, default: 0 },
