@@ -10,7 +10,6 @@
         :bordered="false"
         :pagination="false"
         :loading="loading"
-        :row-selection="null"
       >
         <template #emptyText>
           <div class="text-center text-white py-1">
@@ -79,14 +78,13 @@
 </template>
 
 <script setup>
-import { computed, inject, ref, watch, shallowRef } from 'vue';
+import { computed, inject, ref, watch } from 'vue';
 
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
 
 const emit = defineEmits(['cancelBetting']);
 
-// Memoize columns - only recalculate when translations change
 const columns = computed(() => {
   const t = trlang.value;
   return [
@@ -127,78 +125,36 @@ const columns = computed(() => {
 
 const props = defineProps({
   gameResult: { type: Object, default: null },
-  remainTime: { type: Number, default: 0 },
   loading: { type: Boolean, default: true },
   bettingHistory: { type: Array, default: () => [] },
   cancelLoading: { type: Boolean, default: false },
 });
 
-// Use shallowRef to prevent deep reactivity and only update when data actually changes
-const dataSource = shallowRef([]);
-
-// Track previous values to detect actual changes
-let prevHistoryHash = '';
-let prevGameResultHash = '';
-
-// Helper to create a hash of the betting history for comparison
-const createHistoryHash = (history) => {
-  if (!history || history.length === 0) return 'empty';
-  return history.map(item => {
-    const id = item.id || item._id;
+const dataSource = computed(() => {
+  const history = props.bettingHistory || [];
+  const gameData = props.gameResult;
+  
+  return history.map((item, idx) => {
     const status = item.betting_status || 'WAIT';
-    const amount = item.bet_amount || 0;
-    const earning = item.earning_amount || 0;
-    const win = item.win || false;
-    return `${id}:${status}:${amount}:${earning}:${win}`;
-  }).join('|');
-};
-
-// Helper to create a hash of gameResult for comparison
-const createGameResultHash = (gameData) => {
-  if (!gameData) return 'null';
-  return `${gameData.id || gameData._id || ''}:${gameData.end_time_stamp || ''}:${gameData.total_no || ''}:${gameData.today_no || ''}`;
-};
-
-// Only update dataSource when betting history or gameResult actually changes
-watch(
-  [() => props.bettingHistory, () => props.gameResult],
-  ([history, gameData]) => {
-    const historyArray = history || [];
-    const currentHistoryHash = createHistoryHash(historyArray);
-    const currentGameResultHash = createGameResultHash(gameData);
+    const normalizedStatus = typeof status === 'string' ? status.toUpperCase() : status;
     
-    // Only update if the actual data has changed
-    if (
-      currentHistoryHash !== prevHistoryHash ||
-      currentGameResultHash !== prevGameResultHash
-    ) {
-      prevHistoryHash = currentHistoryHash;
-      prevGameResultHash = currentGameResultHash;
-      
-      dataSource.value = historyArray.map((item, idx) => {
-        const status = item.betting_status || 'WAIT';
-        const normalizedStatus = typeof status === 'string' ? status.toUpperCase() : status;
-        
-        return {
-          id: item.id || item._id,
-          index: idx + 1,
-          bet_time: item.createdAt || null,
-          game_time: gameData?.end_time_stamp || null,
-          total_no: item.total_no ?? gameData?.total_no ?? null,
-          today_no: item.today_no ?? gameData?.today_no ?? null,
-          betting_type: item.betting_type || item.type || '',
-          betting_rate: item.betting_rate || item.benefit || 0,
-          bet_amount: item.bet_amount || 0,
-          earning_amount: item.earning_amount || 0,
-          betting_status: normalizedStatus,
-          win: item.win || false,
-          number_sort: item.number_sort || [],
-        };
-      });
-    }
-  },
-  { immediate: true, deep: false }
-);
+    return {
+      id: item.id || item._id,
+      index: idx + 1,
+      bet_time: item.createdAt || null,
+      game_time: gameData?.end_time_stamp || null,
+      total_no: item.total_no ?? gameData?.total_no ?? null,
+      today_no: item.today_no ?? gameData?.today_no ?? null,
+      betting_type: item.betting_type || item.type || '',
+      betting_rate: item.betting_rate || item.benefit || 0,
+      bet_amount: item.bet_amount || 0,
+      earning_amount: item.earning_amount || 0,
+      betting_status: normalizedStatus,
+      win: item.win || false,
+      number_sort: item.number_sort || [],
+    };
+  });
+});
 
 const getBettingStatusText = (status) => {
   if (!status) return '-';
@@ -221,23 +177,7 @@ const getBettingResultColor = (status) => {
   }
 };
 
-const isWithinCancelWindow = ref(false);
-
-let lastWindowState = false;
-watch(() => props.remainTime, (newTime) => {
-  const nowInWindow = newTime >= 90 && newTime <= 180;
-  
-  if (lastWindowState !== nowInWindow) {
-    lastWindowState = nowInWindow;
-    isWithinCancelWindow.value = nowInWindow;
-  }
-}, { immediate: true });
-
-// Memoize cancellable records - only recalculates when cancel window state or dataSource changes
 const cancellableRecordIds = computed(() => {
-  if (!isWithinCancelWindow.value) {
-    return new Set();
-  }
   return new Set(
     dataSource.value
       .filter(record => record.betting_status === 'WAIT')

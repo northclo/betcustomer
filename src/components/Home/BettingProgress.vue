@@ -70,7 +70,6 @@
      <BettingHistorySection
       :betting-history="bettingHistory"
       :game-result="gameResult"
-      :remain-time="remainTime"
       :loading="loading"
       :cancel-loading="cancelLoading"
       @cancel-betting="handleCancelBetting"
