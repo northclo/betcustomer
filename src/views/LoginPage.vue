@@ -17,9 +17,9 @@
 
       <div>
         <a-typography-text class="text-white">
-          {{ trlang.email }}
+          {{ trlang.user_name }}
         </a-typography-text>
-        <a-input v-model:value="email" :placeholder="trlang.input_email" />
+        <a-input v-model:value="userName" :placeholder="trlang.input_user_name" />
       </div>
 
       <div>
@@ -93,7 +93,6 @@ import { message } from 'ant-design-vue';
 import { useRouter } from 'vue-router';
 import { getData, postData } from '@/helpers/Axios';
 import { apiLink } from '@/utils/api-link';
-import { checkValidEmail } from '@/helpers/Common.js';
 
 /* Router */
 const router = useRouter();
@@ -108,7 +107,7 @@ const isRegistrationEnabled = computed(() => {
 });
 
 /* Reactive states */
-const email = ref('');
+const userName = ref('');
 const password = ref('');
 const remember = ref(false);
 const captchaShow = ref(false);
@@ -188,21 +187,21 @@ const initRetryState = () => {
 
 const saveCredentials = () => {
   if (remember.value) {
-    localStorage.setItem('email', email.value);
+    localStorage.setItem('user_name', userName.value);
     localStorage.setItem('password', password.value);
   } else {
-    localStorage.removeItem('email');
+    localStorage.removeItem('user_name');
     localStorage.removeItem('password');
   }
 };
 
 /* Load saved data on mount */
 onMounted(async () => {
-  const savedEmail = localStorage.getItem('email');
+  const savedUserName = localStorage.getItem('user_name');
   const savedPassword = localStorage.getItem('password');
 
-  if (savedEmail && savedPassword) {
-    email.value = savedEmail;
+  if (savedUserName && savedPassword) {
+    userName.value = savedUserName;
     password.value = savedPassword;
     remember.value = true;
   }
@@ -224,11 +223,8 @@ const goToRegister = () => {
 const login = async () => {
   if (retry.value) return;
 
-  if (!email.value || !password.value) {
-    return message.error(trlang.value.fill_email_password);
-  }
-  if (!checkValidEmail(email.value)) {
-    return message.error(trlang.value.not_correct_email);
+  if (!userName.value || !password.value) {
+    return message.error(trlang.value.fill_user_name_password);
   }
   if (captchaShow.value) {
     if (!captchaInput.value || captchaText.value !== captchaInput.value) {
@@ -238,7 +234,7 @@ const login = async () => {
   }
 
   const res = await postData(apiLink.login, {
-    email: email.value.toLowerCase(),
+    user_name: userName.value.trim(),
     password: password.value,
   });
 

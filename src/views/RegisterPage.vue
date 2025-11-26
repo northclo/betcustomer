@@ -44,10 +44,10 @@
           <a-col :xs="24" :sm="12">
             <div class="form-field">
               <a-typography-text class="text-white">
-                {{ trlang.email }}
+                {{ trlang.user_name }}
                 <span class="text-danger">*</span>
               </a-typography-text>
-              <a-input v-model:value="email" :placeholder="trlang.input_email" />
+              <a-input v-model:value="userName" :placeholder="trlang.input_user_name" />
             </div>
           </a-col>
 
@@ -84,16 +84,6 @@
                 v-model:value="confirmPassword"
                 :placeholder="trlang.confirm_password_placeholder"
               />
-            </div>
-          </a-col>
-
-          <a-col :xs="24" :sm="12">
-            <div class="form-field">
-              <a-typography-text class="text-white">
-                {{ trlang.real_name }}
-                <span class="text-danger">*</span>
-              </a-typography-text>
-              <a-input v-model:value="realName" :placeholder="trlang.input_real_name" />
             </div>
           </a-col>
 
@@ -210,7 +200,6 @@ import { message } from 'ant-design-vue';
 import { useRouter } from 'vue-router';
 import { getData, postData } from '@/helpers/Axios';
 import { apiLink } from '@/utils/api-link';
-import { checkValidEmail } from '@/helpers/Common.js';
 
 const router = useRouter();
 
@@ -218,11 +207,10 @@ const langState = inject('langState');
 const membershipSettings = inject('membershipSettings', ref(null));
 const trlang = computed(() => langState?.translations || {});
 
-const email = ref('');
+const userName = ref('');
 const password = ref('');
 const confirmPassword = ref('');
 const nickname = ref('');
-const realName = ref('');
 const bankId = ref(null);
 const bankNumber = ref('');
 const bankOwnerName = ref('');
@@ -312,16 +300,12 @@ const register = async () => {
     return message.error(trlang.value.membership_registration_disabled);
   }
 
-  if (!email.value || !password.value || !nickname.value || !realName.value) {
+  if (!userName.value || !password.value || !nickname.value) {
     return message.error(trlang.value.please_fill_required_fields);
   }
 
   if (!bankId.value || !bankNumber.value || !bankOwnerName.value) {
     return message.error(trlang.value.bank_information_required);
-  }
-
-  if (!checkValidEmail(email.value)) {
-    return message.error(trlang.value.not_correct_email);
   }
 
   if (password.value !== confirmPassword.value) {
@@ -351,10 +335,9 @@ const register = async () => {
 
   try {
     const payload = {
-      email: email.value.toLowerCase(),
+      user_name: userName.value.trim(),
       password: password.value,
       nickname: nickname.value,
-      real_name: realName.value,
       bank_id: bankId.value,
       bank_number: bankNumber.value,
       bank_owner_name: bankOwnerName.value,
