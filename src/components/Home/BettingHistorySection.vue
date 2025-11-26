@@ -228,10 +228,6 @@ const handleCancelBet = (id) => {
   flex-wrap: wrap;
 }
 
-.betting-result-cell .cancel-button {
-  margin-top: 4px;
-}
-
 .betting-result-complete {
   display: flex;
   flex-direction: row;
