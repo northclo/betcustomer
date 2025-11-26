@@ -86,10 +86,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, inject, reactive } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, inject, reactive } from 'vue';
 import { getData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link.js';
-import { message } from 'ant-design-vue';
+import { message, notification } from 'ant-design-vue';
+import { socket } from '@/plugins/socket.js';
 
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
@@ -234,8 +235,36 @@ const handleModalClose = () => {
   selectedNotice.value = null;
 };
 
+const handleNewGroupMessage = (data) => {
+  notification.info({
+    message: trlang.value.new_message,
+    description: `${data.title || ''}\n${data.content?.substring(0, 100) || ''}${data.content?.length > 100 ? '...' : ''}`,
+    duration: 5,
+    placement: 'topRight',
+    onClick: () => {
+      fetchNotices(pagination.page, pagination.limit);
+    },
+  });
+  
+  if (pagination.page === 1) {
+    fetchNotices(1, pagination.limit);
+  } else {
+    message.info(trlang.value.new_notice_available);
+  }
+};
+
 onMounted(() => {
   fetchNotices(pagination.page, pagination.limit);
+  
+  if (socket) {
+    socket.on('new_group_message', handleNewGroupMessage);
+  }
+});
+
+onBeforeUnmount(() => {
+  if (socket) {
+    socket.off('new_group_message', handleNewGroupMessage);
+  }
 });
 </script>
 
