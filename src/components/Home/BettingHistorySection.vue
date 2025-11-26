@@ -78,7 +78,7 @@
 </template>
 
 <script setup>
-import { computed, inject, ref, watch } from 'vue';
+import { computed, inject } from 'vue';
 
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
