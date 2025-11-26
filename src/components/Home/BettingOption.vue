@@ -174,10 +174,6 @@ const fetchLoading = ref(false);
 const bettingLimits = ref(null);
 
 const isBettingDisabled = computed(() => {
-  console.log(props.bettingRemainTime);
-  console.log(props.loading);
-  console.log(bettingAmount.value);
-  console.log(bettingRate.value);
   if (props.loading) return true;
   if (props.bettingRemainTime < 90 || props.bettingRemainTime > 180) return true;
   if (!bettingAmount.value || !bettingRate.value) return true;
