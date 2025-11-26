@@ -242,4 +242,5 @@ export default {
   minimum_amount_is: "Minimum amount is {amount}",
   invalid_amount: "Invalid amount",
   withdrawal_request_submitted: "Withdrawal request submitted successfully",
+  new_notice_available: "New notice available",
 };

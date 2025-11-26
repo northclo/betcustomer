@@ -236,21 +236,8 @@ const handleModalClose = () => {
 };
 
 const handleNewGroupMessage = (data) => {
-  notification.info({
-    message: trlang.value.new_message,
-    description: `${data.title || ''}\n${data.content?.substring(0, 100) || ''}${data.content?.length > 100 ? '...' : ''}`,
-    duration: 5,
-    placement: 'topRight',
-    onClick: () => {
-      fetchNotices(pagination.page, pagination.limit);
-    },
-  });
-  
-  if (pagination.page === 1) {
-    fetchNotices(1, pagination.limit);
-  } else {
-    message.info(trlang.value.new_notice_available);
-  }
+  console.log('handleNewGroupMessage', data);
+  message.info(trlang.value.new_notice_available);
 };
 
 onMounted(() => {
