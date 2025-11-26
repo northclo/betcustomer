@@ -89,7 +89,7 @@
 import { ref, computed, onMounted, onBeforeUnmount, inject, reactive } from 'vue';
 import { getData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link.js';
-import { message, notification } from 'ant-design-vue';
+import { message } from 'ant-design-vue';
 import { socket } from '@/plugins/socket.js';
 
 const langState = inject('langState');
