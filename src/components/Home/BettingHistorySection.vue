@@ -25,7 +25,7 @@
           <template v-else-if="column.key === 'bet_info'">
             <a-tooltip :title="String(record.number_sort || '')" color="#0086e3">
               <a-tag class="table-cell-content">
-                {{ trlang[record.betting_type] || record.betting_type }}
+                {{ trlang[record.betting_type] || record.betting_type }} " " ({{ record.betting_rate || 0 }})
               </a-tag>
             </a-tooltip>
           </template>
@@ -45,6 +45,7 @@
                   <a-tag 
                     :color="record.win ? 'success' : 'error'"
                     class="table-cell-content win-lose-tag"
+                    :class="record.win ? 'win-tag' : 'lose-tag'"
                   >
                     {{ record.win ? trlang.win : trlang.lose }}
                   </a-tag>
@@ -134,13 +135,15 @@ const dataSource = computed(() => {
   const history = props.bettingHistory || [];
   const gameData = props.gameResult;
   
-  return history.map((item, idx) => {
+  const reversedHistory = [...history].reverse();
+  
+  return reversedHistory.map((item, idx) => {
     const status = item.betting_status || 'WAIT';
     const normalizedStatus = typeof status === 'string' ? status.toUpperCase() : status;
     
     return {
       id: item.id || item._id,
-      index: idx + 1,
+      index: reversedHistory.length - idx,
       bet_time: item.createdAt || null,
       game_time: gameData?.end_time_stamp || null,
       total_no: item.total_no ?? gameData?.total_no ?? null,
@@ -245,9 +248,11 @@ const handleCancelBet = (id) => {
 
 .betting-result-cell {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+  justify-content: center;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .betting-result-cell .cancel-button {
@@ -256,12 +261,25 @@ const handleCancelBet = (id) => {
 
 .betting-result-complete {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+  gap: 8px;
 }
 
 .betting-result-complete .win-lose-tag {
-  margin-top: 2px;
+  margin-top: 0;
+}
+
+:deep(.win-tag) {
+  background: #10b981 !important;
+  border-color: #10b981 !important;
+  color: #ffffff !important;
+}
+
+:deep(.lose-tag) {
+  background: #ef4444 !important;
+  border-color: #ef4444 !important;
+  color: #ffffff !important;
 }
 </style>
 

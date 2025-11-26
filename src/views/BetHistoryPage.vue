@@ -47,28 +47,17 @@
             </template>
             <template v-else-if="column.key === 'betting_result'">
               <template v-if="record.betting_status === 'COMPLETE'">
-                <div class="betting-result-complete">
-                  <span class="table-cell-content">
-                    {{ record.win 
-                      ? (record.earning_amount?.toLocaleString() || 0) 
-                      : `-${(record.bet_amount?.toLocaleString() || 0)}` 
-                    }}
-                  </span>
-                  <a-tag 
-                    :color="record.win ? 'success' : 'error'"
-                    class="table-cell-content win-lose-tag"
-                  >
-                    {{ record.win ? trlang.win : trlang.lose }}
-                  </a-tag>
-                </div>
+                <span class="table-cell-content" :class="record.win ? 'text-success' : 'text-error'">
+                  {{ record.win 
+                    ? (record.earning_amount?.toLocaleString() || 0) 
+                    : trlang.lose
+                  }}
+                </span>
               </template>
               <template v-else>
-                <a-tag 
-                  :color="getBettingResultColor(record.betting_status)"
-                  class="table-cell-content"
-                >
+                <span class="table-cell-content">
                   {{ getBettingStatusText(record.betting_status) }}
-                </a-tag>
+                </span>
               </template>
             </template>
           </template>
@@ -266,8 +255,7 @@ const formatDate = (date) => {
   const day = String(d.getDate()).padStart(2, '0');
   const hours = String(d.getHours()).padStart(2, '0');
   const minutes = String(d.getMinutes()).padStart(2, '0');
-  const seconds = String(d.getSeconds()).padStart(2, '0');
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
 };
 
 const formatGameTime = (timestamp) => {
@@ -278,8 +266,7 @@ const formatGameTime = (timestamp) => {
   const day = String(d.getDate()).padStart(2, '0');
   const hours = String(d.getHours()).padStart(2, '0');
   const minutes = String(d.getMinutes()).padStart(2, '0');
-  const seconds = String(d.getSeconds()).padStart(2, '0');
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
 };
 
 const formatGameIndex = (totalNo, todayNo) => {
@@ -296,21 +283,6 @@ const getBettingStatusText = (status) => {
   if (!status) return '-';
   const statusKey = `betting_status_${status.toLowerCase()}`;
   return trlang.value[statusKey] || status;
-};
-
-const getBettingResultColor = (status) => {
-  switch (status) {
-    case 'COMPLETE':
-      return 'success';
-    case 'PROGRESS':
-      return 'processing';
-    case 'WAIT':
-      return 'default';
-    case 'CANCEL':
-      return 'error';
-    default:
-      return 'default';
-  }
 };
 
 onMounted(() => {
@@ -350,13 +322,26 @@ onMounted(() => {
 
 .betting-result-complete {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
+  justify-content: center;
 }
 
 .betting-result-complete .win-lose-tag {
-  margin-top: 2px;
+  margin-top: 0;
+}
+
+:deep(.win-tag) {
+  background: #10b981 !important;
+  border-color: #10b981 !important;
+  color: #ffffff !important;
+}
+
+:deep(.lose-tag) {
+  background: #ef4444 !important;
+  border-color: #ef4444 !important;
+  color: #ffffff !important;
 }
 </style>
 
