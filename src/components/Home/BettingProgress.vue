@@ -68,6 +68,7 @@
     </a-card>
 
      <BettingHistorySection
+      v-memo="[bettingHistory, gameResult, loading, cancelLoading]"
       :betting-history="bettingHistory"
       :game-result="gameResult"
       :loading="loading"
