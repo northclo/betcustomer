@@ -74,7 +74,7 @@ export default {
   started_new_game: "Started new game: {gameId}",
   game_ended: "Game ended: {gameId}",
   game_is_currently_disabled: "Game is currently disabled",
-  bet_placed_successfully: "Bet placed successfully",
+  bet_placed_successfully: "Bet placed successfully\n{datetime}\n{round}",
   bet_cancelled_successfully: "Bet cancelled successfully",
   bet_amount_must_be_multiple_of_unit: "Bet amount must be a multiple of {unit}",
   bet_amount_below_minimum: "Bet amount is below the minimum of {min}",

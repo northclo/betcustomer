@@ -24,9 +24,9 @@
           </template>
           <template v-else-if="column.key === 'bet_info'">
             <a-tooltip :title="String(record.number_sort || '')" color="#0086e3">
-              <a-tag class="table-cell-content">
-                {{ trlang[record.betting_type] || record.betting_type }} " " ({{ record.betting_rate || 0 }})
-              </a-tag>
+              <span class="table-cell-content">
+                {{ trlang[record.betting_type] || record.betting_type }} ({{ record.betting_rate || 0 }})
+              </span>
             </a-tooltip>
           </template>
           <template v-else-if="column.key === 'bet_amount'">
@@ -35,29 +35,17 @@
           <template v-else-if="column.key === 'betting_result'">
             <div class="betting-result-cell">
               <template v-if="record.betting_status === 'COMPLETE'">
-                <div class="betting-result-complete">
-                  <span class="table-cell-content" :class="record.win ? 'text-success' : 'text-error'">
-                    {{ record.win 
-                      ? (record.earning_amount?.toLocaleString() || 0) 
-                      : `-${(record.bet_amount?.toLocaleString() || 0)}` 
-                    }}
-                  </span>
-                  <a-tag 
-                    :color="record.win ? 'success' : 'error'"
-                    class="table-cell-content win-lose-tag"
-                    :class="record.win ? 'win-tag' : 'lose-tag'"
-                  >
-                    {{ record.win ? trlang.win : trlang.lose }}
-                  </a-tag>
-                </div>
+                <span class="table-cell-content" :class="record.win ? 'text-success' : 'text-error'">
+                  {{ record.win 
+                    ? (record.earning_amount?.toLocaleString() || 0) 
+                    : `-${(record.bet_amount?.toLocaleString() || 0)}` 
+                  }}
+                </span>
               </template>
               <template v-else>
-                <a-tag 
-                  :color="getBettingResultColor(record.betting_status)"
-                  class="table-cell-content"
-                >
+                <span class="table-cell-content">
                   {{ getBettingStatusText(record.betting_status) }}
-                </a-tag>
+                </span>
               </template>
               <a-button
                 v-if="canCancelBet(record)"
@@ -163,21 +151,6 @@ const getBettingStatusText = (status) => {
   if (!status) return '-';
   const statusKey = `betting_status_${status.toLowerCase()}`;
   return trlang.value[statusKey] || status;
-};
-
-const getBettingResultColor = (status) => {
-  switch (status) {
-    case 'COMPLETE':
-      return 'success';
-    case 'PROGRESS':
-      return 'processing';
-    case 'WAIT':
-      return 'default';
-    case 'CANCEL':
-      return 'error';
-    default:
-      return 'default';
-  }
 };
 
 const cancellableRecordIds = computed(() => {
