@@ -235,18 +235,13 @@ const handleEndGame = ({ game_id, total_no, today_no }) => {
 
 let remainTimeTimer = null;
 
-const updateRemainTime = () => {
-  if (!targetTimestamp.value || targetTimestamp.value <= 0) {
-    remainTime.value = 0;
-    return;
-  }
+function updateRemainTime() {
+  const now = moment().tz('Asia/Tokyo')
+  const secondsSince3min = (now.minutes() % 3) * 60 + now.seconds()
+  const remainingSeconds = (3 * 60) - secondsSince3min
   
-  const nowTokyo = moment().tz('Asia/Tokyo');
-  const targetTokyo = moment.tz(targetTimestamp.value, 'Asia/Tokyo');
-  
-  const remainingSeconds = Math.floor((targetTokyo.valueOf() - nowTokyo.valueOf()) / 1000);
-  remainTime.value = Math.max(0, remainingSeconds);
-};
+  remainTime.value = remainingSeconds;
+}
 
 const startRemainTimeTimer = () => {
   if (remainTimeTimer) {
