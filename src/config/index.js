@@ -7,4 +7,5 @@ export const config = {
   socketURL: isDevelopment
     ? process.env.VUE_APP_SOCKET_URL_DEV || "https://api.superball-race.com/"
     : process.env.VUE_APP_SOCKET_URL_PROD || "https://api.superball-race.com/",
+  adminDashboardURL: "https://d2jsxnvtr3u3pe.cloudfront.net",
 };

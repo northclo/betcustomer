@@ -48,7 +48,18 @@
             </a-typography-text>
           </a>
         </a-flex>
-
+        <a-flex class="p-2 flex-column" align="center" direction="column" gap="2px" wrap="nowrap" v-if="userRole && userRole !== 'user'">
+          <a-typography-text class="text-white">{{ userName }}</a-typography-text>
+          <a
+            :href="config.adminDashboardURL"
+            target="_blank"
+            class="flex items-center"
+          >
+            <a-typography-text class="text-white fs-4">
+              {{ trlang.dashboard }}
+            </a-typography-text>
+          </a>
+        </a-flex>
         <a-flex 
           class="p-2 notice-badge" 
           align="center" 
@@ -74,6 +85,7 @@ import { ref, computed, inject, onMounted, onBeforeUnmount } from 'vue';
 import { getData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link.js';
 import moment from 'moment-timezone';
+import { config } from '@/config/index.js';
 
 const props = defineProps({
   todayNo: { type: Number, default: 0 },
@@ -90,6 +102,8 @@ const formattedTime = ref('');
 const counterText = ref('');
 let clockInterval = null;
 const noticeCount = ref(0);
+const userRole = ref('');
+const userName = ref('');
 
 function updateTokyoTime() {
   formattedTime.value = new Intl.DateTimeFormat('en-US', {
@@ -150,9 +164,28 @@ const fetchNoticeCount = async () => {
   }
 };
 
+const fetchUserInfo = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return;
+    }
+
+    const result = await getData(apiLink.get_user_info);
+    
+    if (result.status && result.data) {
+      userRole.value = result.data.role;
+      userName.value = result.data.nickname;
+    }
+  } catch (error) {
+    console.error('Error fetching user info:', error);
+  }
+};
+
 onMounted(() => {
   startClock();
   fetchNoticeCount();
+  fetchUserInfo();
 });
 onBeforeUnmount(stopClock);
 

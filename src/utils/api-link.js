@@ -2,6 +2,7 @@ export const apiLink = {
     get_captcha: 'customer/auth/captcha',
     login: 'customer/auth',
     register: 'customer/auth/register',
+    get_user_info: 'customer/auth/user-info',
     get_betting_info: 'customer/game',
     get_bet_history: 'customer/game/history',
     get_init_betting_option: "customer/game/option",
