@@ -90,7 +90,6 @@ import { ref, computed, onMounted, onBeforeUnmount, inject, reactive } from 'vue
 import { getData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link.js';
 import { message } from 'ant-design-vue';
-import { socket } from '@/plugins/socket.js';
 
 const langState = inject('langState');
 const trlang = computed(() => langState?.translations || {});
@@ -235,23 +234,18 @@ const handleModalClose = () => {
   selectedNotice.value = null;
 };
 
-const handleNewGroupMessage = (data) => {
-  console.log('handleNewGroupMessage', data);
-  message.info(trlang.value.new_notice_available);
+const handleRefreshNoticeList = () => {
+  fetchNotices(pagination.page, pagination.limit);
 };
 
 onMounted(() => {
   fetchNotices(pagination.page, pagination.limit);
   
-  if (socket) {
-    socket.on('new_group_message', handleNewGroupMessage);
-  }
+  window.addEventListener('refresh-notice-list', handleRefreshNoticeList);
 });
 
 onBeforeUnmount(() => {
-  if (socket) {
-    socket.off('new_group_message', handleNewGroupMessage);
-  }
+  window.removeEventListener('refresh-notice-list', handleRefreshNoticeList);
 });
 </script>
 

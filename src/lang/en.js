@@ -30,7 +30,7 @@ export default {
   even_over: "EvenOver",
   normal: 'Normal',
   combined: "Combined",
-  number_match: "Number Match",
+  number_match: "NumberMatch",
   number_13: "Number 13",
   number_14: "Number 14",
   number_16: "Number 16",

@@ -131,6 +131,8 @@
 </template>
 
 <script>
+import { socket } from '@/plugins/socket.js';
+
 export default {
   name: 'MainHeader',
   inject: ['langState', 'siteText'],
@@ -179,7 +181,13 @@ export default {
   },
   methods: {
     logout() {
+      const token = localStorage.getItem('token');
+      if (token && socket.connected) {
+        socket.emit('user_offline', token);
+      }
       localStorage.removeItem('token');
+      window.dispatchEvent(new CustomEvent('token-changed'));
+      localStorage.removeItem('user_id');
       this.$router.push({ path: '/auth/login' });
       this.closeMobileMenu();
     },

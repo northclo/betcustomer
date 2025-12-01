@@ -35,7 +35,7 @@
                 </template>
                 <template v-else-if="column.key === 'action'">
                   <a-button
-                    v-if="record.status === 'WAIT'"
+                    v-if="record.status === 'WAIT' || record.status === 'NEW'"
                     type="primary"
                     danger
                     size="small"
@@ -337,6 +337,7 @@ const formatDate = (dateString) => {
 
 const getStatusText = (status) => {
   const statusMap = {
+    NEW: getTranslation('in_request'),
     WAIT: getTranslation('in_request'),
     COMPLETE: getTranslation('complete'),
     CANCEL: getTranslation('rejected'),
@@ -346,6 +347,7 @@ const getStatusText = (status) => {
 
 const getStatusColor = (status) => {
   const colorMap = {
+    NEW: 'orange',
     WAIT: 'orange',
     COMPLETE: 'complete',
     CANCEL: 'red',
@@ -429,7 +431,7 @@ const handleRequestCharging = async () => {
 };
 
 const handleCancelCharge = async (record) => {
-  if (record.status !== 'WAIT') {
+  if (record.status !== 'WAIT' && record.status !== 'NEW') {
     return message.warning(getTranslation('only_pending_charges_can_be_cancelled'));
   }
 
@@ -465,7 +467,7 @@ const fetchChargeHistory = async (page = 1, pageSize = 10) => {
         chargeAmount: item.amount || 0,
         chargerName: item.user_nickname || '*',
         requestDate: item.createdAt,
-        status: item.status || 'WAIT',
+        status: item.status || 'NEW',
         cancelling: false,
       }));
 

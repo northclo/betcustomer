@@ -36,7 +36,7 @@
                     <a-button
                       type="text"
                       size="small"
-                      :disabled="record.status !== 'PENDING'"
+                      :disabled="record.status !== 'PENDING' && record.status !== 'NEW'"
                       class="action-btn-edit"
                       :title="trlang.edit"
                       @click="handleEdit(record)"
@@ -267,6 +267,9 @@ const getStatusText = (status) => {
   if (status === 'REJECTED') {
     return getTranslation('question_rejected');
   }
+  if (status === 'NEW') {
+    return getTranslation('answer_waiting');
+  }
   return getTranslation('answer_waiting');
 };
 
@@ -276,6 +279,9 @@ const getStatusClass = (status) => {
   }
   if (status === 'REJECTED') {
     return 'status-rejected';
+  }
+  if (status === 'NEW' || status === 'PENDING') {
+    return 'status-waiting';
   }
   return 'status-waiting';
 };
@@ -395,7 +401,7 @@ const fetchSiteSettings = async () => {
 const checkPendingInquiries = () => {
   if (siteSettings.value?.customer_center) {
     const hasPending = questionList.value.some(
-      (q) => q.status === 'PENDING'
+      (q) => q.status === 'PENDING' || q.status === 'NEW'
     );
     
     return hasPending;
@@ -418,7 +424,7 @@ const handleNewQuestion = () => {
 };
 
 const handleEdit = (record) => {
-  if (record.status !== 'PENDING') {
+  if (record.status !== 'PENDING' && record.status !== 'NEW') {
     return message.warning(getTranslation('cannot_edit_resolved_question'));
   }
   isEditMode.value = true;

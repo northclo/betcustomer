@@ -219,17 +219,11 @@ const handleBetAmountChange = (value) => {
 
 const emit = defineEmits(['startBetting']);
 
-const normalizeRate = (value) => {
-  if (typeof value !== 'number') return value;
-  if (value > 10) return value / 100;
-  if (value < 0.1) return value * 100;
-  return value;
-};
-
 const fetchData = async () => {
   fetchLoading.value = true;
   try {
     const result = await getData(apiLink.get_init_betting_option);
+    console.log(result)
 
     if (result.status) {
       bettingLimits.value = result.data.bettingLimits || null;
@@ -255,26 +249,26 @@ const fetchData = async () => {
             {
               key: 'odd',
               label: trlang.value.odd,
-              rate: normalizeRate(result.data.odd),
+              rate: result.data.odd,
               bgColor: 'success',
               radius: 'radius-left-2',
             },
             {
               key: 'even',
               label: trlang.value.even,
-              rate: normalizeRate(result.data.even),
+              rate: result.data.even,
               bgColor: 'danger',
             },
             {
               key: 'under',
               label: trlang.value.under,
-              rate: normalizeRate(result.data.under),
+              rate: result.data.under,
               bgColor: 'success',
             },
             {
               key: 'over',
               label: trlang.value.over,
-              rate: normalizeRate(result.data.over),
+              rate: result.data.over,
               bgColor: 'danger',
               radius: 'radius-right-2',
             },
@@ -287,26 +281,26 @@ const fetchData = async () => {
             {
               key: 'odd_under',
               label: trlang.value.odd_under,
-              rate: normalizeRate(result.data.odd_under),
+              rate: result.data.odd_under,
               bgColor: 'primary',
               radius: 'radius-left-2',
             },
             {
               key: 'odd_over',
               label: trlang.value.odd_over,
-              rate: normalizeRate(result.data.odd_over),
+              rate: result.data.odd_over,
               bgColor: 'pink',
             },
             {
               key: 'even_under',
               label: trlang.value.even_under,
-              rate: normalizeRate(result.data.even_under),
+              rate: result.data.even_under,
               bgColor: 'primary',
             },
             {
               key: 'even_over',
               label: trlang.value.even_over,
-              rate: normalizeRate(result.data.even_over),
+              rate: result.data.even_over,
               bgColor: 'pink',
               radius: 'radius-right-2',
             },
@@ -319,20 +313,20 @@ const fetchData = async () => {
             {
               key: 'number_13',
               label: trlang.value.number_13,
-              rate: normalizeRate(result.data.match_number1),
+              rate: result.data.match_number1,
               bgColor: 'danger',
               radius: 'radius-left-2',
             },
             {
               key: 'number_14',
               label: trlang.value.number_14,
-              rate: normalizeRate(result.data.match_number2),
+              rate: result.data.match_number2,
               bgColor: 'success',
             },
             {
               key: 'number_16',
               label: trlang.value.number_16,
-              rate: normalizeRate(result.data.match_number3),
+              rate: result.data.match_number3,
               bgColor: 'primary',
               radius: 'radius-right-2',
             },

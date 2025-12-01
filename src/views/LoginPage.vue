@@ -93,6 +93,7 @@ import { message } from 'ant-design-vue';
 import { useRouter } from 'vue-router';
 import { getData, postData } from '@/helpers/Axios';
 import { apiLink } from '@/utils/api-link';
+import { socket } from '@/plugins/socket.js';
 
 /* Router */
 const router = useRouter();
@@ -240,8 +241,20 @@ const login = async () => {
 
   if (res.status) {
     localStorage.setItem('token', res.data.token);
+    localStorage.setItem('user_id', res.data.id);
     saveCredentials();
     localStorage.removeItem('login_failed');
+    
+    const token = res.data.token;
+    if (socket.connected) {
+      socket.emit('user_online', token);
+    } else {
+      socket.once('connect', () => {
+        socket.emit('user_online', token);
+      });
+    }
+    
+    window.dispatchEvent(new CustomEvent('token-changed'));
     router.push('/');
   } else {
     handleLoginFailed();

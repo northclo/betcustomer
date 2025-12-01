@@ -41,10 +41,11 @@ import LoginBox from './components/SiteDisabled/LoginBox.vue';
 import PageNotFound from './components/SiteDisabled/PageNotFound.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { computed, ref, onBeforeUnmount, watch, provide, onMounted } from 'vue';
-import { message } from 'ant-design-vue';
+import { message, notification } from 'ant-design-vue';
 import { getData } from '@/helpers/Axios.js';
 import { apiLink } from '@/utils/api-link';
 import { socket } from '@/plugins/socket.js';
+import { useOnlineStatus } from '@/composables/useOnlineStatus.js';
 
 export default {
   name: 'App',
@@ -168,6 +169,41 @@ export default {
       fetchBannerData();
     };
 
+    const handleNewGroupMessage = (data) => {
+      if (!data) {
+        return;
+      }
+
+      const userId = localStorage.getItem('user_id');
+      if (!userId) {
+        return;
+      }
+
+      if (data.targetIds && Array.isArray(data.targetIds)) {
+        const userIdStr = userId.toString();
+        const isTargeted = data.targetIds.some(targetId => 
+          targetId.toString() === userIdStr
+        );
+        
+        if (!isTargeted) {
+          return;
+        }
+      }
+
+      notification.open({
+        message: data.title || 'New notice available',
+        description: data.content || '',
+        duration: 5,
+        placement: 'topRight',
+        onClick: () => {
+          router.push('/notice');
+        },
+      });
+      
+      // Emit event to refresh notice list if on notice page
+      window.dispatchEvent(new CustomEvent('refresh-notice-list'));
+    };
+
     router
       .isReady()
       .then(async () => {
@@ -178,6 +214,7 @@ export default {
           fetchBannerData();
           socket.on('start_game', handleStartGame);
           socket.on('end_game', handleEndGame);
+          socket.on('new_group_message', handleNewGroupMessage);
         }
       })
       .catch(async (error) => {
@@ -189,6 +226,7 @@ export default {
           fetchBannerData();
           socket.on('start_game', handleStartGame);
           socket.on('end_game', handleEndGame);
+          socket.on('new_group_message', handleNewGroupMessage);
         }
       });
 
@@ -202,8 +240,23 @@ export default {
       { immediate: false }
     );
 
+    watch(
+      () => isAuthPage.value,
+      (newVal) => {
+        if (!newVal && routerReady.value && !siteDisabled.value) {
+          socket.on('new_group_message', handleNewGroupMessage);
+        } else {
+          socket.off('new_group_message', handleNewGroupMessage);
+        }
+      },
+      { immediate: false }
+    );
+
     let siteCheckInterval = null;
     let bannerSyncInterval = null;
+    
+    useOnlineStatus();
+    
     onMounted(() => {
       siteCheckInterval = setInterval(() => {
         checkSiteActivation();
@@ -219,6 +272,7 @@ export default {
     onBeforeUnmount(() => {
       socket.off('start_game', handleStartGame);
       socket.off('end_game', handleEndGame);
+      socket.off('new_group_message', handleNewGroupMessage);
       if (siteCheckInterval) {
         clearInterval(siteCheckInterval);
       }
