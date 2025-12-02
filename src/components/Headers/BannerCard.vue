@@ -48,8 +48,10 @@
             </a-typography-text>
           </a>
         </a-flex>
-        <a-flex class="p-2 flex-column" align="center" direction="column" gap="2px" wrap="nowrap" v-if="userRole && userRole !== 'user'">
-          <a-typography-text class="text-white">{{ userName }}</a-typography-text>
+        <a-flex v-if="userRole && userRole !== 'user'" class="p-2 flex-column" align="center" direction="column" gap="2px" wrap="nowrap">
+          <a-typography-text class="text-white">
+            {{ userName }}
+          </a-typography-text>
           <a
             :href="config.adminDashboardURL"
             target="_blank"
