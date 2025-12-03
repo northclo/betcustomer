@@ -1,7 +1,7 @@
 <template>
   <div class="bg-primary-light radius-2 p-3 mt-2">
     <a-row :gutter="[16, 16]">
-      <a-col :xs="24" :lg="18">
+      <a-col :xs="24" :lg="17">
         <a-card :title="getTranslation('money_charged_list')" class="game-result-card matching-height-card">
           <div class="table-container">
             <a-table
@@ -81,7 +81,7 @@
         </a-card>
       </a-col>
 
-      <a-col :xs="24" :lg="6">
+      <a-col :xs="24" :lg="7">
         <a-card :title="getTranslation('request_money_charging')" class="game-result-card matching-height-card">
           <a-space direction="vertical" size="small" class="w-100">
             <div class="instruction-text">
@@ -98,7 +98,7 @@
               <div class="section-title">
                 {{ getTranslation('charge_amount_selection') }}
               </div>
-              <div class="mo-buttons-container mt-1">
+              <div class="mo-buttons-container mt-2">
                 <button
                   v-for="moAmount in moAmounts"
                   :key="moAmount.value"
@@ -120,8 +120,8 @@
               <div class="section-title">
                 {{ getTranslation('charge_money') }}
               </div>
-              <a-row :gutter="[8, 8]" class="mt-1">
-                <a-col :xs="16" :sm="18">
+              <div class="flex gap-2 items-center mt-2">
+                <div class="flex-grow">
                   <a-input-number
                     v-model:value="chargeAmount"
                     :min="chargeMin"
@@ -134,32 +134,32 @@
                     :formatter="(value) => value ? value.toLocaleString() : ''"
                     :parser="(value) => value.replace(/\$\s?|(,*)/g, '')"
                   />
-                </a-col>
-                <a-col :xs="8" :sm="6">
+                </div>
+                <div>
                   <a-button
                     type="primary"
                     class="w-100 glass-action-green request-charge-btn"
                     size="large"
                     :loading="loading"
-                    :disabled="!chargeAmount || chargeAmount <= 0 || !bankNumber || !bankNumber.trim() || !isWithinChargeTimeRange"
+                    :disabled="!chargeAmount || chargeAmount <= 0 || !isWithinChargeTimeRange"
                     @click="handleRequestCharging"
                   >
                     <span class="request-charge-text">{{ getTranslation('request_charge') }}</span>
                   </a-button>
-                </a-col>
-              </a-row>
+                </div>
+              </div>
             </div>
 
-            <div>
-              <div class="section-title">
+            <div class="flex gap-2 items-center">
+              <div class="section-title white-space-nowrap">
                 {{ getTranslation('bank_number') }}
               </div>
               <a-input
-                v-model:value="bankNumber"
+                value="**********"
                 type="text"
-                class="mt-1"
+                class="bank-number-input"
                 size="large"
-                :placeholder="getTranslation('enter_bank_number')"
+                disabled
               />
             </div>
 
@@ -227,7 +227,6 @@ const loadingHistory = ref(false);
 const chargeList = ref([]);
 const chargeAmount = ref(null);
 const selectedMoAmount = ref(null);
-const bankNumber = ref('');
 const pagination = reactive({
   page: 1,
   limit: 10,
@@ -393,11 +392,6 @@ const validateChargeAmount = () => {
     return false;
   }
 
-  if (!bankNumber.value || !bankNumber.value.trim()) {
-    message.error(getTranslation('bank_number_required'));
-    return false;
-  }
-
   return true;
 };
 
@@ -410,7 +404,6 @@ const handleRequestCharging = async () => {
   try {
     const result = await postData(apiLink.add_fund, {
       amount: chargeAmount.value,
-      bank_number: bankNumber.value.trim(),
     });
 
     if (result.status) {
@@ -419,7 +412,6 @@ const handleRequestCharging = async () => {
                              getTranslation('fund_request_submitted');
       message.success(successMessage);
       resetChargeAmount();
-      bankNumber.value = '';
       fetchChargeHistory(pagination.page, pagination.limit);
     }
   } catch (error) {
@@ -505,18 +497,6 @@ const fetchChargeHistory = async (page = 1, pageSize = 10) => {
   }
 };
 
-const fetchBankNumber = async () => {
-  try {
-    const result = await getData(apiLink.get_betting_info);
-    if (result.status && result.data && result.data.user) {
-      bankNumber.value = result.data.user.bank_number || '';
-    }
-  } catch (error) {
-    console.error('Error fetching bank number:', error);
-    message.error(error.message || getTranslation('failed_to_fetch_data'));
-  }
-};
-
 const fetchChargeSettings = async () => {
   try {
     const result = await getData(apiLink.get_site_setting);
@@ -550,7 +530,6 @@ const handlePageSizeChange = (pageSize) => {
 
 onMounted(() => {
   fetchChargeHistory(pagination.page, pagination.limit);
-  fetchBankNumber();
   fetchChargeSettings();
 });
 </script>
@@ -566,8 +545,7 @@ onMounted(() => {
 }
 
 .request-charge-text {
-  display: inline-block;
-  white-space: normal;
+  white-space: nowrap;
   line-height: 1.2;
   text-align: center;
   font-size: 12px;

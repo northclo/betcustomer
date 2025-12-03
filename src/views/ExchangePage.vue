@@ -2,7 +2,7 @@
   <div class="exchange-money-page">
     <div class="bg-primary-light radius-2 p-3 mt-2">
       <a-row :gutter="[16, 16]">
-        <a-col :xs="24" :lg="18">
+        <a-col :xs="24" :lg="17">
           <a-card :title="getTranslation('money_exchanged_list')" class="game-result-card matching-height-card">
             <div class="table-container">
               <a-table
@@ -81,7 +81,7 @@
           </a-card>
         </a-col>
 
-        <a-col :xs="24" :lg="6">
+        <a-col :xs="24" :lg="7">
           <a-card :title="getTranslation('request_money_exchange')" class="game-result-card matching-height-card">
             <a-space direction="vertical" size="middle" class="w-100">
               <div class="instruction-text">
@@ -113,37 +113,37 @@
           </div>
 
           <div>
-                <div class="section-title">
-                  {{ getTranslation('exchange_money') }}
+              <div class="section-title">
+                {{ getTranslation('exchange_money') }}
+              </div>
+              <div class="flex gap-2 items-center mt-2">
+                <div class="flex-grow">
+                  <a-input-number
+                    v-model:value="exchangeAmount"
+                    :min="exchangeMin"
+                    :max="exchangeMax"
+                    :step="10000"
+                    :controls="false"
+                    class="w-100"
+                    :placeholder="trlang.enter_amount"
+                    size="large"
+                    :formatter="(value) => value ? value.toLocaleString() : ''"
+                    :parser="(value) => value.replace(/\$\s?|(,*)/g, '')"
+                  />
                 </div>
-                <a-row :gutter="[8, 8]" class="mt-2">
-                  <a-col :xs="16" :sm="18">
-                    <a-input-number
-                      v-model:value="exchangeAmount"
-                      :min="exchangeMin"
-                      :max="exchangeMax"
-                      :step="10000"
-                      :controls="false"
-                      class="w-100"
-                      :placeholder="trlang.enter_amount"
-                      size="large"
-                      :formatter="(value) => value ? value.toLocaleString() : ''"
-                      :parser="(value) => value.replace(/\$\s?|(,*)/g, '')"
-                    />
-                  </a-col>
-                  <a-col :xs="8" :sm="6">
-                    <a-button
-                      type="primary"
-                      class="w-100 glass-action-green request-exchange-btn"
-                      size="large"
-                      :loading="loading"
-                      :disabled="!exchangeAmount || exchangeAmount <= 0 || !exchangeSecureCode || !exchangeSecureCode.trim() || !bankNumber || !bankNumber.trim() || !isWithinExchangeTimeRange"
-                      @click="handleRequestExchange"
-                    >
-                      <span class="request-exchange-text">{{ getTranslation('request_exchange') }}</span>
-                    </a-button>
-                  </a-col>
-                </a-row>
+                <div>
+                  <a-button
+                    type="primary"
+                    class="w-100 glass-action-green request-exchange-btn"
+                    size="large"
+                    :loading="loading"
+                    :disabled="!exchangeAmount || exchangeAmount <= 0 || !exchangeSecureCode || !exchangeSecureCode.trim() || !isWithinExchangeTimeRange"
+                    @click="handleRequestExchange"
+                  >
+                    <span class="request-exchange-text">{{ getTranslation('request_exchange') }}</span>
+                  </a-button>
+                </div>
+              </div>
             </div>
 
               <div>
@@ -160,16 +160,16 @@
                 />
           </div>
 
-              <div>
-                <div class="section-title">
+              <div class="flex items-center gap-2">
+                <div class="section-title white-space-nowrap">
                   {{ getTranslation('bank_number') }}
                 </div>
                 <a-input
-                  v-model:value="bankNumber"
                   type="text"
-                  class="mt-2"
+                  value="**********"
+                  class="bank-number-input"
                   size="large"
-                  :placeholder="getTranslation('enter_bank_number')"
+                  disabled
                 />
               </div>
 
@@ -226,7 +226,6 @@ const exchangeAmount = ref(null);
 const exchangeSecureCode = ref('');
 const selectedMoAmount = ref(null);
 const availableBalance = ref(0);
-const bankNumber = ref('');
 const pagination = reactive({
   page: 1,
   limit: 10,
@@ -375,7 +374,6 @@ const resetExchangeAmount = () => {
   selectedMoAmount.value = null;
   exchangeAmount.value = null;
   exchangeSecureCode.value = '';
-  bankNumber.value = '';
 };
 
 
@@ -387,11 +385,6 @@ const validateExchangeAmount = () => {
 
   if (!exchangeSecureCode.value || exchangeSecureCode.value.trim() === '') {
     message.error(getTranslation('please_enter_exchange_secure_code'));
-    return false;
-  }
-
-  if (!bankNumber.value || !bankNumber.value.trim()) {
-    message.error(getTranslation('bank_number_required'));
     return false;
   }
 
@@ -434,7 +427,6 @@ const handleRequestExchange = async () => {
     const result = await postData(apiLink.exchange, {
       amount: exchangeAmount.value,
       secure_code: exchangeSecureCode.value.trim(),
-      bank_number: bankNumber.value.trim(),
     });
 
     if (result.status) {
@@ -542,18 +534,6 @@ const fetchBalance = async () => {
   }
 };
 
-const fetchBankNumber = async () => {
-  try {
-    const result = await getData(apiLink.get_betting_info);
-    if (result.status && result.data && result.data.user) {
-      bankNumber.value = result.data.user.bank_number || '';
-    }
-  } catch (error) {
-    console.error('Error fetching bank number:', error);
-    message.error(error.message || getTranslation('failed_to_fetch_data'));
-  }
-};
-
 const fetchExchangeSettings = async () => {
   try {
     const result = await getData(apiLink.get_site_setting);
@@ -593,7 +573,6 @@ const handlePageSizeChange = (pageSize) => {
 onMounted(() => {
   fetchExchangeHistory(pagination.page, pagination.limit);
   fetchBalance();
-  fetchBankNumber();
   fetchExchangeSettings();
 });
 </script>
@@ -613,8 +592,7 @@ onMounted(() => {
 }
 
 .request-exchange-text {
-  display: inline-block;
-  white-space: normal;
+  white-space: nowrap;
   line-height: 1.2;
   text-align: center;
   font-size: 12px;

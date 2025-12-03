@@ -20,6 +20,10 @@
   box-shadow: var(--glass-shadow);
 }
 
+.bank-number-input[disabled] {
+  border: 1px solid var(--glass-border) !important;
+}
+
 .game-result-card {
   background: var(--glass-bg) !important;
   border: 1px solid var(--glass-border-light) !important;
@@ -249,33 +253,27 @@
 
 /* Ball colors matching betting site standards */
 .running-ball1 {
-  background: linear-gradient(135deg, rgba(148, 163, 184, 0.5), rgba(100, 116, 139, 0.5)) !important;
-  border-color: rgba(148, 163, 184, 0.7) !important;
+  background: #FFD54F;
 }
 
 .running-ball2 {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.5), rgba(220, 38, 38, 0.5)) !important;
-  border-color: rgba(239, 68, 68, 0.7) !important;
+  background: #1144cf;
 }
 
 .running-ball3 {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.5), rgba(5, 150, 105, 0.5)) !important;
-  border-color: rgba(16, 185, 129, 0.7) !important;
+  background: #EF4444;
 }
 
 .running-ball4 {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.5), rgba(220, 38, 38, 0.5)) !important;
-  border-color: rgba(239, 68, 68, 0.7) !important;
+  background: rgb(125, 81, 233);
 }
 
 .running-ball5 {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.5), rgba(37, 99, 235, 0.5)) !important;
-  border-color: rgba(59, 130, 246, 0.7) !important;
+  background: #F97316;
 }
 
 .running-ball6 {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.5), rgba(124, 58, 237, 0.5)) !important;
-  border-color: rgba(139, 92, 246, 0.7) !important;
+  background: #22C55E;
 }
 
 .mo-buttons-container {
@@ -291,7 +289,7 @@
   border-radius: 4px;
   transition: background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   font-weight: 600;
-  font-size: 12px;
+  font-size: 11px;
   display: flex;
   align-items: center;
   justify-content: center;
