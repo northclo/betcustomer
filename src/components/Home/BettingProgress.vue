@@ -17,12 +17,12 @@
           />
         </div>
         <div v-if="game?.list?.length">
-          <a-layout-content class="flex-1 flex justify-center flex-wrap gap-2">
-            <a-button :class="game?.odd ? 'active game-btn game-btn-odd' : 'game-btn game-btn-odd'">
-              {{ trlang.odd }}
+          <a-layout-content class="flex-1 flex justify-center flex-wrap gap-5">
+            <a-button :class="game?.odd ? 'game-btn-odev game-btn-odd' : 'game-btn-odev game-btn-even'">
+              {{ game?.odd ? trlang.odd : trlang.even }}
             </a-button>
-            <a-button :class="game?.under ? 'active game-btn game-btn-under' : 'game-btn game-btn-under'">
-              {{ trlang.under }}
+            <a-button :class="game?.under ? 'game-btn-unov game-btn-under' : 'game-btn-unov game-btn-over'">
+              {{ game?.under ? trlang.under : trlang.over }}
             </a-button>
           </a-layout-content>
         </div>

@@ -11,7 +11,7 @@ import './css/common.css'
 import './css/header.css'
 import './css/customAntd.css'
 import './css/custom.css'
-import './css/tailwind.css'
+// import './css/tailwind.css'
 
 import VueLazyload from 'vue3-lazyload'
 import socketPlugin from './plugins/socket';
