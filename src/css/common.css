@@ -120,6 +120,10 @@ button {
   background: transparent; /* No background */
 }
 
+.w-full {
+  width: 100%;
+}
+
 /* ================================
    TEXT ALIGNMENT UTILITIES
 ================================= */
@@ -156,10 +160,6 @@ button {
   color: var(--pink-color) !important;
 }
 
-.text-dark-brown {
-  color: var(--dark-brown-color) !important;
-}
-
 .text-warning {
   color: var(--yellow-color) !important;
 }
@@ -170,18 +170,6 @@ button {
 
 .text-light-green {
   color: var(--light-green-color) !important;
-}
-
-.text-dark-gray {
-  color: var(--dark-gray-color) !important;
-}
-
-.text-light-gray {
-  color: var(--light-gray-color) !important;
-}
-
-.text-dark-main {
-  color: var(--main-dark-color) !important;
 }
 
 /* ================================
@@ -313,24 +301,8 @@ button {
   flex-wrap: wrap; /* Allow wrapping */
 }
 
-.gap-0 {
-  gap: 0px !important;
-}
-
-.gap-1 {
-  gap: 4px !important;
-}
-
 .gap-2 {
   gap: 8px !important;
-}
-
-.gap-3 {
-  gap: 12px !important;
-}
-
-.gap-4 {
-  gap: 16px !important;
 }
 
 .gap-5 {
@@ -345,14 +317,6 @@ button {
 .m-auto {
   margin-left: auto;
   margin-right: auto;
-}
-
-.m-2 {
-  margin: 8px;
-}
-
-.mt-0 {
-  margin-top: 0px;
 }
 
 .mt-2 {
@@ -379,10 +343,6 @@ button {
   margin-left: 8px;
 }
 
-.ms-5 {
-  margin-left: 16px;
-}
-
 .me-2 {
   margin-right: 8px;
 }
@@ -392,10 +352,6 @@ button {
    Uses spacing scale like margin
 ================================= */
 
-.p-1 {
-  padding: 4px;
-}
-
 .p-2 {
   padding: 8px;
 }
@@ -404,48 +360,16 @@ button {
   padding: 12px !important;
 }
 
-.p-4 {
-  padding: 16px;
-}
-
 .p-5 {
   padding: 20px;
-}
-
-.ps-2 {
-  padding-left: 8px;
-}
-
-.ps-5 {
-  padding-left: 20px;
-}
-
-.pe-5 {
-  padding-right: 20px;
 }
 
 .pt-2 {
   padding-top: 8px;
 }
 
-.pt-5 {
-  padding-top: 20px;
-}
-
-.pb-2 {
-  padding-bottom: 8px;
-}
-
-.pb-5 {
-  padding-bottom: 20px;
-}
-
 .px-2 {
   padding-inline: 8px !important;
-}
-
-.px-3 {
-  padding-inline: 12px;
 }
 
 .px-5 {
@@ -456,24 +380,8 @@ button {
    BORDER & RADIUS UTILITIES
 ================================= */
 
-.border-0 {
-  border: none;
-}
-
 .border {
   border: 1px solid rgb(209, 209, 209); /* Light gray border */
-}
-
-.border-primary {
-  border: 1px solid var(--main-color);
-}
-
-.border-bottom {
-  border-bottom: 1px solid rgb(209, 209, 209); /* Light gray border */
-}
-
-.border-danger {
-  border: 3px solid var(--red-color) !important;
 }
 
 .radius-1 {
@@ -538,10 +446,6 @@ button {
 
 .transition {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-.shadow-none {
-  box-shadow: none; /* Remove shadow */
 }
 
 .shadow {

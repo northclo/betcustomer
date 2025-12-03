@@ -1,6 +1,6 @@
 <template>
   <div class="betting-option-container" :class="{ 'betting-disabled': showBettingOverlay }">
-    <a-space class="w-full" v-if="!fetchLoading" direction="vertical" size="small">
+    <a-space v-if="!fetchLoading" class="w-full" direction="vertical" size="small">
       <div v-for="item in bettingOptions" :key="item.key">
         <div class="glass-label radius-top-2 text-white w-fit mb-2 p-2">
           {{ item.label }}
@@ -30,7 +30,7 @@
         <div class="glass-label radius-top-2 text-white w-fit mb-2 p-2">
           {{ trlang.number_sort }}
         </div>
-        <a-flex class="glass-card py-2 px-2 md:p-4" justify="center" gap="middle">
+        <a-flex class="glass-card p-2" justify="center" gap="middle">
           <a-input
             v-for="index in numberSort.length"
             :key="index"
@@ -61,7 +61,7 @@
           </a-col>
         </a-row>
 
-        <a-row :gutter="[12, 8]" class="pt-3">
+        <a-row :gutter="[12, 8]" class="pt-2">
           <a-col :xs="24" :md="5">
             <button
               class="glass-action-btn glass-action-pink text-white w-100 radius-1 cursor-pointer h-100 shadow-dark py-2"
@@ -135,8 +135,8 @@
       <div class="betting-overlay-content">
         <div class="betting-overlay-icon">
           <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-            <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+            <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
           </svg>
         </div>
         <div class="betting-overlay-message">

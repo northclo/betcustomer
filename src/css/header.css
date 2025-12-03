@@ -254,11 +254,6 @@
 }
 
 @media (max-width: 992px) {
-  .AppBarBtns {
-    padding: 4px 0;
-    gap: 6px;
-  }
-
   .mobile-menu-toggle {
     display: inline-flex;
     flex-direction: column;

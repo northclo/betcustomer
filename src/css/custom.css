@@ -499,7 +499,7 @@
 }
 
 .glass-select-dropdown {
-  background: var(--glass-bg) !important;
+  background: #232130 !important;
   border: 1px solid var(--glass-border) !important;
   box-shadow: var(--glass-shadow) !important;
   color: var(--white-color) !important;
