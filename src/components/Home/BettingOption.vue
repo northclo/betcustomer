@@ -1,134 +1,150 @@
 <template>
-  <a-space v-if="!fetchLoading" direction="vertical" size="small">
-    <div v-for="item in bettingOptions" :key="item.key">
-      <div class="glass-label radius-top-2 text-white w-fit mb-2 p-2">
-        {{ item.label }}
+  <div class="betting-option-container" :class="{ 'betting-disabled': showBettingOverlay }">
+    <a-space class="w-full" v-if="!fetchLoading" direction="vertical" size="small">
+      <div v-for="item in bettingOptions" :key="item.key">
+        <div class="glass-label radius-top-2 text-white w-fit mb-2 p-2">
+          {{ item.label }}
+        </div>
+        <a-row class="gap-2 glass-card p-2 radius-2 flex-col sm:flex-row">
+          <a-col
+            v-for="child in item.child"
+            :key="child.key"
+            :xs="24"
+            :sm="Math.floor(24 / item.child.length)"
+            :class="[
+              'glass-option-btn flex-1 text-white flex items-center justify-center cursor-pointer p-2',
+              child.radius,
+              `glass-option-${child.bgColor}`,
+              bettingType === child.key ? 'glass-option-active' : '',
+            ]"
+            @click="setBettingOption(child)"
+          >
+            <span class="fs-4 font-bold">
+              {{ child.label }} {{ child.rate }}
+            </span>
+          </a-col>
+        </a-row>
       </div>
-      <a-row class="gap-2 glass-card p-2 radius-2 flex-col sm:flex-row">
-        <a-col
-          v-for="child in item.child"
-          :key="child.key"
-          :xs="24"
-          :sm="Math.floor(24 / item.child.length)"
-          :class="[
-            'glass-option-btn flex-1 text-white flex items-center justify-center cursor-pointer p-2',
-            child.radius,
-            `glass-option-${child.bgColor}`,
-            bettingType === child.key ? 'glass-option-active' : '',
-          ]"
-          @click="setBettingOption(child)"
-        >
-          <span class="fs-4 font-bold">
-            {{ child.label }} {{ child.rate }}
-          </span>
-        </a-col>
-      </a-row>
-    </div>
 
-    <div v-if="numberSort.length !== 0">
-      <div class="glass-label radius-top-2 text-white w-fit mb-2 p-2">
-        {{ trlang.number_sort }}
+      <div v-if="numberSort.length !== 0">
+        <div class="glass-label radius-top-2 text-white w-fit mb-2 p-2">
+          {{ trlang.number_sort }}
+        </div>
+        <a-flex class="glass-card py-2 px-2 md:p-4" justify="center" gap="middle">
+          <a-input
+            v-for="index in numberSort.length"
+            :key="index"
+            v-model:value="numberSort[index - 1]"
+            class="text-center"
+            style="width: 40px"
+            maxlength="1"
+            @input="handleNumberSortInput(index - 1, $event)"
+            @keypress="handleNumberSortKeypress"
+          />
+        </a-flex>
       </div>
-      <a-flex class="glass-card py-2 px-2 md:p-4" justify="center" gap="middle">
-        <a-input
-          v-for="index in numberSort.length"
-          :key="index"
-          v-model:value="numberSort[index - 1]"
-          class="text-center"
-          style="width: 40px"
-          maxlength="1"
-          @input="handleNumberSortInput(index - 1, $event)"
-          @keypress="handleNumberSortKeypress"
-        />
-      </a-flex>
+
+      <div class="glass-card p-3 radius-2">
+        <a-row :gutter="[12, 6]">
+          <a-col
+            v-for="item in bettingAmountOptions"
+            :key="item"
+            :xs="24"
+            :sm="Math.floor(24 / bettingAmountOptions.length)"
+          >
+            <button
+              class="glass-btn w-100 p-2 fs-3 font-bold cursor-pointer"
+              @click="setBetAmount(item)"
+            >
+              {{ item }}
+            </button>
+          </a-col>
+        </a-row>
+
+        <a-row :gutter="[12, 8]" class="pt-3">
+          <a-col :xs="24" :md="5">
+            <button
+              class="glass-action-btn glass-action-pink text-white w-100 radius-1 cursor-pointer h-100 shadow-dark py-2"
+              @click="resetBettingAmount"
+            >
+              {{ trlang.amount_reset }}
+            </button>
+          </a-col>
+
+          <a-col :xs="24" :md="14">
+            <a-flex justify="space-between" class="gap-2 flex-col sm:flex-row">
+              <div class="flex flex-1">
+                <a-typography-text
+                  class="glass-info-label flex-1 flex items-center justify-center text-white"
+                >
+                  {{ trlang.percentage }}
+                </a-typography-text>
+                <a-typography-text
+                  class="glass-info-value p-3 flex items-center justify-center text-white"
+                >
+                  {{ bettingRate || '0.0' }}
+                </a-typography-text>
+              </div>
+
+              <div class="flex flex-1">
+                <a-typography-text
+                  class="glass-info-label flex-1 flex items-center justify-center text-white"
+                >
+                  {{ trlang.benefit }}
+                </a-typography-text>
+                <a-typography-text
+                  class="glass-info-value p-3 flex items-center justify-center text-white"
+                >
+                  {{ Math.floor(benefitAmount) }}
+                </a-typography-text>
+              </div>
+
+              <a-input-number
+                v-model:value="bettingAmount"
+                class="fs-4 benefit-amount"
+                :step="betUnitStep"
+                :min="0"
+                :precision="0"
+                @change="handleBetAmountChange"
+              />
+            </a-flex>
+
+            <button
+              class="glass-action-btn glass-action-blue w-100 text-white radius-1 p-3 mt-5 cursor-pointer"
+              @click="resetBetting"
+            >
+              {{ trlang.bet_reset }}
+            </button>
+          </a-col>
+
+          <a-col :xs="24" :md="5">
+            <a-button
+              class="glass-action-btn glass-action-green text-white w-100 radius-1 cursor-pointer h-100 shadow-dark py-2"
+              :disabled="isBettingDisabled"
+              :loading="props.loading"
+              @click="startBetting"
+            >
+              {{ trlang.start_bet }}
+            </a-button>
+          </a-col>
+        </a-row>
+      </div>
+    </a-space>
+    
+    <div v-if="showBettingOverlay" class="betting-overlay">
+      <div class="betting-overlay-content">
+        <div class="betting-overlay-icon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+            <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="betting-overlay-message">
+          {{ overlayMessage }}
+        </div>
+      </div>
     </div>
-
-    <div class="glass-card p-3 radius-2">
-      <a-row :gutter="[12, 6]">
-        <a-col
-          v-for="item in bettingAmountOptions"
-          :key="item"
-          :xs="24"
-          :sm="Math.floor(24 / bettingAmountOptions.length)"
-        >
-          <button
-            class="glass-btn w-100 p-2 fs-3 font-bold cursor-pointer"
-            @click="setBetAmount(item)"
-          >
-            {{ item }}
-          </button>
-        </a-col>
-      </a-row>
-
-      <a-row :gutter="[12, 8]" class="pt-3">
-        <a-col :xs="24" :md="5">
-          <button
-            class="glass-action-btn glass-action-pink text-white w-100 radius-1 cursor-pointer h-100 shadow-dark py-2"
-            @click="resetBettingAmount"
-          >
-            {{ trlang.amount_reset }}
-          </button>
-        </a-col>
-
-        <a-col :xs="24" :md="14">
-          <a-flex justify="space-between" class="gap-2 flex-col sm:flex-row">
-            <div class="flex flex-1">
-              <a-typography-text
-                class="glass-info-label flex-1 flex items-center justify-center text-white"
-              >
-                {{ trlang.percentage }}
-              </a-typography-text>
-              <a-typography-text
-                class="glass-info-value p-3 flex items-center justify-center text-white"
-              >
-                {{ bettingRate || '0.0' }}
-              </a-typography-text>
-            </div>
-
-            <div class="flex flex-1">
-              <a-typography-text
-                class="glass-info-label flex-1 flex items-center justify-center text-white"
-              >
-                {{ trlang.benefit }}
-              </a-typography-text>
-              <a-typography-text
-                class="glass-info-value p-3 flex items-center justify-center text-white"
-              >
-                {{ Math.floor(benefitAmount) }}
-              </a-typography-text>
-            </div>
-
-            <a-input-number
-              v-model:value="bettingAmount"
-              class="fs-4 benefit-amount"
-              :step="betUnitStep"
-              :min="0"
-              :precision="0"
-              @change="handleBetAmountChange"
-            />
-          </a-flex>
-
-          <button
-            class="glass-action-btn glass-action-blue w-100 text-white radius-1 p-3 mt-5 cursor-pointer"
-            @click="resetBetting"
-          >
-            {{ trlang.bet_reset }}
-          </button>
-        </a-col>
-
-        <a-col :xs="24" :md="5">
-          <a-button
-            class="glass-action-btn glass-action-green text-white w-100 radius-1 cursor-pointer h-100 shadow-dark py-2"
-            :disabled="isBettingDisabled"
-            :loading="props.loading"
-            @click="startBetting"
-          >
-            {{ trlang.start_bet }}
-          </a-button>
-        </a-col>
-      </a-row>
-    </div>
-  </a-space>
+  </div>
 </template>
 
 <script setup>
@@ -178,6 +194,22 @@ const isBettingDisabled = computed(() => {
   if (props.bettingRemainTime < 90 || props.bettingRemainTime > 180) return true;
   if (!bettingAmount.value || !bettingRate.value) return true;
   return false;
+});
+
+const showBettingOverlay = computed(() => {
+  if (!props.gameActivated) return true;
+  if (props.bettingRemainTime < 90 || props.bettingRemainTime > 180) return true;
+  return false;
+});
+
+const overlayMessage = computed(() => {
+  if (!props.gameActivated) {
+    return props.inactiveMessage || getTranslation('game_is_currently_disabled');
+  }
+  if (props.bettingRemainTime < 90 || props.bettingRemainTime > 180) {
+    return getTranslation('betting_window_closed');
+  }
+  return getTranslation('no_available_betting');
 });
 
 const betUnitStep = computed(() => {
@@ -713,6 +745,86 @@ onMounted(() => {
 @media (min-width: 576px) {
   .benefit-amount {
     width: 90px;
+  }
+}
+
+.betting-option-container {
+  position: relative;
+  width: 100%;
+}
+
+.betting-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.betting-overlay-content {
+  text-align: center;
+  padding: 2rem;
+  max-width: 90%;
+}
+
+.betting-overlay-icon {
+  color: var(--white-color);
+  opacity: 0.9;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.betting-overlay-message {
+  color: var(--white-color);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.betting-overlay-time {
+  color: var(--white-color);
+  font-size: 1rem;
+  opacity: 0.8;
+  margin-top: 0.5rem;
+}
+
+.betting-disabled {
+  pointer-events: none;
+}
+
+.betting-disabled .betting-overlay {
+  pointer-events: all;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
   }
 }
 </style>
