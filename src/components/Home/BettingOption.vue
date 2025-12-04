@@ -133,12 +133,6 @@
     
     <div v-if="showBettingOverlay" class="betting-overlay">
       <div class="betting-overlay-content">
-        <div class="betting-overlay-icon">
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
-            <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-          </svg>
-        </div>
         <div class="betting-overlay-message">
           {{ overlayMessage }}
         </div>
@@ -759,9 +753,7 @@ onMounted(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.8);
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -774,15 +766,6 @@ onMounted(() => {
   text-align: center;
   padding: 2rem;
   max-width: 90%;
-}
-
-.betting-overlay-icon {
-  color: var(--white-color);
-  opacity: 0.9;
-  margin-bottom: 1rem;
-  display: flex;
-  justify-content: center;
-  animation: pulse 2s ease-in-out infinite;
 }
 
 .betting-overlay-message {
