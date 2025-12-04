@@ -1,11 +1,11 @@
 <template>
   <div class="betting-option-container" :class="{ 'betting-disabled': showBettingOverlay }">
-    <a-space class="w-full" v-if="!fetchLoading" direction="vertical" size="small">
+    <a-space v-if="!fetchLoading" class="w-100" direction="vertical" size="small">
       <div v-for="item in bettingOptions" :key="item.key">
         <div class="glass-label radius-top-2 text-white w-fit mb-2 p-2">
           {{ item.label }}
         </div>
-        <a-row class="gap-2 glass-card p-2 radius-2 flex-col sm:flex-row">
+        <a-row class="gap-2 glass-card p-2 radius-2 flex-row">
           <a-col
             v-for="child in item.child"
             :key="child.key"
@@ -30,7 +30,7 @@
         <div class="glass-label radius-top-2 text-white w-fit mb-2 p-2">
           {{ trlang.number_sort }}
         </div>
-        <a-flex class="glass-card py-2 px-2 md:p-4" justify="center" gap="middle">
+        <a-flex class="glass-card p-2" justify="center" gap="middle">
           <a-input
             v-for="index in numberSort.length"
             :key="index"
@@ -61,7 +61,7 @@
           </a-col>
         </a-row>
 
-        <a-row :gutter="[12, 8]" class="pt-3">
+        <a-row :gutter="[12, 8]" class="pt-2">
           <a-col :xs="24" :md="5">
             <button
               class="glass-action-btn glass-action-pink text-white w-100 radius-1 cursor-pointer h-100 shadow-dark py-2"
@@ -72,7 +72,7 @@
           </a-col>
 
           <a-col :xs="24" :md="14">
-            <a-flex justify="space-between" class="gap-2 flex-col sm:flex-row">
+            <a-flex justify="space-between" class="gap-2 flex-row">
               <div class="flex flex-1">
                 <a-typography-text
                   class="glass-info-label flex-1 flex items-center justify-center text-white"
@@ -133,12 +133,6 @@
     
     <div v-if="showBettingOverlay" class="betting-overlay">
       <div class="betting-overlay-content">
-        <div class="betting-overlay-icon">
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-            <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </div>
         <div class="betting-overlay-message">
           {{ overlayMessage }}
         </div>
@@ -759,9 +753,7 @@ onMounted(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.8);
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -774,15 +766,6 @@ onMounted(() => {
   text-align: center;
   padding: 2rem;
   max-width: 90%;
-}
-
-.betting-overlay-icon {
-  color: var(--white-color);
-  opacity: 0.9;
-  margin-bottom: 1rem;
-  display: flex;
-  justify-content: center;
-  animation: pulse 2s ease-in-out infinite;
 }
 
 .betting-overlay-message {
