@@ -207,23 +207,23 @@ button {
 ================================= */
 
 .fs-1 {
-  font-size: 24px; /* Large heading */
+  font-size: 22px; /* Large heading */
 }
 
 .fs-2 {
-  font-size: 20px;
+  font-size: 18px;
 }
 
 .fs-3 {
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .fs-4 {
-  font-size: 14px; /* Base size */
+  font-size: 12px; /* Base size */
 }
 
 .fs-5 {
-  font-size: 10px; /* Small text */
+  font-size: 9px; /* Small text */
 }
 
 @media screen and (min-width: 768px) {

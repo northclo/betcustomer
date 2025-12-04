@@ -35,7 +35,7 @@
         </div>
       </a-layout>
       <a-flex class="mb-5" justify="center">
-        <div class="mt-5 flex gap-5">
+        <div class="mt-5 flex game-result-list">
           <a-button
             v-for="item in (game?.list || [])"
             :key="item"
@@ -169,5 +169,15 @@ const game = computed(() => props.gameResult);
   flex: 1;
   display: flex;
   flex-direction: column;
+}
+
+.game-result-list {
+  gap: 10px !important;
+}
+
+@media screen and (min-width: 576px) {
+  .game-result-list {
+    gap: 20px !important;
+  }
 }
 </style>

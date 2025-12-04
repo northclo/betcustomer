@@ -59,13 +59,13 @@
   border: 2px solid var(--glass-border-light) !important;
   background: #4a2859;
   color: var(--white-color) !important;
-  width: 76px;
-  height: 76px;
+  width: 60px;
+  height: 60px;
   border-radius: 5px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 500;
 }
 
@@ -75,13 +75,13 @@
 
 .game-btn-unov {
   color: var(--white-color) !important;
-  width: 90px;
-  height: 90px;
+  width: 76px;
+  height: 76px;
   border-radius: 5px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 17px;
+  font-size: 14px;
   font-weight: 500;
   background: transparent;
   padding-bottom: 10px;
@@ -742,5 +742,17 @@
 
   .glass-select .ant-select-selector {
     height: 38px !important;
+  }
+
+  .game-btn-odev {
+    width: 76px;
+    height: 76px;
+    font-size: 24px;
+  }
+
+  .game-btn-unov {
+    width: 90px;
+    height: 90px;
+    font-size: 17px;
   }
 }
