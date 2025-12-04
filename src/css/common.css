@@ -1,3 +1,25 @@
+body {
+  font-family:
+		system-ui,
+		-apple-system, /* Firefox supports this but not yet `system-ui` */
+		'Segoe UI',
+		Roboto,
+		Helvetica,
+		Arial,
+		sans-serif,
+		'Apple Color Emoji',
+		'Segoe UI Emoji';
+}
+
+html {
+  line-height: 1.5;
+}
+
+button {
+  font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  line-height: inherit;
+}
+
 #app {
   background: var(--main-dark-color);
   min-height: 100vh;
@@ -118,10 +140,6 @@ button {
 
 .bg-none {
   background: transparent; /* No background */
-}
-
-.w-full {
-  width: 100%;
 }
 
 /* ================================
@@ -301,6 +319,10 @@ button {
   flex-wrap: wrap; /* Allow wrapping */
 }
 
+.flex-grow {
+  flex-grow: 1;
+}
+
 .gap-2 {
   gap: 8px !important;
 }
@@ -458,4 +480,14 @@ button {
 
 .white-space-nowrap {
   white-space: nowrap;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+.text-3xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
 }

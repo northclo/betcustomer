@@ -1,11 +1,11 @@
 <template>
   <div class="betting-option-container" :class="{ 'betting-disabled': showBettingOverlay }">
-    <a-space v-if="!fetchLoading" class="w-full" direction="vertical" size="small">
+    <a-space v-if="!fetchLoading" class="w-100" direction="vertical" size="small">
       <div v-for="item in bettingOptions" :key="item.key">
         <div class="glass-label radius-top-2 text-white w-fit mb-2 p-2">
           {{ item.label }}
         </div>
-        <a-row class="gap-2 glass-card p-2 radius-2 flex-col sm:flex-row">
+        <a-row class="gap-2 glass-card p-2 radius-2 flex-row">
           <a-col
             v-for="child in item.child"
             :key="child.key"
@@ -72,7 +72,7 @@
           </a-col>
 
           <a-col :xs="24" :md="14">
-            <a-flex justify="space-between" class="gap-2 flex-col sm:flex-row">
+            <a-flex justify="space-between" class="gap-2 flex-row">
               <div class="flex flex-1">
                 <a-typography-text
                   class="glass-info-label flex-1 flex items-center justify-center text-white"
