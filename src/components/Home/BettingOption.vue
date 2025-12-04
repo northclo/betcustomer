@@ -19,8 +19,9 @@
             ]"
             @click="setBettingOption(child)"
           >
-            <span class="fs-4 font-bold">
-              {{ child.label }} {{ child.rate }}
+            <span class="fs-4 font-bold betting-option-label">
+              <span>{{ child.label }}</span>
+              <span>{{ child.rate }}</span>
             </span>
           </a-col>
         </a-row>
@@ -64,7 +65,7 @@
         <a-row :gutter="[12, 8]" class="pt-2">
           <a-col :xs="24" :md="5">
             <button
-              class="glass-action-btn glass-action-pink text-white w-100 radius-1 cursor-pointer h-100 shadow-dark py-2"
+              class="glass-action-btn glass-action-pink text-white w-100 radius-1 cursor-pointer h-100 shadow-dark p-2"
               @click="resetBettingAmount"
             >
               {{ trlang.amount_reset }}
@@ -72,7 +73,7 @@
           </a-col>
 
           <a-col :xs="24" :md="14">
-            <a-flex justify="space-between" class="gap-2 flex-row">
+            <a-flex justify="space-between" class="gap-2 info-container">
               <div class="flex flex-1">
                 <a-typography-text
                   class="glass-info-label flex-1 flex items-center justify-center text-white"
@@ -110,7 +111,7 @@
             </a-flex>
 
             <button
-              class="glass-action-btn glass-action-blue w-100 text-white radius-1 p-3 mt-5 cursor-pointer"
+              class="glass-action-btn glass-action-blue w-100 text-white radius-1 p-2 mt-5 cursor-pointer"
               @click="resetBetting"
             >
               {{ trlang.bet_reset }}
@@ -119,7 +120,7 @@
 
           <a-col :xs="24" :md="5">
             <a-button
-              class="glass-action-btn glass-action-green text-white w-100 radius-1 cursor-pointer h-100 shadow-dark py-2"
+              class="glass-action-btn glass-action-green text-white w-100 radius-1 cursor-pointer h-100 shadow-dark p-2"
               :disabled="isBettingDisabled"
               :loading="props.loading"
               @click="startBetting"
@@ -736,9 +737,29 @@ onMounted(() => {
   width: 100%;
 }
 
+.betting-option-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.info-container {
+  flex-direction: column;
+  gap: 6px;
+}
+
 @media (min-width: 576px) {
   .benefit-amount {
     width: 90px;
+  }
+
+  .betting-option-label {
+    flex-direction: row;
+  }
+
+  .info-container {
+    flex-direction: row;
   }
 }
 

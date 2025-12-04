@@ -1,8 +1,8 @@
 <template>
   <a-space direction="vertical" class="w-100">
     <a-card :title="trlang.game_results" class="game-result-card">
-      <a-typography-text class="text-white text-3xl">
-        <span class="text-3xl">{{ totalNo }}</span>
+      <a-typography-text class="text-white fs-1">
+        <span class="fs-1">{{ totalNo }}</span>
         {{ trlang.round }} ({{ todayNo }} {{ trlang.round }})
       </a-typography-text>
 
@@ -49,11 +49,11 @@
       <a-layout
         class="glass-footer flex flex-row justify-center gap-5 p-2 w-100 radius-bottom-1"
       >
-        <a-typography-text class="text-white text-2xl">
+        <a-typography-text class="text-white fs-2">
           <span class="text-warning me-2">{{ trlang.total_betting }}</span>
           {{ totalBettingAmount.toLocaleString() }}
         </a-typography-text>
-        <a-typography-text class="text-white text-2xl">
+        <a-typography-text class="text-white fs-2">
           <span class="text-warning me-2">{{ trlang.total_earning }}</span>
           {{ totalEarningAmount.toLocaleString() }}
         </a-typography-text>

@@ -1,7 +1,7 @@
 <template>
   <div class="main-container mt-2 mb-2">
     <div class="glass-banner">
-      <a-flex justify="space-between" align="center" wrap="wrap">
+      <a-flex justify="space-between" wrap="wrap" class="banner-card">
         <a-flex class="p-2" gap="small" align="center" wrap="nowrap">
           <a-typography-text class="sp-icon mb-0 white-space-nowrap">
             {{ trlang.game_index }}
@@ -35,7 +35,7 @@
           </a-flex>
         </a-flex>
 
-        <a-flex align="center" wrap="nowrap">
+        <a-flex class="p-2" align="center" wrap="nowrap">
           <a
             :href="trlang.store_name_link"
             target="_blank"
@@ -207,5 +207,18 @@ onBeforeUnmount(stopClock);
 
 .notice-badge:hover {
   opacity: 0.8;
+}
+
+.banner-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+@media screen and (min-width: 768px) {
+  .banner-card {
+    flex-direction: row;
+    align-items: center;
+  }
 }
 </style>

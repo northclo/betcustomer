@@ -106,7 +106,7 @@ const columns = computed(() => {
       title: t.betting_result, 
       dataIndex: 'betting_result',
       align: 'center',
-      width: 180,
+      width: 150,
       ellipsis: true,
     },
   ];
@@ -185,17 +185,17 @@ const handleCancelBet = (id) => {
 }
 
 .table-container {
-  overflow-x: hidden !important;
+  overflow-x: auto !important;
   overflow-y: hidden !important;
 }
 
 .betting-history-table :deep(.ant-table-container) {
-  overflow-x: hidden !important;
+  overflow-x: auto !important;
   overflow-y: hidden !important;
 }
 
 .betting-history-table :deep(.ant-table-body) {
-  overflow-x: hidden !important;
+  overflow-x: auto !important;
   overflow-y: hidden !important;
 }
 

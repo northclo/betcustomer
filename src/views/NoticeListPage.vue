@@ -123,12 +123,14 @@ const noticeColumns = computed(() => [
     title: trlang.value.title,
     key: 'title',
     align: 'left',
+    width: 200,
     ellipsis: true,
   },
   {
     title: trlang.value.writer,
     key: 'writer',
     align: 'center',
+    width: 200,
     ellipsis: true,
   },
   {

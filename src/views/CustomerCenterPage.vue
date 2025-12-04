@@ -225,6 +225,7 @@ const questionColumns = computed(() => [
     title: trlang.value.title,
     key: 'title',
     align: 'left',
+    width: 300,
     ellipsis: true,
   },
   {
@@ -245,7 +246,6 @@ const questionColumns = computed(() => [
     key: 'actions',
     align: 'center',
     width: 150,
-    fixed: 'right',
   },
 ]);
 
@@ -735,8 +735,9 @@ onMounted(() => {
 
 .action-bar {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
   flex-wrap: wrap;
   gap: 16px;
 }
@@ -832,5 +833,13 @@ onMounted(() => {
   color: var(--white-color) !important;
   background: var(--glass-bg-light) !important;
   border-color: var(--glass-blue-border) !important;
+}
+
+@media screen and (min-width: 576px) {
+  .action-bar {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 }
 </style>
